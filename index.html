@@ -279,16 +279,18 @@
       const touchX = touch.clientX;
       const touchY = touch.clientY;
 
-      if (touchX < canvas.width / 2) {
-        leftPressed = true;
-      } else if (touchX > canvas.width / 2) {
-        rightPressed = true;
-      }
-
-      if (touchY < canvas.height / 2) {
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
-      } else if (touchY > canvas.height / 2) {
+        leftPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+        rightPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
+        leftPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+        rightPressed = true;
       }
 
       // Adiciona um tiro quando tocar na tela
