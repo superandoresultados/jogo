@@ -20,14 +20,6 @@
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
-
-  <!-- Elemento de áudio para o som do disparo -->
-  <audio id="shootSound">
-    <source src="shoot.mp3" type="audio/mpeg">
-    <source src="shoot.ogg" type="audio/ogg">
-    Your browser does not support the audio tag.
-  </audio>
-
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -48,8 +40,6 @@
     const bulletHeight = 15;
     const bulletSpeed = 5;
     let bullets = [];
-
-    const bulletGlowRadius = 5; // Raio do brilho do projétil
 
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
@@ -112,15 +102,8 @@
     }
 
     function drawBullets() {
+      ctx.fillStyle = 'red';
       bullets.forEach(bullet => {
-        // Desenhar o brilho do projétil
-        ctx.fillStyle = 'yellow';
-        ctx.beginPath();
-        ctx.arc(bullet.x + bulletWidth / 2, bullet.y + bulletHeight / 2, bulletGlowRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Desenhar o projétil
-        ctx.fillStyle = 'red';
         ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
       });
     }
@@ -325,20 +308,9 @@
         downPressed = false;
       }
       if (e.key === ' ') {
-        shootBullet(); // Chama a função de disparo
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
-
-    function shootBullet() {
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      playShootSound(); // Chama a função para reproduzir o som
-    }
-
-    function playShootSound() {
-      const shootSound = document.getElementById('shootSound');
-      shootSound.currentTime = 0; // Reinicia o áudio se já estiver sendo reproduzido
-      shootSound.play();
-    }
   </script>
 </body>
 </html>
