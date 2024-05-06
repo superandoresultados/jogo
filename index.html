@@ -147,17 +147,16 @@
     }
 
     function moveShip() {
-      // Mover a nave com controles de teclado e toque
-      if ((leftPressed || touchLeft) && shipX > 0) {
+      if (leftPressed && shipX > 0) {
         shipX -= shipSpeed;
       }
-      if ((rightPressed || touchRight) && shipX < canvas.width - shipSize) {
+      if (rightPressed && shipX < canvas.width - shipSize) {
         shipX += shipSpeed;
       }
-      if ((upPressed || touchUp) && shipY > 0) {
+      if (upPressed && shipY > 0) {
         shipY -= shipSpeed;
       }
-      if ((downPressed || touchDown) && shipY < canvas.height - shipSize) {
+      if (downPressed && shipY < canvas.height - shipSize) {
         shipY += shipSpeed;
       }
     }
@@ -190,179 +189,3 @@
           }
         });
       });
-    }
-
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          meteors.splice(meteorIndex, 1);
-        }
-      });
-    }
-
-    function checkPhase() {
-      if (score >= 1000 && phase === 1) {
-        phase = 2;
-        phaseMessage = 'Você venceu a Fase 1!';
-        phaseStartTime = Date.now();
-      }
-      if (score >= 2000 && phase === 2) {
-        phaseMessage = 'Você venceu o jogo!';
-        gameEnded = true;
-      }
-      if (phase === 1 || phase === 2) {
-        drawPhaseMessage();
-      }
-    }
-
-    function drawPhaseMessage() {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      ctx.fillText(phaseMessage, canvas.width / 2 - 250, canvas.height / 2);
-      if (phase === 2 && !gameEnded) {
-        // Contagem regressiva de 3 segundos para a próxima fase
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
-        }
-      }
-    }
-
-    function drawCountdown(countdown) {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
-    }
-
-    function drawWinMessage() {
-      if (score >= 2000 && phase === 2 && gameEnded) {
-        // Desenha um troféu no centro da tela
-        const trophyImg = new Image();
-        trophyImg.src = 'trophy.png'; // Substitua 'trophy.png' pelo caminho para sua imagem de troféu
-        trophyImg.onload = function() {
-          const trophyX = (canvas.width - trophyImg.width) / 2;
-          const trophyY = (canvas.height - trophyImg.height) / 2;
-          ctx.drawImage(trophyImg, trophyX, trophyY);
-        };
-      }
-    }
-
-    function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      }
-    }
-
-    function drawExplosion(x, y) {
-      const explosionRadius = 50;
-      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
-      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
-      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-      ctx.fillStyle = explosionGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function createMeteor() {
-      const x = Math.random() * (canvas.width - yellowMeteorWidth);
-      const y = -yellowMeteorHeight;
-      const colors = ['yellow', 'green', 'red'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      let width, height;
-      if (randomColor === 'yellow') {
-        width = yellowMeteorWidth;
-        height = yellowMeteorHeight;
-      } else if (randomColor === 'green') {
-        width = greenMeteorWidth;
-        height = greenMeteorHeight;
-      } else if (randomColor === 'red') {
-        width = redMeteorWidth;
-        height = redMeteorHeight;
-      }
-      meteors.push({ x, y, color: randomColor, width, height });
-    }
-
-    setInterval(createMeteor, 1000);
-
-    draw();
-
-    // Eventos de teclado para movimentar a nave
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown') {
-        downPressed = true;
-      }
-    });
-
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown') {
-        downPressed = false;
-      }
-      if (e.key === ' ') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        // Tocar o som do disparo
-        const shootSound = document.getElementById('shootSound');
-        shootSound.currentTime = 0; // Reiniciar a reprodução, para poder ser disparado novamente mesmo que já esteja em andamento
-        shootSound.play();
-      }
-    });
-
-    // Eventos de toque para movimentar a nave
-    let touchLeft = false;
-    let touchRight = false;
-    let touchUp = false;
-    let touchDown = false;
-
-    canvas.addEventListener('touchstart', function(e) {
-      const touch = e.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-      if (touchX < canvas.width / 2) {
-        touchLeft = true;
-      } else {
-        touchRight = true;
-      }
-      if (touchY < canvas.height / 2) {
-        touchUp = true;
-      } else {
-        touchDown = true;
-      }
-    });
-
-    canvas.addEventListener('touchend', function(e) {
-      touchLeft = false;
-      touchRight = false;
-      touchUp = false;
-      touchDown = false;
-    });
-  </script>
-</body>
-</html>
