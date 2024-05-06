@@ -292,9 +292,6 @@
       if (e.key === 'ArrowDown') {
         downPressed = true;
       }
-      if (e.key === ' ') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -309,6 +306,12 @@
       }
       if (e.key === 'ArrowDown') {
         downPressed = false;
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === ' ') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
   </script>
