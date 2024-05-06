@@ -277,73 +277,37 @@
 
     setInterval(createMeteor, 1000);
 
-    // Adicione este código para suporte a toque
-    let touchStartX = 0;
-    let touchStartY = 0;
+    draw();
 
-    canvas.addEventListener('touchstart', function(e) {
-      e.preventDefault();
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    });
+    function handleTouchStart(event) {
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
 
-    canvas.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      const touchEndX = e.changedTouches[0].clientX;
-      const touchEndY = e.changedTouches[0].clientY;
-
-      const deltaX = touchEndX - touchStartX;
-      const deltaY = touchEndY - touchStartY;
-
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Movimento horizontal
-        if (deltaX > 0) {
-          rightPressed = true;
-        } else {
-          leftPressed = true;
-        }
-      } else {
-        // Movimento vertical
-        if (deltaY > 0) {
-          downPressed = true;
-        } else {
-          upPressed = true;
-        }
-      }
-    });
-
-    canvas.addEventListener('touchmove', function(e) {
-      e.preventDefault(); // Evita que a tela role quando o jogador arrasta
-    });
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') {
+      if (touchX < canvas.width / 2) {
         leftPressed = true;
-      }
-      if (e.key === 'ArrowRight') {
+      } else {
         rightPressed = true;
       }
-      if (e.key === 'ArrowUp') {
+
+      if (touchY < canvas.height / 2) {
         upPressed = true;
-      }
-      if (e.key === 'ArrowDown') {
+      } else {
         downPressed = true;
       }
-    });
+    }
 
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown') {
-        downPressed = false;
-      }
+    function handleTouchEnd(event) {
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
+
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
       if (e.key === ' ') {
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
