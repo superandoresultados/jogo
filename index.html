@@ -281,13 +281,13 @@
 
       if (touchX < canvas.width / 2) {
         leftPressed = true;
-      } else {
+      } else if (touchX > canvas.width / 2) {
         rightPressed = true;
       }
 
       if (touchY < canvas.height / 2) {
         upPressed = true;
-      } else {
+      } else if (touchY > canvas.height / 2) {
         downPressed = true;
       }
     }
@@ -304,34 +304,34 @@
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
       }
-      if (e.key === 'ArrowRight') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = true;
       }
-      if (e.key === 'ArrowUp') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = true;
       }
-      if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (e.key === ' ') {
+      if (e.key === ' ' || e.key === 'Spacebar') {
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
 
     document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
       }
-      if (e.key === 'ArrowRight') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
       }
-      if (e.key === 'ArrowUp') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
       }
-      if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
     });
