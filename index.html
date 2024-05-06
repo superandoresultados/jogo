@@ -49,6 +49,8 @@
     const bulletSpeed = 5;
     let bullets = [];
 
+    const bulletGlowRadius = 5; // Raio do brilho do projétil
+
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
     const greenMeteorWidth = 45;
@@ -110,8 +112,15 @@
     }
 
     function drawBullets() {
-      ctx.fillStyle = 'red';
       bullets.forEach(bullet => {
+        // Desenhar o brilho do projétil
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(bullet.x + bulletWidth / 2, bullet.y + bulletHeight / 2, bulletGlowRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Desenhar o projétil
+        ctx.fillStyle = 'red';
         ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
       });
     }
