@@ -130,17 +130,11 @@
     }
 
     function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
+      if ((leftPressed || rightPressed) && shipX > 0 && shipX < canvas.width - shipSize) {
+        shipX += (rightPressed - leftPressed) * shipSpeed;
       }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
+      if ((upPressed || downPressed) && shipY > 0 && shipY < canvas.height - shipSize) {
+        shipY += (downPressed - upPressed) * shipSpeed;
       }
     }
 
@@ -310,8 +304,35 @@
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown') {
+        downPressed = true;
+      }
       if (e.key === ' ') {
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft') {
+        leftPressed = false;
+      }
+      if (e.key === 'ArrowRight') {
+        rightPressed = false;
+      }
+      if (e.key === 'ArrowUp') {
+        upPressed = false;
+      }
+      if (e.key === 'ArrowDown') {
+        downPressed = false;
       }
     });
   </script>
