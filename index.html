@@ -277,7 +277,44 @@
 
     setInterval(createMeteor, 1000);
 
-    draw();
+    // Adicione este código para suporte a toque
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    canvas.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    canvas.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Movimento horizontal
+        if (deltaX > 0) {
+          rightPressed = true;
+        } else {
+          leftPressed = true;
+        }
+      } else {
+        // Movimento vertical
+        if (deltaY > 0) {
+          downPressed = true;
+        } else {
+          upPressed = true;
+        }
+      }
+    });
+
+    canvas.addEventListener('touchmove', function(e) {
+      e.preventDefault(); // Evita que a tela role quando o jogador arrasta
+    });
 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowLeft') {
@@ -311,10 +348,6 @@
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
-
-    // Adicione aqui o código fornecido anteriormente
-    // ...
-
   </script>
 </body>
 </html>
