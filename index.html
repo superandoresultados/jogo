@@ -147,16 +147,17 @@
     }
 
     function moveShip() {
-      if (leftPressed && shipX > 0) {
+      // Mover a nave com controles de teclado e toque
+      if ((leftPressed || touchLeft) && shipX > 0) {
         shipX -= shipSpeed;
       }
-      if (rightPressed && shipX < canvas.width - shipSize) {
+      if ((rightPressed || touchRight) && shipX < canvas.width - shipSize) {
         shipX += shipSpeed;
       }
-      if (upPressed && shipY > 0) {
+      if ((upPressed || touchUp) && shipY > 0) {
         shipY -= shipSpeed;
       }
-      if (downPressed && shipY < canvas.height - shipSize) {
+      if ((downPressed || touchDown) && shipY < canvas.height - shipSize) {
         shipY += shipSpeed;
       }
     }
@@ -296,6 +297,7 @@
 
     draw();
 
+    // Eventos de teclado para movimentar a nave
     document.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowLeft') {
         leftPressed = true;
@@ -325,20 +327,42 @@
         downPressed = false;
       }
       if (e.key === ' ') {
-        shootBullet(); // Chama a função de disparo
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        // Tocar o som do disparo
+        const shootSound = document.getElementById('shootSound');
+        shootSound.currentTime = 0; // Reiniciar a reprodução, para poder ser disparado novamente mesmo que já esteja em andamento
+        shootSound.play();
       }
     });
 
-    function shootBullet() {
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      playShootSound(); // Chama a função para reproduzir o som
-    }
+    // Eventos de toque para movimentar a nave
+    let touchLeft = false;
+    let touchRight = false;
+    let touchUp = false;
+    let touchDown = false;
 
-    function playShootSound() {
-      const shootSound = document.getElementById('shootSound');
-      shootSound.currentTime = 0; // Reinicia o áudio se já estiver sendo reproduzido
-      shootSound.play();
-    }
+    canvas.addEventListener('touchstart', function(e) {
+      const touch = e.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+      if (touchX < canvas.width / 2) {
+        touchLeft = true;
+      } else {
+        touchRight = true;
+      }
+      if (touchY < canvas.height / 2) {
+        touchUp = true;
+      } else {
+        touchDown = true;
+      }
+    });
+
+    canvas.addEventListener('touchend', function(e) {
+      touchLeft = false;
+      touchRight = false;
+      touchUp = false;
+      touchDown = false;
+    });
   </script>
 </body>
 </html>
