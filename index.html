@@ -158,3 +158,163 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Game</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Elemento de áudio para o som do disparo -->
+  <audio id="shootSound">
+    <source src="shoot.mp3" type="audio/mpeg">
+    <source src="shoot.ogg" type="audio/ogg">
+    Your browser does not support the audio tag.
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const shipSize = 50;
+    const shipSpeed = 5;
+    let shipX = (canvas.width - shipSize) / 2;
+    let shipY = canvas.height - shipSize - 10;
+
+    const bulletWidth = 5;
+    const bulletHeight = 15;
+    const bulletSpeed = 5;
+    let bullets = [];
+
+    const bulletGlowRadius = 5;
+
+    // Variáveis para controlar os eventos de toque
+    let touchX = null;
+    let touchY = null;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBackground();
+      drawShip();
+      drawBullets();
+      moveShip();
+      moveBullets();
+      requestAnimationFrame(draw);
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawShip() {
+      ctx.fillStyle = 'gray';
+      ctx.beginPath();
+      ctx.moveTo(shipX + shipSize / 2, shipY);
+      ctx.lineTo(shipX, shipY + shipSize);
+      ctx.lineTo(shipX + shipSize, shipY + shipSize);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawBullets() {
+      bullets.forEach(bullet => {
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(bullet.x + bulletWidth / 2, bullet.y + bulletHeight / 2, bulletGlowRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'red';
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+      });
+    }
+
+    function moveShip() {
+      // Mover a nave com eventos de toque
+      if (touchX !== null && touchY !== null) {
+        if (touchX < shipX + shipSize / 2) {
+          shipX -= shipSpeed;
+        }
+        if (touchX > shipX + shipSize / 2) {
+          shipX += shipSpeed;
+        }
+        if (touchY < shipY + shipSize / 2) {
+          shipY -= shipSpeed;
+        }
+        if (touchY > shipY + shipSize / 2) {
+          shipY += shipSpeed;
+        }
+      }
+    }
+
+    function moveBullets() {
+      bullets.forEach(bullet => {
+        bullet.y -= bulletSpeed;
+      });
+      bullets = bullets.filter(bullet => bullet.y > 0);
+    }
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchX = touch.clientX;
+      touchY = touch.clientY;
+    }
+
+    function handleTouchMove(e) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchX = touch.clientX;
+      touchY = touch.clientY;
+    }
+
+    function handleTouchEnd(e) {
+      e.preventDefault();
+      touchX = null;
+      touchY = null;
+    }
+
+    function handleTouchCancel(e) {
+      e.preventDefault();
+      touchX = null;
+      touchY = null;
+    }
+
+    function shoot() {
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      // Tocar o som do disparo
+      const shootSound = document.getElementById('shootSound');
+      shootSound.currentTime = 0;
+      shootSound.play();
+    }
+
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchend', handleTouchEnd);
+    canvas.addEventListener('touchcancel', handleTouchCancel);
+
+    canvas.addEventListener('click', shoot);
+
+    draw();
+  </script>
+</body>
+</html>
