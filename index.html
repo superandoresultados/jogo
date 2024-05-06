@@ -280,6 +280,7 @@
     draw();
 
     function handleTouchStart(event) {
+      event.preventDefault();
       const touch = event.touches[0];
       const touchX = touch.clientX;
       const touchY = touch.clientY;
@@ -298,6 +299,7 @@
     }
 
     function handleTouchEnd(event) {
+      event.preventDefault();
       leftPressed = false;
       rightPressed = false;
       upPressed = false;
