@@ -5,37 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Game</title>
   <style>
-    body {
+    body, html {
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #000;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
     }
     canvas {
+      display: block;
+      margin: auto;
       border: 2px solid #fff;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+  <canvas id="gameCanvas"></canvas>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     const shipSize = 50;
     const shipSpeed = 5;
-    let shipX = (canvasWidth - shipSize) / 2;
-    let shipY = canvasHeight - shipSize - 10;
-    let upPressed = false;
-    let downPressed = false;
+    let shipX = (canvas.width - shipSize) / 2;
+    let shipY = canvas.height - shipSize - 10;
     let leftPressed = false;
     let rightPressed = false;
+    let upPressed = false;
+    let downPressed = false;
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -58,7 +58,7 @@
     let gameEnded = false;
 
     function draw() {
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
       drawShip();
       drawBullets();
@@ -76,10 +76,10 @@
 
     function drawBackground() {
       ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       // Desenha a barra superior para o score
       ctx.fillStyle = '#181818';
-      ctx.fillRect(0, 0, canvasWidth, 40);
+      ctx.fillRect(0, 0, canvas.width, 40);
     }
 
     function drawShip() {
@@ -131,17 +131,17 @@
     }
 
     function moveShip() {
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvasHeight - shipSize) {
-        shipY += shipSpeed;
-      }
       if (leftPressed && shipX > 0) {
         shipX -= shipSpeed;
       }
-      if (rightPressed && shipX < canvasWidth - shipSize) {
+      if (rightPressed && shipX < canvas.width - shipSize) {
         shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
       }
     }
 
@@ -156,7 +156,7 @@
       meteors.forEach(meteor => {
         meteor.y += meteorSpeed;
       });
-      meteors = meteors.filter(meteor => meteor.y < canvasHeight);
+      meteors = meteors.filter(meteor => meteor.y < canvas.height);
     }
 
     function checkCollisions() {
@@ -177,7 +177,7 @@
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvasHeight) {
+        if (meteor.y + meteor.height >= canvas.height) {
           score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
           drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
           meteors.splice(meteorIndex, 1);
@@ -203,7 +203,7 @@
     function drawPhaseMessage() {
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
-      ctx.fillText(phaseMessage, canvasWidth / 2 - 250, canvasHeight / 2);
+      ctx.fillText(phaseMessage, canvas.width / 2 - 250, canvas.height / 2);
       if (phase === 2 && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
@@ -219,7 +219,7 @@
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
       ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvasWidth / 2 - 100, canvasHeight / 2 + 50);
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
     }
 
     function drawWinMessage() {
@@ -228,8 +228,8 @@
         const trophyImg = new Image();
         trophyImg.src = 'trophy.png'; // Substitua 'trophy.png' pelo caminho para sua imagem de troféu
         trophyImg.onload = function() {
-          const trophyX = (canvasWidth - trophyImg.width) / 2;
-          const trophyY = (canvasHeight - trophyImg.height) / 2;
+          const trophyX = (canvas.width - trophyImg.width) / 2;
+          const trophyY = (canvas.height - trophyImg.height) / 2;
           ctx.drawImage(trophyImg, trophyX, trophyY);
         };
       }
@@ -258,7 +258,7 @@
     }
 
     function createMeteor() {
-      const x = Math.random() * (canvasWidth - yellowMeteorWidth);
+      const x = Math.random() * (canvas.width - yellowMeteorWidth);
       const y = -yellowMeteorHeight;
       const colors = ['yellow', 'green', 'red'];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -281,32 +281,32 @@
     draw();
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowUp') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown') {
-        downPressed = true;
-      }
       if (e.key === 'ArrowLeft') {
         leftPressed = true;
       }
       if (e.key === 'ArrowRight') {
         rightPressed = true;
       }
+      if (e.key === 'ArrowUp') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown') {
+        downPressed = true;
+      }
     });
 
     document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowUp') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown') {
-        downPressed = false;
-      }
       if (e.key === 'ArrowLeft') {
         leftPressed = false;
       }
       if (e.key === 'ArrowRight') {
         rightPressed = false;
+      }
+      if (e.key === 'ArrowUp') {
+        upPressed = false;
+      }
+      if (e.key === 'ArrowDown') {
+        downPressed = false;
       }
     });
 
