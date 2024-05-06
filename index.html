@@ -20,6 +20,14 @@
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+
+  <!-- Elemento de áudio para o som do disparo -->
+  <audio id="shootSound">
+    <source src="shoot.mp3" type="audio/mpeg">
+    <source src="shoot.ogg" type="audio/ogg">
+    Your browser does not support the audio tag.
+  </audio>
+
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -308,9 +316,20 @@
         downPressed = false;
       }
       if (e.key === ' ') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootBullet(); // Chama a função de disparo
       }
     });
+
+    function shootBullet() {
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      playShootSound(); // Chama a função para reproduzir o som
+    }
+
+    function playShootSound() {
+      const shootSound = document.getElementById('shootSound');
+      shootSound.currentTime = 0; // Reinicia o áudio se já estiver sendo reproduzido
+      shootSound.play();
+    }
   </script>
 </body>
 </html>
