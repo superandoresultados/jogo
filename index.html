@@ -290,6 +290,9 @@
       } else if (touchY > canvas.height / 2) {
         downPressed = true;
       }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
     function handleTouchEnd(event) {
@@ -316,9 +319,6 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -333,6 +333,9 @@
       }
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
+      }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
   </script>
