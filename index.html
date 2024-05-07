@@ -16,6 +16,15 @@
       display: block;
       margin: auto;
     }
+    /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
+    @media screen and (max-width: 600px) {
+      canvas {
+        font-size: 12px;
+      }
+      .message {
+        font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
+      }
+    }
   </style>
 </head>
 <body>
@@ -47,10 +56,6 @@
     const greenMeteorHeight = 45;
     const redMeteorWidth = 60;
     const redMeteorHeight = 60;
-    const blueMeteorWidth = 60;
-    const blueMeteorHeight = 60;
-    const purpleMeteorWidth = 75;
-    const purpleMeteorHeight = 75;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -67,7 +72,6 @@
       drawBullets();
       drawMeteors();
       drawScore();
-      drawPhaseMessage();
       drawWinMessage();
       moveShip();
       moveBullets();
@@ -194,19 +198,12 @@
         phase = 2;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
-        setTimeout(startPhaseTwo, 3000);
       }
       if (score >= 2000 && phase === 2) {
-        phase = 3;
-        phaseMessage = 'Venceu';
-        phaseStartTime = Date.now();
-        setTimeout(startPhaseThree, 3000);
-      }
-      if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
-      if (phase === 1 || phase === 2 || phase === 3) {
+      if (phase === 1 || phase === 2) {
         drawPhaseMessage();
       }
     }
@@ -214,9 +211,10 @@
     function drawPhaseMessage() {
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(phaseMessage, canvas.width / 2, canvas.height / 2);
-      if ((phase === 2 || phase === 3) && !gameEnded) {
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      if (phase === 2 && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
         const countdown = 3 - Math.floor(elapsedTime / 1000);
@@ -231,16 +229,19 @@
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
       ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2, canvas.height / 2 + 50);
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
     }
 
     function drawWinMessage() {
-      if (score >= 5000 && gameEnded) {
-        // Desenha a mensagem "Vencedor" no centro da tela
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('Vencedor', canvas.width / 2, canvas.height / 2);
+      if (score >= 2000 && phase === 2 && gameEnded) {
+        // Desenha um troféu no centro da tela
+        const trophyImg = new Image();
+        trophyImg.src = 'trophy.png'; // Substitua 'trophy.png' pelo caminho para sua imagem de troféu
+        trophyImg.onload = function() {
+          const trophyX = (canvas.width - trophyImg.width) / 2;
+          const trophyY = (canvas.height - trophyImg.height) / 2;
+          ctx.drawImage(trophyImg, trophyX, trophyY);
+        };
       }
     }
 
@@ -251,10 +252,6 @@
         return 20;
       } else if (color === 'red') {
         return 30;
-      } else if (color === 'blue') {
-        return 50;
-      } else if (color === 'purple') {
-        return 100;
       }
     }
 
@@ -271,54 +268,22 @@
     }
 
     function createMeteor() {
-      let x, y, width, height, color;
-      if (phase === 1) {
-        x = Math.random() * (canvas.width - yellowMeteorWidth);
-        y = -yellowMeteorHeight;
-        color = 'yellow';
+      const x = Math.random() * (canvas.width - yellowMeteorWidth);
+      const y = -yellowMeteorHeight;
+      const colors = ['yellow', 'green', 'red'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      let width, height;
+      if (randomColor === 'yellow') {
         width = yellowMeteorWidth;
         height = yellowMeteorHeight;
-      } else if (phase === 2) {
-        const colors = ['yellow', 'green', 'red', 'blue'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        }
-        x = Math.random() * (canvas.width - width);
-        y = -height;
-      } else if (phase === 3) {
-        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        } else if (color === 'purple') {
-          width = purpleMeteorWidth;
-          height = purpleMeteorHeight;
-        }
-        x = Math.random() * (canvas.width - width);
-        y = -height;
+      } else if (randomColor === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (randomColor === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
       }
-      meteors.push({ x, y, color, width, height });
+      meteors.push({ x, y, color: randomColor, width, height });
     }
 
     setInterval(createMeteor, 1000);
@@ -389,6 +354,9 @@
       }
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
+      }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
   </script>
