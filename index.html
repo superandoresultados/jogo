@@ -426,6 +426,19 @@
       }
     });
 
+    canvas.addEventListener('touchend', function(event) {
+      const touchX = event.changedTouches[0].clientX;
+      const touchY = event.changedTouches[0].clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
+
     function restartGame() {
       // Reinicia o jogo na fase 1 com Score 0
       phase = 1;
