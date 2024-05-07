@@ -56,10 +56,10 @@
     const greenMeteorHeight = 45;
     const redMeteorWidth = 60;
     const redMeteorHeight = 60;
-    const blueMeteorWidth = 45;
-    const blueMeteorHeight = 45;
-    const purpleMeteorWidth = 60;
-    const purpleMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -209,8 +209,7 @@
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
       }
-      if (score >= 5000) {
-        phase = 4;
+      if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
@@ -241,18 +240,13 @@
     }
 
     function drawWinMessage() {
-      if (gameEnded && phase === 4) {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
         ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        const messageWidth = ctx.measureText(phaseMessage).width;
-        const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-        ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-        // Botão para reiniciar o jogo
-        ctx.fillStyle = 'green';
-        ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 70, 200, 50);
-        ctx.fillStyle = 'white';
+        ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50);
+        ctx.fillStyle = 'black';
         ctx.font = '24px Arial';
-        ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 105);
+        ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 135);
       }
     }
 
@@ -422,22 +416,21 @@
     canvas.addEventListener('click', function(event) {
       const clickX = event.clientX;
       const clickY = event.clientY;
-      if (gameEnded && phase === 4) {
-        // Verifica se o botão de reiniciar foi clicado
-        if (clickX > canvas.width / 2 - 100 && clickX < canvas.width / 2 + 100 &&
-            clickY > canvas.height / 2 + 70 && clickY < canvas.height / 2 + 120) {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
           restartGame();
         }
       }
     });
 
     function restartGame() {
-      score = 0;
+      // Reinicia o jogo na fase 1 com Score 0
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
+      score = 0;
       gameEnded = false;
-      bullets = [];
       meteors = [];
     }
   </script>
