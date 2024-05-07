@@ -50,7 +50,7 @@
     #lifeCount {
       position: fixed;
       top: 10px;
-      left: 10px;
+      right: 10px; /* Alterado para posicionar à direita */
       font-family: 'Roboto', sans-serif;
       font-size: 20px;
       color: white;
@@ -204,7 +204,10 @@
     function drawLifeCount() {
       ctx.fillStyle = 'white';
       ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, 10, 30);
+      const lifeText = `Vidas: ${lives.toString().padStart(2, '0')}`; // Formata o texto das vidas
+      const textWidth = ctx.measureText(lifeText).width;
+      const textX = canvas.width - textWidth - 10; // Posiciona o texto à direita da tela
+      ctx.fillText(lifeText, textX, 30);
     }
 
     function moveShip() {
