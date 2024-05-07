@@ -196,11 +196,11 @@
     function checkPhase() {
       if (score >= 1000 && phase === 1) {
         phase = 2;
-        phaseMessage = 'Você venceu a Fase 1!';
+        phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
       }
       if (score >= 2000 && phase === 2) {
-        phaseMessage = 'Você venceu o jogo!';
+        phaseMessage = 'Vencedor';
         gameEnded = true;
       }
       if (phase === 1 || phase === 2) {
