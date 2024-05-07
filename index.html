@@ -130,11 +130,17 @@
     }
 
     function moveShip() {
-      if ((leftPressed || rightPressed) && shipX > 0 && shipX < canvas.width - shipSize) {
-        shipX += (rightPressed - leftPressed) * shipSpeed;
+      if (leftPressed && shipX > 0) {
+        shipX -= shipSpeed;
       }
-      if ((upPressed || downPressed) && shipY > 0 && shipY < canvas.height - shipSize) {
-        shipY += (downPressed - upPressed) * shipSpeed;
+      if (rightPressed && shipX < canvas.width - shipSize) {
+        shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
       }
     }
 
@@ -281,15 +287,17 @@
 
       if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
-        leftPressed = true;
       } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
-        rightPressed = true;
       } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
-        leftPressed = true;
       } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
+      }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
         rightPressed = true;
       }
 
