@@ -11,10 +11,15 @@
       overflow: hidden;
       width: 100%;
       height: 100%;
+      background-color: #141414; /* Cor de fundo mais escura */
+      font-family: 'Arial', sans-serif; /* Fonte padrão */
     }
     canvas {
       display: block;
       margin: auto;
+      border: 2px solid #ffffff; /* Adiciona uma borda branca ao redor do canvas */
+      border-radius: 10px; /* Borda arredondada */
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Sombra suave */
     }
     /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
     @media screen and (max-width: 600px) {
@@ -25,10 +30,28 @@
         font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
       }
     }
+    /* Estiliza o botão "Reiniciar Jogo" */
+    .restart-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #FF4500; /* Cor de fundo laranja */
+      color: #fff; /* Cor do texto branco */
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease; /* Transição suave */
+    }
+    .restart-button:hover {
+      background-color: #FF6347; /* Cor de fundo laranja mais clara ao passar o mouse */
+    }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
+  <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button> <!-- Botão de reiniciar o jogo -->
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
