@@ -201,12 +201,12 @@
     function checkPhase() {
       if (score >= 1000 && phase === 1) {
         phase = 2;
-        phaseMessage = '';
+        phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
-        phaseMessage = '';
+        phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
       }
       if (score >= 5000 && phase === 3) {
@@ -348,6 +348,16 @@
       const touch = event.touches[0];
       const touchX = touch.clientX;
       const touchY = touch.clientY;
+
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
+      }
 
       if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
