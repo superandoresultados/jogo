@@ -4,13 +4,13 @@ body, html {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background-color: #111; /* Cor de fundo escura */
+  background: linear-gradient(135deg, #2E2E2E, #111111); /* Gradiente de fundo escuro */
 }
 
 canvas {
   display: block;
   margin: auto;
-  background-color: #000; /* Cor de fundo do canvas */
+  background: linear-gradient(90deg, #171717, #000000); /* Gradiente de fundo do canvas */
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Sombra suave */
 }
 
