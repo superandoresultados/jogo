@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Game</title>
   <style>
-    body,
-    html {
+    body, html {
       margin: 0;
       padding: 0;
       overflow: hidden;
       width: 100%;
       height: 100%;
     }
-
     canvas {
       display: block;
       margin: auto;
     }
-
     /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
     @media screen and (max-width: 600px) {
       canvas {
         font-size: 12px;
       }
-
       .message {
         font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
       }
@@ -52,7 +47,6 @@
     }
   </style>
 </head>
-
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
@@ -98,6 +92,7 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
+    let lives = 3; // Vidas iniciais
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -120,13 +115,12 @@
     function drawBackground() {
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // Desenha a barra superior para o score
+      // Desenha a barra superior para o score e vidas
       ctx.fillStyle = '#181818';
       ctx.fillRect(0, 0, canvas.width, 40);
-      // Desenha a palavra "Vidas"
       ctx.fillStyle = 'white';
       ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives < 10 ? '0' + lives : lives}`, canvas.width - 100, 30);
+      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, canvas.width - 100, 30);
     }
 
     function drawShip() {
@@ -194,9 +188,9 @@
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
           if (bullet.x < meteor.x + meteor.width &&
-            bullet.x + bulletWidth > meteor.x &&
-            bullet.y < meteor.y + meteor.height &&
-            bullet.y + bulletHeight > meteor.y) {
+              bullet.x + bulletWidth > meteor.x &&
+              bullet.y < meteor.y + meteor.height &&
+              bullet.y + bulletHeight > meteor.y) {
             bullets = bullets.filter(b => b !== bullet);
             score += getMeteorScore(meteor.color);
             drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
@@ -221,16 +215,22 @@
         phase = 2;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
       }
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
+    }
+
+    function increaseLife() {
+      lives++; // Incrementa uma vida
     }
 
     function drawPhaseMessage() {
@@ -405,57 +405,63 @@
     canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
-
-    function keyDownHandler(event) {
-      if (event.key === 'Left' || event.key === 'ArrowLeft') {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
       }
-      if (event.key === 'Right' || event.key === 'ArrowRight') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = true;
       }
-      if (event.key === 'Up' || event.key === 'ArrowUp') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = true;
       }
-      if (event.key === 'Down' || event.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (event.key === ' ' && !gameEnded) {
-        // Adiciona um tiro quando a barra de espaço é pressionada
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
-    }
+    });
 
-    function keyUpHandler(event) {
-      if (event.key === 'Left' || event.key === 'ArrowLeft') {
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
       }
-      if (event.key === 'Right' || event.key === 'ArrowRight') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
       }
-      if (event.key === 'Up' || event.key === 'ArrowUp') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
       }
-      if (event.key === 'Down' || event.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-    }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      }
+    });
 
-    let lives = 3;
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
 
     function restartGame() {
-      lives = 3;
-      score = 0;
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
+      score = 0;
       gameEnded = false;
-      restartButton.style.display = 'none';
-      bullets = [];
       meteors = [];
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
   </script>
 </body>
-
 </html>
