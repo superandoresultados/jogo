@@ -211,7 +211,9 @@
     function drawPhaseMessage() {
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
-      ctx.fillText(phaseMessage, canvas.width / 2 - 250, canvas.height / 2);
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
       if (phase === 2 && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
