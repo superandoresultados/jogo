@@ -56,6 +56,10 @@
     const greenMeteorHeight = 45;
     const redMeteorWidth = 60;
     const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 55;
+    const purpleMeteorHeight = 55;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -200,10 +204,15 @@
         phaseStartTime = Date.now();
       }
       if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Venceu';
+        phaseStartTime = Date.now();
+      }
+      if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
-      if (phase === 1 || phase === 2) {
+      if (phase > 1 && phase <= 3) {
         drawPhaseMessage();
       }
     }
@@ -214,7 +223,7 @@
       const messageWidth = ctx.measureText(phaseMessage).width;
       const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
       ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      if (phase === 2 && !gameEnded) {
+      if ((phase === 2 || phase === 3) && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
         const countdown = 3 - Math.floor(elapsedTime / 1000);
@@ -233,7 +242,7 @@
     }
 
     function drawWinMessage() {
-      if (score >= 2000 && phase === 2 && gameEnded) {
+      if (score >= 5000 && phase === 3 && gameEnded) {
         // Desenha um troféu no centro da tela
         const trophyImg = new Image();
         trophyImg.src = 'trophy.png'; // Substitua 'trophy.png' pelo caminho para sua imagem de troféu
@@ -252,6 +261,10 @@
         return 20;
       } else if (color === 'red') {
         return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
       }
     }
 
@@ -268,22 +281,39 @@
     }
 
     function createMeteor() {
-      const x = Math.random() * (canvas.width - yellowMeteorWidth);
-      const y = -yellowMeteorHeight;
-      const colors = ['yellow', 'green', 'red'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      let width, height;
-      if (randomColor === 'yellow') {
-        width = yellowMeteorWidth;
-        height = yellowMeteorHeight;
-      } else if (randomColor === 'green') {
-        width = greenMeteorWidth;
-        height = greenMeteorHeight;
-      } else if (randomColor === 'red') {
-        width = redMeteorWidth;
-        height = redMeteorHeight;
+      let x, y, width, height, color;
+      if (score < 1000) {
+        // Fase 1: meteoros amarelos, verdes e vermelhos
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        }
+      } else if (score < 2000) {
+        // Fase 2: adiciona meteoros azuis
+        x = Math.random() * (canvas.width - blueMeteorWidth);
+        y = -blueMeteorHeight;
+        color = 'blue';
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
+      } else {
+        // Fase 3: adiciona meteoros roxos
+        x = Math.random() * (canvas.width - purpleMeteorWidth);
+        y = -purpleMeteorHeight;
+        color = 'purple';
+        width = purpleMeteorWidth;
+        height = purpleMeteorHeight;
       }
-      meteors.push({ x, y, color: randomColor, width, height });
+      meteors.push({ x, y, color, width, height });
     }
 
     setInterval(createMeteor, 1000);
