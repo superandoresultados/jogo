@@ -68,7 +68,6 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let spacePressed = false; // Adiciona uma variável para controlar se a tecla de espaço está pressionada
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -118,6 +117,10 @@
       // Desenha a barra superior para o score
       ctx.fillStyle = '#181818';
       ctx.fillRect(0, 0, canvas.width, 40);
+      // Desenha a palavra "Vidas" na parte direita da barra superior
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Roboto';
+      ctx.fillText('Vidas: 03', canvas.width - 100, 30);
     }
 
     function drawShip() {
@@ -164,9 +167,6 @@
       }
       if (downPressed && shipY < canvas.height - shipSize) {
         shipY += shipSpeed;
-      }
-      if (spacePressed) { // Se a tecla de espaço estiver pressionada, adiciona um tiro
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     }
 
@@ -383,6 +383,9 @@
       } else {
         rightPressed = true;
       }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
     function handleTouchEnd(event) {
@@ -409,9 +412,6 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        spacePressed = true; // Define spacePressed como true quando a tecla de espaço é pressionada
-      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -428,7 +428,7 @@
         downPressed = false;
       }
       if (e.key === ' ' || e.key === 'Spacebar') {
-        spacePressed = false; // Define spacePressed como false quando a tecla de espaço é liberada
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
 
