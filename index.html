@@ -92,6 +92,7 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
+    let lives = 3; // Vidas iniciais
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -114,13 +115,12 @@
     function drawBackground() {
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // Desenha a barra superior para o score
+      // Desenha a barra superior para o score e vidas
       ctx.fillStyle = '#181818';
       ctx.fillRect(0, 0, canvas.width, 40);
-      // Desenha a palavra "Vidas" na parte direita da barra superior
       ctx.fillStyle = 'white';
       ctx.font = '20px Roboto';
-      ctx.fillText('Vidas: 03', canvas.width - 100, 30);
+      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, canvas.width - 100, 30);
     }
 
     function drawShip() {
@@ -215,16 +215,22 @@
         phase = 2;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
       }
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
+    }
+
+    function increaseLife() {
+      lives++; // Incrementa uma vida
     }
 
     function drawPhaseMessage() {
@@ -446,12 +452,13 @@
     });
 
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
       score = 0;
       gameEnded = false;
       meteors = [];
       phaseMessage = '';
+      lives = 3;
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
