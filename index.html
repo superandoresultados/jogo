@@ -45,22 +45,11 @@
     .restart-button:hover {
       background-color: #45a049;
     }
-
-    /* Estilo para a contagem de vidas */
-    #lifeCount {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      font-family: 'Roboto', sans-serif;
-      font-size: 20px;
-      color: white;
-    }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
-  <div id="lifeCount">Vidas: 03</div>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -68,8 +57,8 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const shipImage = new Image();
-    shipImage.src = 'nave.jpg';
+    let shipImg = new Image();
+    shipImg.src = 'nave.png';
 
     const shipSize = 50;
     const shipSpeed = 5;
@@ -103,7 +92,6 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
-    let lives = 3; // Número inicial de vidas da nave
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -114,7 +102,6 @@
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
-      drawLifeCount(); // Desenhar a contagem de vidas
       moveShip();
       moveBullets();
       moveMeteors();
@@ -133,7 +120,7 @@
     }
 
     function drawShip() {
-      ctx.drawImage(shipImage, shipX, shipY, shipSize, shipSize);
+      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
     }
 
     function drawBullets() {
@@ -164,6 +151,78 @@
       ctx.fillText(`Score: ${score}`, 10, 30);
     }
 
+    function moveShip() {
+      if (leftPressed && shipX > 0) {
+        shipX -= shipSpeed;
+      }
+      if (rightPressed && shipX < canvas.width - shipSize) {
+        shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
+      }
+    }
+
+    function moveBullets() {
+      bullets.forEach(bullet => {
+        bullet.y -= bulletSpeed;
+      });
+      bullets = bullets.filter(bullet => bullet.y > 0);
+    }
+
+    function moveMeteors() {
+      meteors.forEach(meteor => {
+        meteor.y += meteorSpeed;
+      });
+      meteors = meteors.filter(meteor => meteor.y < canvas.height);
+    }
+
+    function checkCollisions() {
+      bullets.forEach(bullet => {
+        meteors.forEach((meteor, meteorIndex) => {
+          if (bullet.x < meteor.x + meteor.width &&
+              bullet.x + bulletWidth > meteor.x &&
+              bullet.y < meteor.y + meteor.height &&
+              bullet.y + bulletHeight > meteor.y) {
+            bullets = bullets.filter(b => b !== bullet);
+            score += getMeteorScore(meteor.color);
+            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            meteors.splice(meteorIndex, 1);
+          }
+        });
+      });
+    }
+
+    function checkMeteorBottom() {
+      meteors.forEach((meteor, meteorIndex) => {
+        if (meteor.y + meteor.height >= canvas.height) {
+          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
+          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+          meteors.splice(meteorIndex, 1);
+        }
+      });
+    }
+
+    function checkPhase() {
+      if (score >= 1000 && phase === 1) {
+        phase = 2;
+        phaseMessage = 'Venceu';
+        phaseStartTime = Date.now();
+      }
+      if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Venceu';
+        phaseStartTime = Date.now();
+      }
+      if (score >= 5000 && phase === 3) {
+        phaseMessage = 'Vencedor';
+        gameEnded = true;
+      }
+    }
+
     function drawPhaseMessage() {
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
@@ -184,167 +243,214 @@
 
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
-      ctx.font = '36px Arial';
-      const countdownWidth = ctx.measureText(countdown).width;
-      const countdownX = (canvas.width - countdownWidth) / 2; // Centraliza o texto na tela
-      ctx.fillText(countdown, countdownX, canvas.height / 2 + 50);
+      ctx.font = '24px Arial';
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
     }
 
     function drawWinMessage() {
-      if (gameEnded && score >= 500) {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        const winMessage = 'Parabéns! Você ganhou!';
-        const messageWidth = ctx.measureText(winMessage).width;
-        const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-        ctx.fillText(winMessage, messageX, canvas.height / 2);
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        const restartButton = document.querySelector('.restart-button');
+        restartButton.style.display = 'block';
       }
     }
 
-    function drawLifeCount() {
-      ctx.fillStyle = 'white';
-      ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, 10, 30);
-    }
-
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
+    function getMeteorScore(color) {
+      if (color === 'yellow') {
+        return 10;
+      } else if (color === 'green') {
+        return 20;
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
       }
     }
 
-    function moveBullets() {
-      bullets.forEach(bullet => {
-        bullet.y -= bulletSpeed;
-      });
-      bullets = bullets.filter(bullet => bullet.y > 0); // Remove balas fora do canvas
+    function drawExplosion(x, y) {
+      const explosionRadius = 50;
+      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      ctx.fillStyle = explosionGradient;
+      ctx.beginPath();
+      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
-      });
-      meteors = meteors.filter(meteor => meteor.y < canvas.height); // Remove meteoros abaixo do canvas
-    }
-
-    function checkCollisions() {
-      bullets.forEach((bullet, bulletIndex) => {
-        meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
-              bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
-              bullet.y + bulletHeight > meteor.y) {
-            // Colisão entre bala e meteoro
-            bullets.splice(bulletIndex, 1); // Remove a bala
-            meteors.splice(meteorIndex, 1); // Remove o meteoro
-            score += meteor.points; // Aumenta a pontuação
-          }
-        });
-      });
-    }
-
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          meteors.splice(meteorIndex, 1); // Remove o meteoro
-          lives--; // Diminui uma vida
-          loseLife();
+    function createMeteor() {
+      let x, y, color, width, height;
+      if (phase === 1) {
+        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
         }
-      });
-    }
-
-    function loseLife() {
-      if (lives === 0) {
-        gameOver();
+      } else if (phase === 2) {
+        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
+        x = Math.random() * (canvas.width - blueMeteorWidth);
+        y = -blueMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        }
+      } else if (phase === 3) {
+        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
+        x = Math.random() * (canvas.width - purpleMeteorWidth);
+        y = -purpleMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
       }
+      meteors.push({ x, y, color, width, height });
     }
 
-    function checkPhase() {
-      if (score >= 100 && phase === 1) {
-        phase = 2;
-        phaseMessage = 'Fase 2';
-        phaseStartTime = Date.now();
-        createMeteors(10, yellowMeteorWidth, yellowMeteorHeight, 1);
+    setInterval(createMeteor, 1000);
+
+    draw();
+
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
       }
-      if (score >= 300 && phase === 2) {
-        phase = 3;
-        phaseMessage = 'Fase 3';
-        phaseStartTime = Date.now();
-        createMeteors(10, greenMeteorWidth, greenMeteorHeight, 2);
-      }
-      if (score >= 500 && phase === 3) {
-        gameEnded = true;
-      }
-    }
 
-    function gameOver() {
-      gameEnded = true;
-      phaseMessage = 'Game Over';
-      restartButton.style.display = 'block';
-    }
-
-    function restartGame() {
-      window.location.reload();
-    }
-
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('keyup', keyUpHandler, false);
-
-    function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
-        leftPressed = true;
-      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
-        rightPressed = true;
-      } else if (event.key === 'ArrowUp' || event.key === 'Up') {
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
-      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
-      } else if (event.key === ' ') {
-        shoot();
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
       }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
-    function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+    function handleTouchEnd(event) {
+      event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
+
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
-      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
-      } else if (event.key === 'ArrowUp' || event.key === 'Up') {
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
-      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-    }
-
-    function shoot() {
-      bullets.push({x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY});
-    }
-
-    function createMeteors(numberOfMeteors, width, height, points) {
-      for (let i = 0; i < numberOfMeteors; i++) {
-        const x = Math.random() * (canvas.width - width);
-        const y = -Math.random() * canvas.height; // Meteoros começam acima do canvas
-        meteors.push({x, y, width, height, points, color: getRandomColor()});
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
+
+    function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
+      phaseMessage = '';
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
-
-    function getRandomColor() {
-      const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-      return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    createMeteors(5, yellowMeteorWidth, yellowMeteorHeight, 1); // Cria meteoros iniciais
-
-    draw(); // Inicia o loop de desenho do jogo
   </script>
 </body>
 </html>
