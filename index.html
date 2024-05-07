@@ -56,6 +56,8 @@
     const greenMeteorHeight = 45;
     const redMeteorWidth = 60;
     const redMeteorHeight = 60;
+    const blueMeteorWidth = 60;
+    const blueMeteorHeight = 60;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -200,10 +202,15 @@
         phaseStartTime = Date.now();
       }
       if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Venceu';
+        phaseStartTime = Date.now();
+      }
+      if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
-      if (phase === 1 || phase === 2) {
+      if (phase === 1 || phase === 2 || phase === 3) {
         drawPhaseMessage();
       }
     }
@@ -252,6 +259,8 @@
         return 20;
       } else if (color === 'red') {
         return 30;
+      } else if (color === 'blue') {
+        return 50;
       }
     }
 
@@ -270,7 +279,7 @@
     function createMeteor() {
       const x = Math.random() * (canvas.width - yellowMeteorWidth);
       const y = -yellowMeteorHeight;
-      const colors = ['yellow', 'green', 'red'];
+      const colors = ['yellow', 'green', 'red', 'blue'];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
       let width, height;
       if (randomColor === 'yellow') {
@@ -282,6 +291,9 @@
       } else if (randomColor === 'red') {
         width = redMeteorWidth;
         height = redMeteorHeight;
+      } else if (randomColor === 'blue') {
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
       }
       meteors.push({ x, y, color: randomColor, width, height });
     }
