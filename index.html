@@ -29,9 +29,7 @@
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
-  <div id="restartButton" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-    <button onclick="restartGame()">Reiniciar Jogo</button>
-  </div>
+  <button id="restartButton" onclick="restartGame()" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px;">Reiniciar Jogo</button>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -59,10 +57,10 @@
     const greenMeteorHeight = 45;
     const redMeteorWidth = 60;
     const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 70;
-    const purpleMeteorHeight = 70;
+    const blueMeteorWidth = 45;
+    const blueMeteorHeight = 45;
+    const purpleMeteorWidth = 60;
+    const purpleMeteorHeight = 60;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -203,21 +201,19 @@
     function checkPhase() {
       if (score >= 1000 && phase === 1) {
         phase = 2;
+        phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
-        createMeteor();
-        phaseMessage = '';
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
-        phaseStartTime = Date.now();
-        createMeteor();
         phaseMessage = 'Venceu';
+        phaseStartTime = Date.now();
       }
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
       }
-      if (phase >= 2) {
+      if (phase === 1 || phase === 2 || phase === 3) {
         drawPhaseMessage();
       }
     }
@@ -228,7 +224,27 @@
       const messageWidth = ctx.measureText(phaseMessage).width;
       const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
       ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      if (phase === 1 && !gameEnded) {
+        // Contagem regressiva de 3 segundos para a próxima fase
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
       if (phase === 2 && !gameEnded) {
+        // Contagem regressiva de 3 segundos para a próxima fase
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
+      if (phase === 3 && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
         const countdown = 3 - Math.floor(elapsedTime / 1000);
@@ -247,16 +263,9 @@
     }
 
     function drawWinMessage() {
-      if (score >= 5000 && gameEnded) {
-        // Desenha um troféu no centro da tela
-        const trophyImg = new Image();
-        trophyImg.src = 'trophy.png'; // Substitua 'trophy.png' pelo caminho para sua imagem de troféu
-        trophyImg.onload = function() {
-          const trophyX = (canvas.width - trophyImg.width) / 2;
-          const trophyY = (canvas.height - trophyImg.height) / 2;
-          ctx.drawImage(trophyImg, trophyX, trophyY);
-        };
-        document.getElementById('restartButton').style.display = 'block'; // Mostra o botão de reiniciar jogo
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        document.getElementById('restartButton').style.display = 'block';
       }
     }
 
@@ -287,28 +296,55 @@
     }
 
     function createMeteor() {
-      const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      let width, height;
-      if (randomColor === 'yellow') {
+      let x, y, width, height, color;
+
+      if (score < 1000 || (score >= 1000 && score < 2000)) {
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
         width = yellowMeteorWidth;
         height = yellowMeteorHeight;
-      } else if (randomColor === 'green') {
-        width = greenMeteorWidth;
-        height = greenMeteorHeight;
-      } else if (randomColor === 'red') {
-        width = redMeteorWidth;
-        height = redMeteorHeight;
-      } else if (randomColor === 'blue') {
-        width = blueMeteorWidth;
-        height = blueMeteorHeight;
-      } else if (randomColor === 'purple') {
-        width = purpleMeteorWidth;
-        height = purpleMeteorHeight;
+        color = 'yellow';
+      } else if (score >= 1000 && score < 2000) {
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        }
+      } else if (score >= 2000) {
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
       }
-      const x = Math.random() * (canvas.width - width);
-      const y = -height;
-      meteors.push({ x, y, color: randomColor, width, height });
+
+      x = Math.random() * (canvas.width - width);
+      y = -height;
+
+      meteors.push({ x, y, color, width, height });
     }
 
     setInterval(createMeteor, 1000);
@@ -391,8 +427,8 @@
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
-      bullets = [];
       meteors = [];
+      bullets = [];
       document.getElementById('restartButton').style.display = 'none';
     }
   </script>
