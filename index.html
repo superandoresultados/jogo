@@ -11,15 +11,10 @@
       overflow: hidden;
       width: 100%;
       height: 100%;
-      background-color: #141414; /* Cor de fundo mais escura */
-      font-family: 'Arial', sans-serif; /* Fonte padrão */
     }
     canvas {
       display: block;
       margin: auto;
-      border: 2px solid #ffffff; /* Adiciona uma borda branca ao redor do canvas */
-      border-radius: 10px; /* Borda arredondada */
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Sombra suave */
     }
     /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
     @media screen and (max-width: 600px) {
@@ -30,28 +25,31 @@
         font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
       }
     }
-    /* Estiliza o botão "Reiniciar Jogo" */
+
+    /* Estilo para o botão de reiniciar jogo */
     .restart-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #FF4500; /* Cor de fundo laranja */
-      color: #fff; /* Cor do texto branco */
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
       border: none;
       border-radius: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease; /* Transição suave */
+      font-size: 16px;
+      display: none;
     }
+
     .restart-button:hover {
-      background-color: #FF6347; /* Cor de fundo laranja mais clara ao passar o mouse */
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
-  <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button> <!-- Botão de reiniciar o jogo -->
+  <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -265,11 +263,8 @@
     function drawWinMessage() {
       if (score >= 5000 && phase === 3 && gameEnded) {
         // Desenha um botão para reiniciar o jogo
-        ctx.fillStyle = 'white';
-        ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50);
-        ctx.fillStyle = 'black';
-        ctx.font = '24px Arial';
-        ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 135);
+        const restartButton = document.querySelector('.restart-button');
+        restartButton.style.display = 'block';
       }
     }
 
@@ -466,6 +461,8 @@
       gameEnded = false;
       meteors = [];
       phaseMessage = '';
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
   </script>
 </body>
