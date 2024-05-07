@@ -4,20 +4,22 @@ body, html {
   overflow: hidden;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #2E2E2E, #111111); /* Gradiente de fundo escuro */
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Fundo com gradiente em tons de roxo e azul */
+  font-family: 'Roboto', sans-serif; /* Fonte moderna */
 }
 
 canvas {
   display: block;
   margin: auto;
-  background: linear-gradient(90deg, #171717, #000000); /* Gradiente de fundo do canvas */
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Sombra suave */
+  background: linear-gradient(90deg, #24243e, #302b63); /* Gradiente de fundo do canvas em tons de roxo e azul */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Sombra suave */
 }
 
 .message {
-  font-family: 'Roboto', sans-serif; /* Fonte moderna */
-  font-size: 18px;
+  font-size: 24px;
   color: #fff; /* Cor do texto */
+  text-align: center; /* Centraliza o texto */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra no texto para efeito de destaque */
 }
 
 @media screen and (max-width: 600px) {
@@ -25,6 +27,6 @@ canvas {
     font-size: 12px;
   }
   .message {
-    font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
+    font-size: 18px; /* Ajusta o tamanho do texto das mensagens para dispositivos móveis */
   }
 }
