@@ -273,7 +273,7 @@
 
     draw();
 
-    function handleTouchStart(event) {
+    function handleTouch(event) {
       event.preventDefault();
       const touch = event.touches[0];
       const touchX = touch.clientX;
@@ -305,7 +305,7 @@
       downPressed = false;
     }
 
-    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
