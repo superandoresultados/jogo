@@ -68,6 +68,9 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const shipImage = new Image();
+    shipImage.src = 'nave.jpg';
+
     const shipSize = 50;
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
@@ -130,23 +133,7 @@
     }
 
     function drawShip() {
-      // Corpo da nave
-      ctx.fillStyle = 'gray';
-      ctx.beginPath();
-      ctx.moveTo(shipX + shipSize / 2, shipY);
-      ctx.lineTo(shipX, shipY + shipSize);
-      ctx.lineTo(shipX + shipSize, shipY + shipSize);
-      ctx.closePath();
-      ctx.fill();
-
-      // Asas da nave
-      ctx.fillStyle = 'gray';
-      ctx.beginPath();
-      ctx.moveTo(shipX + shipSize / 4, shipY + shipSize / 2);
-      ctx.lineTo(shipX + shipSize / 2, shipY - shipSize / 4);
-      ctx.lineTo(shipX + shipSize * 3 / 4, shipY + shipSize / 2);
-      ctx.closePath();
-      ctx.fill();
+      ctx.drawImage(shipImage, shipX, shipY, shipSize, shipSize);
     }
 
     function drawBullets() {
