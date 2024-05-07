@@ -11,23 +11,57 @@
       overflow: hidden;
       width: 100%;
       height: 100%;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Fundo com gradiente em tons de roxo e azul */
+      font-family: 'Roboto', sans-serif; /* Fonte moderna */
     }
     canvas {
       display: block;
       margin: auto;
+      background: linear-gradient(90deg, #24243e, #302b63); /* Gradiente de fundo do canvas em tons de roxo e azul */
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Sombra suave */
     }
-    /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #181818; /* Cor de fundo da barra superior */
+      padding: 10px 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave na barra superior */
+    }
+    .top-bar h1 {
+      font-size: 24px;
+      color: #fff; /* Cor do texto */
+      margin: 0;
+    }
+    .top-bar h2 {
+      font-size: 24px;
+      color: #fff; /* Cor do texto */
+      margin: 0;
+    }
+    .message {
+      font-size: 24px;
+      color: #fff; /* Cor do texto */
+      text-align: center; /* Centraliza o texto */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra no texto para efeito de destaque */
+    }
     @media screen and (max-width: 600px) {
       canvas {
         font-size: 12px;
       }
       .message {
-        font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
+        font-size: 18px; /* Ajusta o tamanho do texto das mensagens para dispositivos móveis */
+      }
+      .top-bar h1, .top-bar h2 {
+        font-size: 16px; /* Ajusta o tamanho do texto na barra superior para dispositivos móveis */
       }
     }
   </style>
 </head>
 <body>
+  <div class="top-bar">
+    <h1>Score: <span id="score">0</span></h1>
+    <h2>Time: <span id="time">0:00</span></h2>
+  </div>
   <canvas id="gameCanvas"></canvas>
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -413,27 +447,18 @@
       }
     });
 
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
+    let seconds = 0;
+    let minutes = 0;
+    setInterval(() => {
+      if (!gameEnded) {
+        seconds++;
+        if (seconds === 60) {
+          minutes++;
+          seconds = 0;
         }
+        document.getElementById('time').innerText = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
       }
-    });
-
-    function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0
-      phase = 1;
-      score = 0;
-      gameEnded = false;
-      meteors = [];
-      phaseMessage = '';
-    }
+    }, 1000);
   </script>
 </body>
 </html>
