@@ -25,33 +25,16 @@
         font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
       }
     }
-    .top-bar {
-      background: linear-gradient(to right, #000000, #3b3b3b);
-      color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      font-family: Arial, sans-serif;
-    }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div>
-      <span>Score: <span id="score">0</span></span>
-      <span style="margin-left: 20px;" id="time">Time: 00:00</span>
-    </div>
-  </div>
   <canvas id="gameCanvas"></canvas>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const scoreElement = document.getElementById('score');
-    const timeElement = document.getElementById('time');
 
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - document.querySelector('.top-bar').offsetHeight;
+    canvas.height = window.innerHeight;
 
     const shipSize = 50;
     const shipSpeed = 5;
@@ -85,6 +68,7 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
+    let timeElapsed = 0;
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -92,6 +76,8 @@
       drawShip();
       drawBullets();
       drawMeteors();
+      drawScore();
+      drawTime();
       drawPhaseMessage();
       drawWinMessage();
       moveShip();
@@ -100,15 +86,20 @@
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
+      updateTimer();
       requestAnimationFrame(draw);
     }
 
     function drawBackground() {
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Desenha a barra superior para o score
+      ctx.fillStyle = '#181818';
+      ctx.fillRect(0, 0, canvas.width, 40);
     }
 
     function drawShip() {
+      // Corpo da nave
       ctx.fillStyle = 'gray';
       ctx.beginPath();
       ctx.moveTo(shipX + shipSize / 2, shipY);
@@ -117,6 +108,7 @@
       ctx.closePath();
       ctx.fill();
 
+      // Asas da nave
       ctx.fillStyle = 'gray';
       ctx.beginPath();
       ctx.moveTo(shipX + shipSize / 4, shipY + shipSize / 2);
@@ -148,37 +140,28 @@
       });
     }
 
-    function drawPhaseMessage() {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2;
-      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      if ((phase === 2 || phase === 3) && !gameEnded) {
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = '';
-        }
-      }
-    }
-
-    function drawCountdown(countdown) {
+    function drawScore() {
       ctx.fillStyle = 'white';
       ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+      ctx.fillText(`Score: ${score}`, 10, 30);
     }
 
-    function drawWinMessage() {
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50);
-        ctx.fillStyle = 'black';
-        ctx.font = '24px Arial';
-        ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 135);
-      }
+    function drawTime() {
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Time: ${formatTime(timeElapsed)}`, 150, 30);
+    }
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    function updateTimer() {
+      const currentTime = Date.now();
+      const deltaTime = (currentTime - phaseStartTime) / 1000; // Em segundos
+      timeElapsed = Math.floor(deltaTime);
     }
 
     function moveShip() {
@@ -229,7 +212,7 @@
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
         if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5;
+          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
           drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
           meteors.splice(meteorIndex, 1);
         }
@@ -250,6 +233,41 @@
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
         gameEnded = true;
+      }
+    }
+
+    function drawPhaseMessage() {
+      ctx.fillStyle = 'white';
+      ctx.font = '48px Arial';
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      if ((phase === 2 || phase === 3) && !gameEnded) {
+        // Contagem regressiva de 3 segundos para a próxima fase
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
+    }
+
+    function drawCountdown(countdown) {
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    }
+
+    function drawWinMessage() {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        ctx.fillStyle = 'white';
+        ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50);
+        ctx.fillStyle = 'black';
+        ctx.font = '24px Arial';
+        ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 135);
       }
     }
 
@@ -282,6 +300,7 @@
     function createMeteor() {
       let x, y, color, width, height;
       if (phase === 1) {
+        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
         x = Math.random() * (canvas.width - yellowMeteorWidth);
         y = -yellowMeteorHeight;
         const colors = ['yellow', 'green', 'red'];
@@ -297,6 +316,7 @@
           height = redMeteorHeight;
         }
       } else if (phase === 2) {
+        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
         x = Math.random() * (canvas.width - blueMeteorWidth);
         y = -blueMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue'];
@@ -315,6 +335,7 @@
           height = blueMeteorHeight;
         }
       } else if (phase === 3) {
+        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
         x = Math.random() * (canvas.width - purpleMeteorWidth);
         y = -purpleMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
@@ -365,6 +386,7 @@
         rightPressed = true;
       }
 
+      // Adiciona um tiro quando tocar na tela
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
@@ -416,6 +438,7 @@
       const clickX = event.clientX;
       const clickY = event.clientY;
       if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
         const buttonX = canvas.width / 2 - 100;
         const buttonY = canvas.height / 2 + 100;
         if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
@@ -425,11 +448,14 @@
     });
 
     function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0
       phase = 1;
       score = 0;
       gameEnded = false;
       meteors = [];
       phaseMessage = '';
+      phaseStartTime = Date.now();
+      timeElapsed = 0;
     }
   </script>
 </body>
