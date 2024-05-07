@@ -16,38 +16,42 @@
       display: block;
       margin: auto;
     }
+    /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
+    @media screen and (max-width: 600px) {
+      canvas {
+        font-size: 12px;
+      }
+      .message {
+        font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
+      }
+    }
     .top-bar {
-      background: linear-gradient(to right, #64b3f4, #c2e59c);
-      height: 40px;
+      background: linear-gradient(to right, #000000, #3b3b3b);
+      color: #ffffff;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 20px;
-      color: white;
+      padding: 10px 20px;
       font-family: Arial, sans-serif;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .top-bar h1 {
-      margin: 0;
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
-    <h1>Space Game</h1>
     <div>
-      <span id="score">Score: 0</span>
-      <span id="time">Time: 0:00</span>
+      <span>Score: <span id="score">0</span></span>
+      <span style="margin-left: 20px;" id="time">Time: 00:00</span>
     </div>
   </div>
   <canvas id="gameCanvas"></canvas>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const timeElement = document.getElementById('time');
 
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 40; // Subtrai a altura da barra superior
+    canvas.height = window.innerHeight - document.querySelector('.top-bar').offsetHeight;
 
     const shipSize = 50;
     const shipSpeed = 5;
@@ -105,7 +109,6 @@
     }
 
     function drawShip() {
-      // Corpo da nave
       ctx.fillStyle = 'gray';
       ctx.beginPath();
       ctx.moveTo(shipX + shipSize / 2, shipY);
@@ -114,7 +117,6 @@
       ctx.closePath();
       ctx.fill();
 
-      // Asas da nave
       ctx.fillStyle = 'gray';
       ctx.beginPath();
       ctx.moveTo(shipX + shipSize / 4, shipY + shipSize / 2);
@@ -150,16 +152,15 @@
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
       const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      const messageX = (canvas.width - messageWidth) / 2;
       ctx.fillText(phaseMessage, messageX, canvas.height / 2);
       if ((phase === 2 || phase === 3) && !gameEnded) {
-        // Contagem regressiva de 3 segundos para a próxima fase
         const elapsedTime = Date.now() - phaseStartTime;
         const countdown = 3 - Math.floor(elapsedTime / 1000);
         if (countdown > 0) {
           drawCountdown(countdown);
         } else {
-          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+          phaseMessage = '';
         }
       }
     }
@@ -172,7 +173,6 @@
 
     function drawWinMessage() {
       if (score >= 5000 && phase === 3 && gameEnded) {
-        // Desenha um botão para reiniciar o jogo
         ctx.fillStyle = 'white';
         ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 50);
         ctx.fillStyle = 'black';
@@ -229,7 +229,7 @@
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
         if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
+          score -= 5;
           drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
           meteors.splice(meteorIndex, 1);
         }
@@ -282,7 +282,6 @@
     function createMeteor() {
       let x, y, color, width, height;
       if (phase === 1) {
-        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
         x = Math.random() * (canvas.width - yellowMeteorWidth);
         y = -yellowMeteorHeight;
         const colors = ['yellow', 'green', 'red'];
@@ -298,7 +297,6 @@
           height = redMeteorHeight;
         }
       } else if (phase === 2) {
-        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
         x = Math.random() * (canvas.width - blueMeteorWidth);
         y = -blueMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue'];
@@ -317,7 +315,6 @@
           height = blueMeteorHeight;
         }
       } else if (phase === 3) {
-        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
         x = Math.random() * (canvas.width - purpleMeteorWidth);
         y = -purpleMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
@@ -368,7 +365,6 @@
         rightPressed = true;
       }
 
-      // Adiciona um tiro quando tocar na tela
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
@@ -420,7 +416,6 @@
       const clickX = event.clientX;
       const clickY = event.clientY;
       if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
         const buttonX = canvas.width / 2 - 100;
         const buttonY = canvas.height / 2 + 100;
         if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
@@ -430,7 +425,6 @@
     });
 
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0
       phase = 1;
       score = 0;
       gameEnded = false;
