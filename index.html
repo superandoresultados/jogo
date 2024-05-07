@@ -201,12 +201,12 @@
     function checkPhase() {
       if (score >= 1000 && phase === 1) {
         phase = 2;
-        phaseMessage = 'Venceu';
+        phaseMessage = '';
         phaseStartTime = Date.now();
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
-        phaseMessage = 'Venceu';
+        phaseMessage = '';
         phaseStartTime = Date.now();
       }
       if (score >= 5000 && phase === 3) {
