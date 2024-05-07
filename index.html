@@ -27,29 +27,41 @@
     }
 
     /* Estilo para o botão de reiniciar jogo */
-    .restart-button {
+    .restart-button, .pause-button {
       position: fixed;
       bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
       padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       font-size: 16px;
-      display: none;
+    }
+
+    .restart-button {
+      left: calc(50% - 90px);
+      background-color: #4CAF50;
+      color: white;
     }
 
     .restart-button:hover {
       background-color: #45a049;
+    }
+
+    .pause-button {
+      left: calc(50% + 10px);
+      background-color: #f44336;
+      color: white;
+    }
+
+    .pause-button:hover {
+      background-color: #d32f2f;
     }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
+  <button class="pause-button" onclick="togglePause()">Pausar</button>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -89,8 +101,13 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
+    let paused = false;
 
     function draw() {
+      if (paused) {
+        requestAnimationFrame(draw);
+        return;
+      }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
       drawShip();
@@ -295,6 +312,9 @@
     }
 
     function createMeteor() {
+      if (paused) {
+        return;
+      }
       let x, y, color, width, height;
       if (phase === 1) {
         // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
@@ -421,6 +441,12 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      }
+      if (e.key === 'p' || e.key === 'P') {
+        togglePause();
+      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -435,9 +461,6 @@
       }
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       }
     });
 
@@ -461,8 +484,13 @@
       gameEnded = false;
       meteors = [];
       phaseMessage = '';
+      paused = false;
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
+    }
+
+    function togglePause() {
+      paused = !paused;
     }
   </script>
 </body>
