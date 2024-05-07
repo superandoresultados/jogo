@@ -25,26 +25,6 @@
         font-size: 14px; /* Ajusta o tamanho do texto das mensagens */
       }
     }
-
-    /* Estilo para o botão de reiniciar jogo */
-    .restart-button {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      display: none;
-    }
-
-    .restart-button:hover {
-      background-color: #45a049;
-    }
   </style>
 </head>
 <body>
@@ -92,7 +72,8 @@
     let phaseMessage = '';
     let phaseStartTime = 0;
     let gameEnded = false;
-    let lives = 3;
+    let lives = 3; // Adicionando vidas
+    let gameOver = false;
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -121,7 +102,7 @@
       // Desenha as vidas
       ctx.fillStyle = 'white';
       ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives < 10 ? '0' : ''}${lives}`, canvas.width - 80, 30);
+      ctx.fillText(`Vidas: ${lives < 10 ? '0' : ''}${lives}`, canvas.width - 100, 30);
     }
 
     function drawShip() {
@@ -199,7 +180,7 @@
           }
         });
       });
-      // Verifica colisão entre nave e meteoros
+      // Verifica colisão entre meteoro e nave
       meteors.forEach((meteor, meteorIndex) => {
         if (shipX < meteor.x + meteor.width &&
             shipX + shipSize > meteor.x &&
@@ -207,18 +188,15 @@
             shipY + shipSize > meteor.y) {
           drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
           meteors.splice(meteorIndex, 1);
-          lives--;
-          if (lives === 0) {
-            endGame();
+          if (!gameOver) {
+            lives--;
+            if (lives <= 0) {
+              gameOver = true;
+              endGame();
+            }
           }
         }
       });
-    }
-
-    function endGame() {
-      gameEnded = true;
-      phaseMessage = 'Game Over';
-      restartGame();
     }
 
     function checkMeteorBottom() {
@@ -236,13 +214,13 @@
         phase = 2;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
-        lives++;
+        lives++; // Adiciona vida ao passar de fase
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
-        lives++;
+        lives++; // Adiciona vida ao passar de fase
       }
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
@@ -372,60 +350,47 @@
     }
 
     function restartGame() {
-      bullets = [];
-      meteors = [];
       score = 0;
       phase = 1;
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
       lives = 3;
+      gameOver = false;
+      meteors = [];
+      bullets = [];
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
 
-    function fireBullet() {
-      const bulletX = shipX + shipSize / 2 - bulletWidth / 2;
-      const bulletY = shipY;
-      bullets.push({ x: bulletX, y: bulletY });
-    }
-
-    function keyDownHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyDownHandler(event) {
+      if (event.key === 'Left' || event.key === 'ArrowLeft') {
         leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      } else if (event.key === 'Right' || event.key === 'ArrowRight') {
         rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      } else if (event.key === 'Up' || event.key === 'ArrowUp') {
         upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      } else if (event.key === 'Down' || event.key === 'ArrowDown') {
         downPressed = true;
       }
-      if (e.key === ' ' && !gameEnded) {
-        fireBullet();
-      }
     }
 
-    function keyUpHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyUpHandler(event) {
+      if (event.key === 'Left' || event.key === 'ArrowLeft') {
         leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      } else if (event.key === 'Right' || event.key === 'ArrowRight') {
         rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      } else if (event.key === 'Up' || event.key === 'ArrowUp') {
         upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      } else if (event.key === 'Down' || event.key === 'ArrowDown') {
         downPressed = false;
       }
     }
 
-    function touchStartHandler(e) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
+    function touchStartHandler(event) {
+      event.preventDefault();
+      const touchX = event.touches[0].clientX;
+      const touchY = event.touches[0].clientY;
       if (touchX < canvas.width / 2) {
         leftPressed = true;
       } else {
@@ -438,20 +403,58 @@
       }
     }
 
-    function touchEndHandler(e) {
-      e.preventDefault();
+    function touchEndHandler(event) {
+      event.preventDefault();
       leftPressed = false;
       rightPressed = false;
       upPressed = false;
       downPressed = false;
     }
 
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('keyup', keyUpHandler, false);
-    canvas.addEventListener('touchstart', touchStartHandler, false);
-    canvas.addEventListener('touchend', touchEndHandler, false);
+    function touchMoveHandler(event) {
+      event.preventDefault();
+      const touchX = event.touches[0].clientX;
+      const touchY = event.touches[0].clientY;
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+        rightPressed = false;
+      } else {
+        leftPressed = false;
+        rightPressed = true;
+      }
+      if (touchY < canvas.height / 2) {
+        upPressed = true;
+        downPressed = false;
+      } else {
+        upPressed = false;
+        downPressed = true;
+      }
+    }
 
-    setInterval(createMeteor, 2000);
+    function touchShootHandler(event) {
+      event.preventDefault();
+      const touchX = event.touches[0].clientX;
+      const touchY = event.touches[0].clientY;
+      if (touchY < canvas.height / 2) {
+        shoot();
+      }
+    }
+
+    function shoot() {
+      const bulletX = shipX + shipSize / 2 - bulletWidth / 2;
+      const bulletY = shipY;
+      bullets.push({ x: bulletX, y: bulletY });
+    }
+
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
+    canvas.addEventListener('touchstart', touchStartHandler);
+    canvas.addEventListener('touchend', touchEndHandler);
+    canvas.addEventListener('touchmove', touchMoveHandler);
+    canvas.addEventListener('touchend', touchShootHandler);
+
+    // Inicializa o jogo
+    setInterval(createMeteor, 1000);
     draw();
   </script>
 </body>
