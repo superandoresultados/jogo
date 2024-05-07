@@ -247,7 +247,38 @@
         ctx.fillStyle = 'black';
         ctx.font = '24px Arial';
         ctx.fillText('Reiniciar Jogo', canvas.width / 2 - 80, canvas.height / 2 + 135);
+        canvas.addEventListener('click', handleRestartClick);
+        canvas.addEventListener('touchend', handleRestartTouch, { passive: false });
       }
+    }
+
+    function handleRestartClick(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      const buttonX = canvas.width / 2 - 100;
+      const buttonY = canvas.height / 2 + 100;
+      if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+        restartGame();
+      }
+    }
+
+    function handleRestartTouch(event) {
+      event.preventDefault();
+      const touchX = event.changedTouches[0].clientX;
+      const touchY = event.changedTouches[0].clientY;
+      const buttonX = canvas.width / 2 - 100;
+      const buttonY = canvas.height / 2 + 100;
+      if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+        restartGame();
+      }
+    }
+
+    function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
     }
 
     function getMeteorScore(color) {
@@ -410,32 +441,6 @@
       }
       if (e.key === ' ' || e.key === 'Spacebar') {
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-        }
-      }
-    });
-
-    canvas.addEventListener('touchend', function(event) {
-      const touchX = event.changedTouches[0].clientX;
-      const touchY = event.changedTouches[0].clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-        }
       }
     });
 
