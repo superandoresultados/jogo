@@ -147,10 +147,10 @@
             meteorColor = 'rock1.png';
         }
         const meteorImg = new Image();
+        meteorImg.src = meteorColor;
         meteorImg.onload = function() {
           ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
         };
-        meteorImg.src = meteorColor;
       });
     }
 
@@ -171,6 +171,21 @@
         color: randomColor,
       };
       meteors.push(meteor);
+    }
+
+    function moveShip() {
+      if (leftPressed && shipX > 0) {
+        shipX -= shipSpeed;
+      }
+      if (rightPressed && shipX < canvas.width - shipSize) {
+        shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
+      }
     }
 
     // Restante do código permanece inalterado...
