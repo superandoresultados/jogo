@@ -68,7 +68,7 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let shootPressed = false; // Variável para indicar se o jogador deseja atirar
+    let shootPressed = false; // Variável para controlar o tiro
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -388,6 +388,8 @@
       } else {
         downPressed = true;
       }
+      // Adiciona a variável para controlar o tiro
+      shootPressed = true;
     }
 
     function handleRelease(event) {
@@ -396,13 +398,8 @@
       rightPressed = false;
       upPressed = false;
       downPressed = false;
-    }
-
-    function handleShoot() {
-      if (!gameEnded) {
-        // Impede que o jogador atire após o fim do jogo
-        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
-      }
+      // Reseta a variável para controlar o tiro
+      shootPressed = false;
     }
 
     function restartGame() {
@@ -423,7 +420,6 @@
     window.addEventListener('keyup', keyUpHandler, false);
     canvas.addEventListener('touchstart', handleTouch, false);
     canvas.addEventListener('touchend', handleRelease, false);
-    canvas.addEventListener('mousedown', handleShoot, false);
 
     function keyDownHandler(event) {
       if (event.key === 'ArrowLeft' || event.key === 'Left') {
@@ -436,8 +432,10 @@
       } else if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = true;
       }
-      if (event.key === ' ' && !gameEnded) {
-        shootPressed = true; // Ativar o tiro ao pressionar a barra de espaço
+      // Verifica se a tecla pressionada é a barra de espaço ou se o tiro foi acionado pelo toque
+      if ((event.key === ' ' || shootPressed) && !gameEnded) {
+        // Impede que o jogador atire após o fim do jogo
+        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
       }
     }
 
@@ -452,9 +450,6 @@
       } else if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = false;
       }
-      if (event.key === ' ') {
-        shootPressed = false; // Desativar o tiro ao soltar a barra de espaço
-      }
     }
 
     function gameOver() {
@@ -463,30 +458,6 @@
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'block';
     }
-
-    // Função para lidar com a lógica de tiro
-    function handleShooting() {
-      if (shootPressed) {
-        handleShoot();
-        // Agora, enquanto a barra de espaço estiver pressionada, continuará atirando a cada quadro
-        requestAnimationFrame(handleShooting);
-      }
-    }
-
-    // Iniciar o loop de tiro ao pressionar a barra de espaço
-    window.addEventListener('keydown', (event) => {
-      if (event.key === ' ') {
-        handleShooting();
-      }
-    });
-
-    // Parar o loop de tiro ao soltar a barra de espaço
-    window.addEventListener('keyup', (event) => {
-      if (event.key === ' ') {
-        cancelAnimationFrame(handleShooting);
-      }
-    });
-
   </script>
 </body>
 </html>
