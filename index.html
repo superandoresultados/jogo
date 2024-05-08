@@ -104,6 +104,8 @@
     let gameEnded = false;
     let lives = 3; // Vidas iniciais
 
+    const shootSound = new Audio('shoot.wav');
+
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawShip();
@@ -383,6 +385,7 @@
 
       // Adiciona um tiro quando tocar na tela
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.play(); // Toca o som de tiro
     }
 
     function handleTouchEnd(event) {
@@ -426,6 +429,7 @@
       }
       if (e.key === ' ' || e.key === 'Spacebar') {
         bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.play(); // Toca o som de tiro
       }
     });
 
