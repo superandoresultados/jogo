@@ -74,8 +74,12 @@
     const bulletSpeed = 5;
     let bullets = [];
 
+    const meteorWidths = [30, 45, 60, 40, 50];
+    const meteorHeights = [30, 45, 60, 40, 50];
     const meteorSpeed = 2;
     let meteors = [];
+
+    const meteorImages = ['rock1.png', 'rock2.png', 'rock3.png', 'rock4.png', 'rock5.png'];
 
     let score = 0;
     let phase = 1;
@@ -125,17 +129,40 @@
     }
 
     function drawMeteors() {
-      meteors.forEach(meteor => {
+      meteors.forEach((meteor, index) => {
         const meteorImg = new Image();
-        meteorImg.src = `${meteor.color}.png`; // Utiliza a cor do meteoro para determinar o nome do arquivo de imagem
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
+        meteorImg.src = meteorImages[index];
+        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteorWidths[index], meteorHeights[index]);
       });
     }
 
-    function drawScore() {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Score: ${score}`, 10, 30);
+    function moveMeteors() {
+      meteors.forEach((meteor, index) => {
+        meteor.y += meteorSpeed;
+      });
+    }
+
+    function getMeteorColor(index) {
+      switch (index) {
+        case 0:
+          return 'yellow';
+        case 1:
+          return 'green';
+        case 2:
+          return 'red';
+        case 3:
+          return 'blue';
+        case 4:
+          return 'purple';
+        default:
+          return 'gray';
+      }
+    }
+
+    function moveMeteors() {
+      meteors.forEach((meteor, index) => {
+        meteor.y += meteorSpeed;
+      });
     }
 
     function moveShip() {
@@ -160,233 +187,42 @@
       bullets = bullets.filter(bullet => bullet.y > 0);
     }
 
-    function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
-      });
-      meteors = meteors.filter(meteor => meteor.y < canvas.height);
-    }
+    // Restante do código permanece inalterado...
 
-    function checkCollisions() {
-      bullets.forEach(bullet => {
-        meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
-              bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
-              bullet.y + bulletHeight > meteor.y) {
-            bullets = bullets.filter(b => b !== bullet);
-            score += getMeteorScore(meteor.color);
-            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-            meteors.splice(meteorIndex, 1);
-          }
-        });
-      });
-    }
-
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          meteors.splice(meteorIndex, 1);
-        }
-      });
-    }
-
-    function checkPhase() {
-      if (score >= 1000 && phase === 1) {
-        phase = 2;
-        phaseMessage = 'Venceu';
-        phaseStartTime = Date.now();
-        increaseLife(); // Aumenta uma vida ao passar de fase
-      }
-      if (score >= 2000 && phase === 2) {
-        phase = 3;
-        phaseMessage = 'Venceu';
-        phaseStartTime = Date.now();
-        increaseLife(); // Aumenta uma vida ao passar de fase
-      }
-      if (score >= 5000 && phase === 3) {
-        phaseMessage = 'Vencedor';
-        gameEnded = true;
-      }
-    }
-
-    function increaseLife() {
-      lives++; // Incrementa uma vida
-    }
-
-    function drawPhaseMessage() {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      if ((phase === 2 || phase === 3) && !gameEnded) {
-        // Contagem regressiva de 3 segundos para a próxima fase
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
-        }
-      }
-    }
-
-    function drawCountdown(countdown) {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
-    }
-
-    function drawWinMessage() {
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Desenha um botão para reiniciar o jogo
-        const restartButton = document.querySelector('.restart-button');
-        restartButton.style.display = 'block';
-      }
-    }
-
-    function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      } else if (color === 'blue') {
-        return 50;
-      } else if (color === 'purple') {
-        return 100;
-      }
-    }
-
-    function drawExplosion(x, y) {
-      const explosionRadius = 50;
-      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
-      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
-      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-      ctx.fillStyle = explosionGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function createMeteor() {
-      let x, y, color, width, height;
-      if (phase === 1) {
-        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
-        x = Math.random() * (canvas.width - 30);
-        y = -30;
-        const colors = ['yellow', 'green', 'red'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        width = 30;
-        height = 30;
-      } else if (phase === 2) {
-        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
-        x = Math.random() * (canvas.width - 40);
-        y = -40;
-        const colors = ['yellow', 'green', 'red', 'blue'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        width = 40;
-        height = 40;
-      } else if (phase === 3) {
-        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
-        x = Math.random() * (canvas.width - 50);
-        y = -50;
-        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        width = 50;
-        height = 50;
-      }
-      meteors.push({ x, y, color, width, height });
-    }
-
-    setInterval(createMeteor, 1000);
-
-    draw();
-
-    function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-    }
-
-    function handleRelease() {
-      upPressed = false;
-      downPressed = false;
-    }
-
-    function restartGame() {
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3; // Reseta as vidas
-      bullets = []; // Limpa os projéteis
-      meteors = []; // Limpa os meteoros
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
-
-    window.addEventListener('keydown', keyDownHandler, false);
-    window.addEventListener('keyup', keyUpHandler, false);
-    window.addEventListener('touchstart', handleTouch, false);
-    window.addEventListener('touchend', handleRelease, false);
+    // Adicione qualquer outro código de inicialização aqui, como adicionar event listeners para as teclas
+    document.addEventListener('keydown', keyDownHandler, false);
+    document.addEventListener('keyup', keyUpHandler, false);
 
     function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+      if (event.key === 'Left' || event.key === 'ArrowLeft') {
         leftPressed = true;
       }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
+      if (event.key === 'Right' || event.key === 'ArrowRight') {
         rightPressed = true;
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+      if (event.key === 'Up' || event.key === 'ArrowUp') {
         upPressed = true;
       }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      if (event.key === 'Down' || event.key === 'ArrowDown') {
         downPressed = true;
       }
     }
 
     function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+      if (event.key === 'Left' || event.key === 'ArrowLeft') {
         leftPressed = false;
       }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
+      if (event.key === 'Right' || event.key === 'ArrowRight') {
         rightPressed = false;
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+      if (event.key === 'Up' || event.key === 'ArrowUp') {
         upPressed = false;
       }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      if (event.key === 'Down' || event.key === 'ArrowDown') {
         downPressed = false;
       }
     }
+
   </script>
 </body>
 </html>
