@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 4</title>
+  <title>Space Game Beta 5</title>
   <style>
     body, html {
       margin: 0;
@@ -76,6 +76,14 @@
     const bulletSpeed = 5;
     let bullets = [];
 
+    const meteorImages = {
+      yellow: 'rock1.png',
+      green: 'rock2.png',
+      red: 'rock3.png',
+      blue: 'rock4.png',
+      purple: 'rock5.png'
+    };
+
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
     const greenMeteorWidth = 45;
@@ -126,16 +134,9 @@
 
     function drawMeteors() {
       meteors.forEach(meteor => {
-        ctx.fillStyle = meteor.color;
-        ctx.beginPath();
-        ctx.moveTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width, meteor.y + meteor.height * 0.5);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x, meteor.y + meteor.height * 0.5);
-        ctx.closePath();
-        ctx.fill();
+        const meteorImg = new Image();
+        meteorImg.src = meteorImages[meteor.color];
+        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
       });
     }
 
