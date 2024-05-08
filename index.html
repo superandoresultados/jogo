@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 9</title>
+  <title>Space Game Beta 10</title>
   <style>
     body, html {
       margin: 0;
@@ -50,17 +50,14 @@
 
     /* Estilo para o painel de score */
     .score-panel {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      position: absolute;
+      top: 20px;
+      left: 20px;
       padding: 10px;
       background-color: rgba(0, 0, 0, 0.5);
       color: white;
       font-size: 24px;
-      border-radius: 0 0 10px 10px;
-      font-family: 'Roboto', sans-serif;
-      opacity: 1.0;
+      border-radius: 10px;
     }
   </style>
 </head>
@@ -69,6 +66,9 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
+  <audio id="shootSound" src="shoot.wav"></audio>
+  <audio id="explosionSound" src="bum.wav"></audio>
+  <audio id="winSound" src="complete.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -114,6 +114,11 @@
     const meteorSpeed = 2;
     let meteors = [];
 
+    const specialObjectWidth = 30;
+    const specialObjectHeight = 30;
+    const specialObjectSpeed = 2;
+    let specialObject = null;
+
     let score = 0;
     let phase = 1;
     let phaseMessage = '';
@@ -121,21 +126,24 @@
     let gameEnded = false;
     let lives = 3; // Vidas iniciais
 
-    let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav');
-    let completeSound = new Audio('complete.wav');
+    let shootSound = document.getElementById('shootSound');
+    let explosionSound = document.getElementById('explosionSound');
+    let completeSound = document.getElementById('completeSound');
+    let winSound = document.getElementById('winSound');
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawShip();
       drawBullets();
       drawMeteors();
+      drawSpecialObject();
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
       moveShip();
       moveBullets();
       moveMeteors();
+      moveSpecialObject();
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
@@ -159,6 +167,13 @@
         meteorImg.src = meteorImages[meteor.color];
         ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
       });
+    }
+
+    function drawSpecialObject() {
+      if (specialObject) {
+        ctx.fillStyle = 'green';
+        ctx.fillRect(specialObject.x, specialObject.y, specialObjectWidth, specialObjectHeight);
+      }
     }
 
     function drawScore() {
@@ -195,7 +210,35 @@
       meteors = meteors.filter(meteor => meteor.y < canvas.height);
     }
 
+    function moveSpecialObject() {
+      if (specialObject) {
+        specialObject.y += specialObjectSpeed;
+        if (specialObject.y > canvas.height) {
+          specialObject = null; // Se a bola atingir o fundo da tela, ela desaparece
+        }
+      } else {
+        // A cada minuto, cria um novo objeto especial
+        if (Math.random() < 1 / (60 * 60)) { // 1/60 de chance por segundo
+          specialObject = {
+            x: Math.random() * (canvas.width - specialObjectWidth),
+            y: -specialObjectHeight
+          };
+        }
+      }
+    }
+
     function checkCollisions() {
+      // Verifica colisões entre a nave e o objeto especial
+      if (specialObject &&
+          shipX < specialObject.x + specialObjectWidth &&
+          shipX + shipSize > specialObject.x &&
+          shipY < specialObject.y + specialObjectHeight &&
+          shipY + shipSize > specialObject.y) {
+        score += 500;
+        specialObject = null;
+      }
+
+      // Verifica colisões entre os tiros e os meteoros
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
           if (bullet.x < meteor.x + meteor.width &&
@@ -210,18 +253,6 @@
             meteors.splice(meteorIndex, 1);
           }
         });
-      });
-    }
-
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-          explosionSound.play(); // Toca o som da explosão
-          meteors.splice(meteorIndex, 1);
-        }
       });
     }
 
@@ -373,118 +404,98 @@
       meteors.push({ x, y, color, width, height });
     }
 
-    setInterval(createMeteor, 1000);
-
-    draw();
-
-    function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-          return;
+    function checkMeteorBottom() {
+      meteors.forEach((meteor, index) => {
+        if (meteor.y >= canvas.height) {
+          // Remove o meteoro quando ele alcança a parte inferior da tela
+          meteors.splice(index, 1);
+          decreaseLife(); // Diminui uma vida
         }
-      }
+      });
+    }
 
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
+    function decreaseLife() {
+      lives--; // Decrementa uma vida
+      if (lives === 0) {
+        gameOver();
       }
+    }
 
-      if (touchX < canvas.width / 2) {
+    function gameOver() {
+      gameEnded = true;
+      phaseMessage = 'Game Over';
+      // Desenha um botão para reiniciar o jogo
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'block';
+    }
+
+    function restartGame() {
+      // Reinicia todas as variáveis do jogo
+      bullets = [];
+      meteors = [];
+      specialObject = null;
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar jogo
+      draw(); // Reinicia o loop principal do jogo
+    }
+
+    draw(); // Inicia o loop principal do jogo
+
+    // Event listeners para movimentação da nave
+    document.addEventListener('keydown', keyDownHandler, false);
+    document.addEventListener('keyup', keyUpHandler, false);
+
+    function keyDownHandler(e) {
+      if (e.key === 'Left' || e.key === 'ArrowLeft') {
         leftPressed = true;
-      } else {
+      }
+      if (e.key === 'Right' || e.key === 'ArrowRight') {
         rightPressed = true;
       }
+      if (e.key === 'Up' || e.key === 'ArrowUp') {
+        upPressed = true;
+      }
+      if (e.key === 'Down' || e.key === 'ArrowDown') {
+        downPressed = true;
+      }
+      if (e.key === ' ' && !gameEnded) {
+        // Barra de espaço para atirar
+        shoot();
+      }
+    }
 
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+    function keyUpHandler(e) {
+      if (e.key === 'Left' || e.key === 'ArrowLeft') {
+        leftPressed = false;
+      }
+      if (e.key === 'Right' || e.key === 'ArrowRight') {
+        rightPressed = false;
+      }
+      if (e.key === 'Up' || e.key === 'ArrowUp') {
+        upPressed = false;
+      }
+      if (e.key === 'Down' || e.key === 'ArrowDown') {
+        downPressed = false;
+      }
+    }
+
+    function shoot() {
+      const bulletX = shipX + (shipSize / 2) - (bulletWidth / 2);
+      const bulletY = shipY;
+      bullets.push({ x: bulletX, y: bulletY });
       shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
       shootSound.play(); // Toca o som do tiro
     }
 
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
+    // Cria um novo meteoro a cada 2 segundos
+    setInterval(createMeteor, 2000);
 
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
-
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = false;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-        }
-      }
-    });
-
-    function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
-      phase = 1;
-      score = 0;
-      gameEnded = false;
-      meteors = [];
-      phaseMessage = '';
-      lives = 3;
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
   </script>
 </body>
 </html>
