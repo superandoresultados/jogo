@@ -63,6 +63,9 @@
     let rock1Img = new Image();
     rock1Img.src = 'rock1.png';
 
+    let rock2Img = new Image();
+    rock2Img.src = 'rock2.png';
+
     const shipSize = 50;
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
@@ -77,8 +80,6 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    const rock1Width = 30;
-    const rock1Height = 30;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -131,7 +132,7 @@
 
     function drawMeteors() {
       meteors.forEach(meteor => {
-        ctx.drawImage(rock1Img, meteor.x, meteor.y, rock1Width, rock1Height);
+        ctx.drawImage(meteor.img, meteor.x, meteor.y, meteor.width, meteor.height);
       });
     }
 
@@ -173,13 +174,13 @@
     function checkCollisions() {
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + rock1Width &&
+          if (bullet.x < meteor.x + meteor.width &&
               bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + rock1Height &&
+              bullet.y < meteor.y + meteor.height &&
               bullet.y + bulletHeight > meteor.y) {
             bullets = bullets.filter(b => b !== bullet);
-            score += 10; // Incrementa o score ao acertar um meteoro
-            drawExplosion(meteor.x + rock1Width / 2, meteor.y + rock1Height / 2);
+            score += getMeteorScore(meteor.color);
+            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
             meteors.splice(meteorIndex, 1);
           }
         });
@@ -188,10 +189,10 @@
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + rock1Height >= canvas.height) {
+        if (meteor.y + meteor.height >= canvas.height) {
           // Diminui a vida ao atingir a parte inferior da tela
           lives--;
-          drawExplosion(meteor.x + rock1Width / 2, meteor.y + rock1Height / 2);
+          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
           meteors.splice(meteorIndex, 1);
         }
       });
@@ -252,6 +253,20 @@
       }
     }
 
+    function getMeteorScore(color) {
+      if (color === 'yellow') {
+        return 10;
+      } else if (color === 'green') {
+        return 20;
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
+      }
+    }
+
     function drawExplosion(x, y) {
       const explosionRadius = 50;
       const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
@@ -265,9 +280,21 @@
     }
 
     function createMeteor() {
-      let x = Math.random() * (canvas.width - rock1Width);
-      let y = -rock1Height;
-      meteors.push({ x, y });
+      let x, y, img, width, height;
+      if (phase === 1) {
+        x = Math.random() * (canvas.width - rock1Img.width);
+        y = -rock1Img.height;
+        img = rock1Img;
+        width = rock1Img.width;
+        height = rock1Img.height;
+      } else if (phase === 2) {
+        x = Math.random() * (canvas.width - rock2Img.width);
+        y = -rock2Img.height;
+        img = rock2Img;
+        width = rock2Img.width;
+        height = rock2Img.height;
+      }
+      meteors.push({ x, y, img, width, height });
     }
 
     setInterval(createMeteor, 1000);
