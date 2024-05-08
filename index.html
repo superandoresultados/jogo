@@ -74,12 +74,18 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    const meteorWidths = [30, 45, 60, 40, 50];
-    const meteorHeights = [30, 45, 60, 40, 50];
+    const yellowMeteorWidth = 30;
+    const yellowMeteorHeight = 30;
+    const greenMeteorWidth = 45;
+    const greenMeteorHeight = 45;
+    const redMeteorWidth = 60;
+    const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
     const meteorSpeed = 2;
     let meteors = [];
-
-    const meteorImages = ['rock1.png', 'rock2.png', 'rock3.png', 'rock4.png', 'rock5.png'];
 
     let score = 0;
     let phase = 1;
@@ -130,61 +136,48 @@
 
     function drawMeteors() {
       meteors.forEach((meteor, index) => {
+        let meteorColor;
+        switch (index) {
+          case 0:
+            meteorColor = 'rock1.png';
+            break;
+          case 1:
+            meteorColor = 'rock2.png';
+            break;
+          case 2:
+            meteorColor = 'rock3.png';
+            break;
+          case 3:
+            meteorColor = 'rock4.png';
+            break;
+          case 4:
+            meteorColor = 'rock5.png';
+            break;
+          default:
+            meteorColor = 'rock1.png';
+        }
         const meteorImg = new Image();
-        meteorImg.src = meteorImages[index];
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteorWidths[index], meteorHeights[index]);
+        meteorImg.onload = function() {
+          ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
+        };
+        meteorImg.src = meteorColor;
       });
     }
 
     function moveMeteors() {
-      meteors.forEach((meteor, index) => {
+      meteors.forEach(meteor => {
         meteor.y += meteorSpeed;
       });
     }
 
-    function getMeteorColor(index) {
-      switch (index) {
-        case 0:
-          return 'yellow';
-        case 1:
-          return 'green';
-        case 2:
-          return 'red';
-        case 3:
-          return 'blue';
-        case 4:
-          return 'purple';
-        default:
-          return 'gray';
-      }
-    }
-
-    function moveMeteors() {
-      meteors.forEach((meteor, index) => {
-        meteor.y += meteorSpeed;
-      });
-    }
-
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
-      }
-    }
-
-    function moveBullets() {
-      bullets.forEach(bullet => {
-        bullet.y -= bulletSpeed;
-      });
-      bullets = bullets.filter(bullet => bullet.y > 0);
+    function createMeteor() {
+      const meteor = {
+        x: Math.random() * (canvas.width - 50),
+        y: -50,
+        width: 30 + Math.random() * 50,
+        height: 30 + Math.random() * 50,
+      };
+      meteors.push(meteor);
     }
 
     // Restante do código permanece inalterado...
@@ -222,6 +215,11 @@
         downPressed = false;
       }
     }
+
+    // Funções de inicialização
+    setInterval(createMeteor, 1000); // Cria um novo meteoro a cada segundo
+
+    draw(); // Inicia o jogo
 
   </script>
 </body>
