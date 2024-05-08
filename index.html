@@ -69,8 +69,6 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
-  <audio id="shootSound" src="shoot.wav"></audio>
-  <audio id="explosionSound" src="bum.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -116,10 +114,6 @@
     const meteorSpeed = 2;
     let meteors = [];
 
-    const greenBallWidth = 30;
-    const greenBallHeight = 30;
-    let greenBalls = [];
-
     let score = 0;
     let phase = 1;
     let phaseMessage = '';
@@ -127,23 +121,23 @@
     let gameEnded = false;
     let lives = 3; // Vidas iniciais
 
-    let shootSound = document.getElementById('shootSound');
-    let explosionSound = document.getElementById('explosionSound');
-    let completeSound = document.getElementById('completeSound');
+    let shootSound = new Audio('shoot.wav');
+    let explosionSound = new Audio('bum.wav');
+    let completeSound = new Audio('complete.wav');
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawShip();
       drawBullets();
       drawMeteors();
-      drawGreenBalls();
+      drawGreenBall(); // Desenha a bola verde
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
       moveShip();
       moveBullets();
       moveMeteors();
-      moveGreenBalls();
+      moveGreenBall(); // Move a bola verde
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
@@ -169,16 +163,17 @@
       });
     }
 
-    function drawGreenBalls() {
-      ctx.fillStyle = 'green';
-      greenBalls.forEach(greenBall => {
-        ctx.fillRect(greenBall.x, greenBall.y, greenBallWidth, greenBallHeight);
-      });
-    }
-
     function drawScore() {
       const scorePanel = document.getElementById('scorePanel');
       scorePanel.textContent = `Score: ${score}`;
+    }
+
+    // Função para desenhar a bola verde
+    function drawGreenBall() {
+      ctx.fillStyle = 'green';
+      ctx.beginPath();
+      ctx.arc(greenBall.x, greenBall.y, greenBall.width, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     function moveShip() {
@@ -210,11 +205,15 @@
       meteors = meteors.filter(meteor => meteor.y < canvas.height);
     }
 
-    function moveGreenBalls() {
-      greenBalls.forEach(greenBall => {
-        greenBall.y += meteorSpeed / 2; // Move a bola verde com metade da velocidade dos meteoros
-      });
-      greenBalls = greenBalls.filter(greenBall => greenBall.y < canvas.height);
+    // Função para mover a bola verde
+    function moveGreenBall() {
+      // Move a bola para baixo
+      greenBall.y += greenBall.speed;
+      // Se a bola atingir o fundo do canvas, reposiciona-a no topo
+      if (greenBall.y > canvas.height) {
+        greenBall.y = -greenBall.height;
+        greenBall.x = Math.random() * (canvas.width - greenBall.width);
+      }
     }
 
     function checkCollisions() {
@@ -234,16 +233,14 @@
         });
       });
 
-      // Verifica colisão entre nave e bola verde
-      greenBalls.forEach((greenBall, greenBallIndex) => {
-        if (shipX < greenBall.x + greenBallWidth &&
-            shipX + shipSize > greenBall.x &&
-            shipY < greenBall.y + greenBallHeight &&
-            shipY + shipSize > greenBall.y) {
-          greenBalls.splice(greenBallIndex, 1); // Remove a bola verde
-          score += 500; // Adiciona 500 pontos ao score
-        }
-      });
+      // Verifica colisão com a bola verde
+      if (shipX < greenBall.x + greenBall.width &&
+          shipX + shipSize > greenBall.x &&
+          shipY < greenBall.y + greenBall.height &&
+          shipY + shipSize > greenBall.y) {
+        // Colisão detectada, ação a ser tomada
+        // Por exemplo, reduzir vidas, reiniciar jogo, etc.
+      }
     }
 
     function checkMeteorBottom() {
@@ -343,104 +340,214 @@
       ctx.fill();
     }
 
-    function createMeteor() {
-      let x, y, color, width, height;
-      const colors = Object.keys(meteorImages);
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      if (randomColor === 'yellow') {
-        width = yellowMeteorWidth;
-        height = yellowMeteorHeight;
-      } else if (randomColor === 'green') {
-        width = greenMeteorWidth;
-        height = greenMeteorHeight;
-      } else if (randomColor === 'red') {
-        width = redMeteorWidth;
-        height = redMeteorHeight;
-      } else if (randomColor === 'blue') {
-        width = blueMeteorWidth;
-        height = blueMeteorHeight;
-      } else if (randomColor === 'purple') {
-        width = purpleMeteorWidth;
-        height = purpleMeteorHeight;
-      }
-      x = Math.random() * (canvas.width - width);
-      y = -height;
-      meteors.push({ x, y, color: randomColor, width, height });
-    }
+    // Variáveis ​​e funções relacionadas à bola verde
+    let greenBall = {
+      x: Math.random() * canvas.width,
+      y: -50, // Começa acima do canvas
+      width: 20,
+      height: 20,
+      speed: 1 // Velocidade de descida da bola verde
+    };
 
     function createGreenBall() {
-      const x = Math.random() * (canvas.width - greenBallWidth);
-      const y = -greenBallHeight;
-      greenBalls.push({ x, y });
+      // Gera uma nova posição aleatória para a bola verde
+      greenBall.x = Math.random() * canvas.width;
+      greenBall.y = -50; // Começa acima do canvas
     }
 
-    function restartGame() {
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3; // Reinicia as vidas
-      bullets = [];
-      meteors = [];
-      greenBalls = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none'; // Esconde o botão de reiniciar jogo
+    // Função para desenhar a bola verde
+    function drawGreenBall() {
+      ctx.fillStyle = 'green';
+      ctx.beginPath();
+      ctx.arc(greenBall.x, greenBall.y, greenBall.width, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // Adiciona eventos de teclado para mover a nave
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
+    // Função para mover a bola verde
+    function moveGreenBall() {
+      // Move a bola para baixo
+      greenBall.y += greenBall.speed;
+      // Se a bola atingir o fundo do canvas, reposiciona-a no topo
+      if (greenBall.y > canvas.height) {
+        createGreenBall(); // Cria uma nova bola verde
+      }
+    }
 
-    function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
-        leftPressed = true;
+    function createMeteor() {
+      let x, y, color, width, height;
+      if (phase === 1) {
+        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        }
+      } else if (phase === 2) {
+        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
+        x = Math.random() * (canvas.width - blueMeteorWidth);
+        y = -blueMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        }
+      } else if (phase === 3) {
+        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
+        x = Math.random() * (canvas.width - purpleMeteorWidth);
+        y = -purpleMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
       }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
-        rightPressed = true;
+      meteors.push({ x, y, color, width, height });
+    }
+
+    setInterval(createMeteor, 1000);
+
+    draw();
+
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
         upPressed = true;
-      }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
       }
-      if (event.key === ' ' && !gameEnded) {
-        // Adiciona um tiro somente se o jogo não tiver terminado
-        shoot();
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
       }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
     }
 
-    function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+    function handleTouchEnd(event) {
+      event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
+
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
       }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
       }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
+
+    function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
-
-    function shoot() {
-      bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som de tiro
-    }
-
-    // Adiciona evento de clique para atirar na versão mobile
-    canvas.addEventListener('click', shoot);
-
-    // Cria meteoros em intervalos regulares
-    setInterval(createMeteor, 2000); // Cada 2 segundos
-    setInterval(createGreenBall, 60000); // Cada 1 minuto
-
-    // Inicia o jogo
-    draw();
   </script>
 </body>
 </html>
