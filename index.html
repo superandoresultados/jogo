@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 11</title>
+  <title>Space Game Beta 10</title>
   <style>
     body, html {
       margin: 0;
@@ -69,6 +69,8 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
+  <audio id="shootSound" src="shoot.wav"></audio>
+  <audio id="explosionSound" src="bum.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -114,8 +116,8 @@
     const meteorSpeed = 2;
     let meteors = [];
 
-    const greenBallWidth = 20;
-    const greenBallHeight = 20;
+    const greenBallWidth = 30;
+    const greenBallHeight = 30;
     let greenBalls = [];
 
     let score = 0;
@@ -125,9 +127,9 @@
     let gameEnded = false;
     let lives = 3; // Vidas iniciais
 
-    let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav');
-    let completeSound = new Audio('complete.wav');
+    let shootSound = document.getElementById('shootSound');
+    let explosionSound = document.getElementById('explosionSound');
+    let completeSound = document.getElementById('completeSound');
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -169,8 +171,8 @@
 
     function drawGreenBalls() {
       ctx.fillStyle = 'green';
-      greenBalls.forEach(ball => {
-        ctx.fillRect(ball.x, ball.y, greenBallWidth, greenBallHeight);
+      greenBalls.forEach(greenBall => {
+        ctx.fillRect(greenBall.x, greenBall.y, greenBallWidth, greenBallHeight);
       });
     }
 
@@ -209,10 +211,10 @@
     }
 
     function moveGreenBalls() {
-      greenBalls.forEach(ball => {
-        ball.y += meteorSpeed; // A velocidade de queda é a mesma que a dos meteoros
+      greenBalls.forEach(greenBall => {
+        greenBall.y += meteorSpeed / 2; // Move a bola verde com metade da velocidade dos meteoros
       });
-      greenBalls = greenBalls.filter(ball => ball.y < canvas.height);
+      greenBalls = greenBalls.filter(greenBall => greenBall.y < canvas.height);
     }
 
     function checkCollisions() {
@@ -232,23 +234,14 @@
         });
       });
 
-      meteors.forEach((meteor, meteorIndex) => {
-        if (shipX < meteor.x + meteor.width &&
-            shipX + shipSize > meteor.x &&
-            shipY < meteor.y + meteor.height &&
-            shipY + shipSize > meteor.y) {
-          lives--;
-          meteors.splice(meteorIndex, 1);
-        }
-      });
-
-      greenBalls.forEach((ball, ballIndex) => {
-        if (shipX < ball.x + greenBallWidth &&
-            shipX + shipSize > ball.x &&
-            shipY < ball.y + greenBallHeight &&
-            shipY + shipSize > ball.y) {
-          score += 500;
-          greenBalls.splice(ballIndex, 1);
+      // Verifica colisão entre nave e bola verde
+      greenBalls.forEach((greenBall, greenBallIndex) => {
+        if (shipX < greenBall.x + greenBallWidth &&
+            shipX + shipSize > greenBall.x &&
+            shipY < greenBall.y + greenBallHeight &&
+            shipY + shipSize > greenBall.y) {
+          greenBalls.splice(greenBallIndex, 1); // Remove a bola verde
+          score += 500; // Adiciona 500 pontos ao score
         }
       });
     }
@@ -256,6 +249,10 @@
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
         if (meteor.y + meteor.height >= canvas.height) {
+          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
+          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+          explosionSound.play(); // Toca o som da explosão
           meteors.splice(meteorIndex, 1);
         }
       });
@@ -348,65 +345,27 @@
 
     function createMeteor() {
       let x, y, color, width, height;
-      if (phase === 1) {
-        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
-        x = Math.random() * (canvas.width - yellowMeteorWidth);
-        y = -yellowMeteorHeight;
-        const colors = ['yellow', 'green', 'red'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        }
-      } else if (phase === 2) {
-        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
-        x = Math.random() * (canvas.width - blueMeteorWidth);
-        y = -blueMeteorHeight;
-        const colors = ['yellow', 'green', 'red', 'blue'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        }
-      } else if (phase === 3) {
-        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
-        x = Math.random() * (canvas.width - purpleMeteorWidth);
-        y = -purpleMeteorHeight;
-        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        } else if (color === 'purple') {
-          width = purpleMeteorWidth;
-          height = purpleMeteorHeight;
-        }
+      const colors = Object.keys(meteorImages);
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      if (randomColor === 'yellow') {
+        width = yellowMeteorWidth;
+        height = yellowMeteorHeight;
+      } else if (randomColor === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (randomColor === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
+      } else if (randomColor === 'blue') {
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
+      } else if (randomColor === 'purple') {
+        width = purpleMeteorWidth;
+        height = purpleMeteorHeight;
       }
-      meteors.push({ x, y, color, width, height });
+      x = Math.random() * (canvas.width - width);
+      y = -height;
+      meteors.push({ x, y, color: randomColor, width, height });
     }
 
     function createGreenBall() {
@@ -415,50 +374,72 @@
       greenBalls.push({ x, y });
     }
 
-    setInterval(createMeteor, 1000);
-    setInterval(createGreenBall, 60000);
+    function restartGame() {
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3; // Reinicia as vidas
+      bullets = [];
+      meteors = [];
+      greenBalls = [];
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar jogo
+    }
 
+    // Adiciona eventos de teclado para mover a nave
     document.addEventListener('keydown', keyDownHandler);
     document.addEventListener('keyup', keyUpHandler);
 
-    function keyDownHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyDownHandler(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
         leftPressed = true;
-      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+      }
+      if (event.key === 'ArrowRight' || event.key === 'Right') {
         rightPressed = true;
-      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+      }
+      if (event.key === 'ArrowUp' || event.key === 'Up') {
         upPressed = true;
-      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+      }
+      if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = true;
-      } else if (e.key === ' ' && !gameEnded) { // Adiciona uma condição para impedir que o jogo continue após o término
-        shootBullet();
+      }
+      if (event.key === ' ' && !gameEnded) {
+        // Adiciona um tiro somente se o jogo não tiver terminado
+        shoot();
       }
     }
 
-    function keyUpHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyUpHandler(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
         leftPressed = false;
-      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+      }
+      if (event.key === 'ArrowRight' || event.key === 'Right') {
         rightPressed = false;
-      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+      }
+      if (event.key === 'ArrowUp' || event.key === 'Up') {
         upPressed = false;
-      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+      }
+      if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = false;
       }
     }
 
-    function shootBullet() {
-      const bulletX = shipX + shipSize / 2 - bulletWidth / 2;
-      const bulletY = shipY;
-      bullets.push({ x: bulletX, y: bulletY });
+    function shoot() {
+      bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
       shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
+      shootSound.play(); // Toca o som de tiro
     }
 
-    function restartGame() {
-      location.reload(); // Recarrega a página para reiniciar o jogo
-    }
+    // Adiciona evento de clique para atirar na versão mobile
+    canvas.addEventListener('click', shoot);
 
+    // Cria meteoros em intervalos regulares
+    setInterval(createMeteor, 2000); // Cada 2 segundos
+    setInterval(createGreenBall, 60000); // Cada 1 minuto
+
+    // Inicia o jogo
     draw();
   </script>
 </body>
