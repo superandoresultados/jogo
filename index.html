@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game</title>
+  <title>Space Game Beta 4</title>
   <style>
     body, html {
       margin: 0;
@@ -11,6 +11,8 @@
       overflow: hidden;
       width: 100%;
       height: 100%;
+      background-image: url('space.png');
+      background-size: cover;
     }
     canvas {
       display: block;
@@ -96,7 +98,6 @@
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBackground();
       drawShip();
       drawBullets();
       drawMeteors();
@@ -110,17 +111,6 @@
       checkMeteorBottom();
       checkPhase();
       requestAnimationFrame(draw);
-    }
-
-    function drawBackground() {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // Desenha a barra superior para o score e vidas
-      ctx.fillStyle = '#181818';
-      ctx.fillRect(0, 0, canvas.width, 40);
-      ctx.fillStyle = 'white';
-      ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, canvas.width - 100, 30);
     }
 
     function drawShip() {
