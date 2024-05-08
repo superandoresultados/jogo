@@ -62,7 +62,7 @@
     let shipImg = new Image();
     shipImg.src = 'nave.png';
 
-    const shipSize = 75; // Tamanho da nave aumentado em 50%
+    const shipSize = 50;
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
@@ -75,6 +75,14 @@
     const bulletHeight = 15;
     const bulletSpeed = 5;
     let bullets = [];
+
+    const meteorImages = {
+      yellow: 'rock1.png',
+      green: 'rock2.png',
+      red: 'rock3.png',
+      blue: 'rock4.png',
+      purple: 'rock5.png'
+    };
 
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
@@ -126,16 +134,9 @@
 
     function drawMeteors() {
       meteors.forEach(meteor => {
-        ctx.fillStyle = meteor.color;
-        ctx.beginPath();
-        ctx.moveTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width, meteor.y + meteor.height * 0.5);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x, meteor.y + meteor.height * 0.5);
-        ctx.closePath();
-        ctx.fill();
+        const meteorImg = new Image();
+        meteorImg.src = meteorImages[meteor.color];
+        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
       });
     }
 
@@ -347,6 +348,111 @@
     setInterval(createMeteor, 1000);
 
     draw();
+
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
+      }
+
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+    }
+
+    function handleTouchEnd(event) {
+      event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
+
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = false;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = false;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = false;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = false;
+      }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
+
+    function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+    }
   </script>
 </body>
 </html>
