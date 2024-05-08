@@ -68,6 +68,7 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
+    let shootPressed = false; // Variável para indicar se o jogador deseja atirar
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -397,6 +398,13 @@
       downPressed = false;
     }
 
+    function handleShoot() {
+      if (!gameEnded) {
+        // Impede que o jogador atire após o fim do jogo
+        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
+      }
+    }
+
     function restartGame() {
       score = 0;
       phase = 1;
@@ -415,6 +423,7 @@
     window.addEventListener('keyup', keyUpHandler, false);
     canvas.addEventListener('touchstart', handleTouch, false);
     canvas.addEventListener('touchend', handleRelease, false);
+    canvas.addEventListener('mousedown', handleShoot, false);
 
     function keyDownHandler(event) {
       if (event.key === 'ArrowLeft' || event.key === 'Left') {
@@ -428,8 +437,7 @@
         downPressed = true;
       }
       if (event.key === ' ' && !gameEnded) {
-        // Impede que o jogador atire após o fim do jogo
-        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
+        shootPressed = true; // Ativar o tiro ao pressionar a barra de espaço
       }
     }
 
@@ -444,6 +452,9 @@
       } else if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = false;
       }
+      if (event.key === ' ') {
+        shootPressed = false; // Desativar o tiro ao soltar a barra de espaço
+      }
     }
 
     function gameOver() {
@@ -452,6 +463,30 @@
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'block';
     }
+
+    // Função para lidar com a lógica de tiro
+    function handleShooting() {
+      if (shootPressed) {
+        handleShoot();
+        // Agora, enquanto a barra de espaço estiver pressionada, continuará atirando a cada quadro
+        requestAnimationFrame(handleShooting);
+      }
+    }
+
+    // Iniciar o loop de tiro ao pressionar a barra de espaço
+    window.addEventListener('keydown', (event) => {
+      if (event.key === ' ') {
+        handleShooting();
+      }
+    });
+
+    // Parar o loop de tiro ao soltar a barra de espaço
+    window.addEventListener('keyup', (event) => {
+      if (event.key === ' ') {
+        cancelAnimationFrame(handleShooting);
+      }
+    });
+
   </script>
 </body>
 </html>
