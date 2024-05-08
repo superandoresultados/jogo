@@ -114,10 +114,11 @@
     const meteorSpeed = 2;
     let meteors = [];
 
-    const greenBallSize = 20;
-    let greenBallX;
-    let greenBallY = -greenBallSize; // Inicia fora da tela
-    let greenBallSpeed = 1; // Velocidade da bola verde
+    const greenBallRadius = 20;
+    const greenBallSpeed = 3;
+    let greenBallX = Math.random() * (canvas.width - greenBallRadius * 2);
+    let greenBallY = 0 - greenBallRadius;
+    let greenBallActive = true;
 
     let score = 0;
     let phase = 1;
@@ -135,6 +136,7 @@
       drawShip();
       drawBullets();
       drawMeteors();
+      drawGreenBall();
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
@@ -145,6 +147,7 @@
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
+      checkGreenBallCollision();
       requestAnimationFrame(draw);
     }
 
@@ -168,10 +171,12 @@
     }
 
     function drawGreenBall() {
-      ctx.fillStyle = 'green';
-      ctx.beginPath();
-      ctx.arc(greenBallX, greenBallY, greenBallSize, 0, Math.PI * 2);
-      ctx.fill();
+      if (greenBallActive) {
+        ctx.fillStyle = 'green';
+        ctx.beginPath();
+        ctx.arc(greenBallX, greenBallY, greenBallRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     function drawScore() {
@@ -209,51 +214,34 @@
     }
 
     function moveGreenBall() {
-      if (greenBallY < canvas.height) {
+      if (greenBallActive) {
         greenBallY += greenBallSpeed;
+        if (greenBallY > canvas.height) {
+          greenBallActive = false;
+        }
       } else {
-        // Reinicia a posição da bola verde quando ela atinge o final da tela
-        greenBallX = Math.random() * (canvas.width - greenBallSize);
-        greenBallY = -greenBallSize;
+        greenBallX = Math.random() * (canvas.width - greenBallRadius * 2);
+        greenBallY = 0 - greenBallRadius;
+        greenBallActive = true;
       }
     }
 
     function checkCollisions() {
-      bullets.forEach((bullet, bulletIndex) => {
-        // Verifica colisão entre tiros e meteoros
+      bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
           if (bullet.x < meteor.x + meteor.width &&
               bullet.x + bulletWidth > meteor.x &&
               bullet.y < meteor.y + meteor.height &&
               bullet.y + bulletHeight > meteor.y) {
-            bullets.splice(bulletIndex, 1); // Remove o tiro
+            bullets = bullets.filter(b => b !== bullet);
             score += getMeteorScore(meteor.color);
             drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
             explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
             explosionSound.play(); // Toca o som da explosão
-            meteors.splice(meteorIndex, 1); // Remove o meteoro
+            meteors.splice(meteorIndex, 1);
           }
         });
-
-        // Verifica colisão entre tiros e bola verde
-        if (bullet.x < greenBallX + greenBallSize &&
-            bullet.x + bulletWidth > greenBallX &&
-            bullet.y < greenBallY + greenBallSize &&
-            bullet.y + bulletHeight > greenBallY) {
-          bullets.splice(bulletIndex, 1); // Remove o tiro
-          score += 500; // Ganha 500 pontos ao acertar a bola verde
-          greenBallY = -greenBallSize; // Reinicia a posição da bola verde
-        }
       });
-
-      // Verifica colisão entre nave e bola verde
-      if (shipX < greenBallX + greenBallSize &&
-          shipX + shipSize > greenBallX &&
-          shipY < greenBallY + greenBallSize &&
-          shipY + shipSize > greenBallY) {
-        score += 500; // Ganha 500 pontos ao encostar na bola verde
-        greenBallY = -greenBallSize; // Reinicia a posição da bola verde
-      }
     }
 
     function checkMeteorBottom() {
@@ -372,7 +360,7 @@
           height = redMeteorHeight;
         }
       } else if (phase === 2) {
-        // Fase 2: Adiciona meteoros azuis
+        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
         x = Math.random() * (canvas.width - blueMeteorWidth);
         y = -blueMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue'];
@@ -391,7 +379,7 @@
           height = blueMeteorHeight;
         }
       } else if (phase === 3) {
-        // Fase 3: Adiciona meteoros roxos
+        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
         x = Math.random() * (canvas.width - purpleMeteorWidth);
         y = -purpleMeteorHeight;
         const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
@@ -422,57 +410,80 @@
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
-      lives = 3;
+      lives = 3; // Reseta o número de vidas
       meteors = [];
       bullets = [];
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
 
-    function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'a') {
-        leftPressed = true;
-      } else if (event.key === 'ArrowRight' || event.key === 'd') {
-        rightPressed = true;
-      } else if (event.key === 'ArrowUp' || event.key === 'w') {
-        upPressed = true;
-      } else if (event.key === 'ArrowDown' || event.key === 's') {
-        downPressed = true;
-      }
-      if (event.key === ' ') {
-        // Tecla de espaço para disparar
-        shoot();
+    function checkGreenBallCollision() {
+      bullets.forEach((bullet, bulletIndex) => {
+        if (greenBallActive &&
+          bullet.x < greenBallX + greenBallRadius &&
+          bullet.x + bulletWidth > greenBallX &&
+          bullet.y < greenBallY + greenBallRadius &&
+          bullet.y + bulletHeight > greenBallY) {
+          bullets.splice(bulletIndex, 1);
+          greenBallActive = false;
+          score += 500; // Aumenta o score ao acertar a bola verde
+        }
+      });
+
+      if (greenBallActive &&
+        shipX < greenBallX + greenBallRadius &&
+        shipX + shipSize > greenBallX &&
+        shipY < greenBallY + greenBallRadius &&
+        shipY + shipSize > greenBallY) {
+        greenBallActive = false;
+        lives++; // Aumenta uma vida ao coletar a bola verde
       }
     }
 
-    function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'a') {
+    function handleKeyDown(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+        leftPressed = true;
+      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
+        rightPressed = true;
+      } else if (event.key === 'ArrowUp' || event.key === 'Up') {
+        upPressed = true;
+      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
+        downPressed = true;
+      } else if (event.key === ' ' && !gameEnded) {
+        // Adiciona um limite de tiros na tela ao mesmo tempo
+        if (bullets.length < 3) {
+          shoot();
+        }
+      }
+    }
+
+    function handleKeyUp(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
         leftPressed = false;
-      } else if (event.key === 'ArrowRight' || event.key === 'd') {
+      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
         rightPressed = false;
-      } else if (event.key === 'ArrowUp' || event.key === 'w') {
+      } else if (event.key === 'ArrowUp' || event.key === 'Up') {
         upPressed = false;
-      } else if (event.key === 'ArrowDown' || event.key === 's') {
+      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = false;
       }
     }
 
     function shoot() {
-      const bulletX = shipX + shipSize / 2 - bulletWidth / 2;
-      const bulletY = shipY;
-      bullets.push({ x: bulletX, y: bulletY });
+      bullets.push({
+        x: shipX + shipSize / 2 - bulletWidth / 2,
+        y: shipY - bulletHeight
+      });
       shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
+      shootSound.play(); // Toca o som de tiro
     }
 
-    function init() {
-      document.addEventListener('keydown', keyDownHandler);
-      document.addEventListener('keyup', keyUpHandler);
-      setInterval(createMeteor, 1000); // Cria um meteoro a cada segundo
-      draw();
-    }
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
 
-    init();
+    setInterval(createMeteor, 1000); // Cria um novo meteoro a cada 1 segundo
+
+    draw();
   </script>
 </body>
 </html>
