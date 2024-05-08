@@ -74,16 +74,6 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    const yellowMeteorWidth = 30;
-    const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 45;
-    const greenMeteorHeight = 45;
-    const redMeteorWidth = 60;
-    const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 50;
-    const purpleMeteorHeight = 50;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -135,22 +125,22 @@
     }
 
     function drawMeteors() {
-      meteors.forEach((meteor, index) => {
+      meteors.forEach(meteor => {
         let meteorColor;
-        switch (index) {
-          case 0:
+        switch (meteor.color) {
+          case 'yellow':
             meteorColor = 'rock1.png';
             break;
-          case 1:
+          case 'green':
             meteorColor = 'rock2.png';
             break;
-          case 2:
+          case 'red':
             meteorColor = 'rock3.png';
             break;
-          case 3:
+          case 'blue':
             meteorColor = 'rock4.png';
             break;
-          case 4:
+          case 'purple':
             meteorColor = 'rock5.png';
             break;
           default:
@@ -171,11 +161,14 @@
     }
 
     function createMeteor() {
+      const colorOptions = ['yellow', 'green', 'red', 'blue', 'purple'];
+      const randomColor = colorOptions[Math.floor(Math.random() * colorOptions.length)];
       const meteor = {
         x: Math.random() * (canvas.width - 50),
         y: -50,
         width: 30 + Math.random() * 50,
         height: 30 + Math.random() * 50,
+        color: randomColor,
       };
       meteors.push(meteor);
     }
