@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 10</title>
+  <title>Space Game Beta 11</title>
   <style>
     body, html {
       margin: 0;
@@ -116,7 +116,6 @@
 
     const greenBallWidth = 20;
     const greenBallHeight = 20;
-    const greenBallSpeed = 2;
     let greenBalls = [];
 
     let score = 0;
@@ -211,13 +210,12 @@
 
     function moveGreenBalls() {
       greenBalls.forEach(ball => {
-        ball.y += greenBallSpeed;
+        ball.y += meteorSpeed; // A velocidade de queda é a mesma que a dos meteoros
       });
       greenBalls = greenBalls.filter(ball => ball.y < canvas.height);
     }
 
     function checkCollisions() {
-      // Verifica colisões entre tiros da nave e meteoros
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
           if (bullet.x < meteor.x + meteor.width &&
@@ -234,14 +232,23 @@
         });
       });
 
-      // Verifica colisões entre nave e bola verde
+      meteors.forEach((meteor, meteorIndex) => {
+        if (shipX < meteor.x + meteor.width &&
+            shipX + shipSize > meteor.x &&
+            shipY < meteor.y + meteor.height &&
+            shipY + shipSize > meteor.y) {
+          lives--;
+          meteors.splice(meteorIndex, 1);
+        }
+      });
+
       greenBalls.forEach((ball, ballIndex) => {
         if (shipX < ball.x + greenBallWidth &&
             shipX + shipSize > ball.x &&
             shipY < ball.y + greenBallHeight &&
             shipY + shipSize > ball.y) {
+          score += 500;
           greenBalls.splice(ballIndex, 1);
-          score += 500; // Ganha 500 pontos ao tocar na bola verde
         }
       });
     }
@@ -249,10 +256,6 @@
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
         if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-          explosionSound.play(); // Toca o som da explosão
           meteors.splice(meteorIndex, 1);
         }
       });
@@ -412,70 +415,50 @@
       greenBalls.push({ x, y });
     }
 
-    function restartGame() {
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3; // Reinicia o número de vidas
-      meteors = [];
-      greenBalls = [];
-      bullets = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
+    setInterval(createMeteor, 1000);
+    setInterval(createGreenBall, 60000);
 
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('keyup', keyUpHandler, false);
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
 
     function keyDownHandler(e) {
-      if (e.key === 'Left' || e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
-      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = true;
-      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = true;
-      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
+      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
-      } else if (e.key === ' ' && !gameEnded) {
-        shoot();
+      } else if (e.key === ' ' && !gameEnded) { // Adiciona uma condição para impedir que o jogo continue após o término
+        shootBullet();
       }
     }
 
     function keyUpHandler(e) {
-      if (e.key === 'Left' || e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
-      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
-      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
+      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
-      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
+      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
     }
 
-    function shoot() {
+    function shootBullet() {
       const bulletX = shipX + shipSize / 2 - bulletWidth / 2;
       const bulletY = shipY;
       bullets.push({ x: bulletX, y: bulletY });
       shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som de tiro
+      shootSound.play(); // Toca o som do tiro
     }
 
-    function gameLoop() {
-      if (!gameEnded) {
-        if (Math.random() < 0.03) {
-          createMeteor();
-        }
-        if (Math.random() < 0.01) {
-          createGreenBall();
-        }
-      }
-      setTimeout(gameLoop, 1000); // Chama a função a cada 1 segundo
+    function restartGame() {
+      location.reload(); // Recarrega a página para reiniciar o jogo
     }
 
-    gameLoop();
     draw();
   </script>
 </body>
