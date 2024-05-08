@@ -451,36 +451,6 @@
       }
     });
 
-    function checkShipCollision() {
-  meteors.forEach((meteor, meteorIndex) => {
-    if (
-      shipX < meteor.x + meteor.width &&
-      shipX + shipSize > meteor.x &&
-      shipY < meteor.y + meteor.height &&
-      shipY + shipSize > meteor.y
-    ) {
-      // Colisão detectada, desenha a explosão
-      drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
-      // Reduz uma vida da nave
-      lives--;
-      // Remove o meteoro que colidiu com a nave
-      meteors.splice(meteorIndex, 1);
-      // Verifica se o jogo acabou
-      if (lives <= 0) {
-        gameEnded = true;
-      }
-    }
-  });
-}
-
-    function draw() {
-  // Outros códigos...
-
-  checkShipCollision();
-
-  // Outros códigos...
-}
-
     function restartGame() {
       // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
