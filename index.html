@@ -74,6 +74,16 @@
     const bulletSpeed = 5;
     let bullets = [];
 
+    const yellowMeteorWidth = 30;
+    const yellowMeteorHeight = 30;
+    const greenMeteorWidth = 45;
+    const greenMeteorHeight = 45;
+    const redMeteorWidth = 60;
+    const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -123,112 +133,3 @@
         ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
       });
     }
-
-    function drawMeteors() {
-      meteors.forEach(meteor => {
-        let meteorColor;
-        switch (meteor.color) {
-          case 'yellow':
-            meteorColor = 'rock1.png';
-            break;
-          case 'green':
-            meteorColor = 'rock2.png';
-            break;
-          case 'red':
-            meteorColor = 'rock3.png';
-            break;
-          case 'blue':
-            meteorColor = 'rock4.png';
-            break;
-          case 'purple':
-            meteorColor = 'rock5.png';
-            break;
-          default:
-            meteorColor = 'rock1.png';
-        }
-        const meteorImg = new Image();
-        meteorImg.src = meteorColor;
-        meteorImg.onload = function() {
-          ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-        };
-      });
-    }
-
-    function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
-      });
-    }
-
-    function createMeteor() {
-      const colorOptions = ['yellow', 'green', 'red', 'blue', 'purple'];
-      const randomColor = colorOptions[Math.floor(Math.random() * colorOptions.length)];
-      const meteor = {
-        x: Math.random() * (canvas.width - 50),
-        y: -50,
-        width: 30 + Math.random() * 50,
-        height: 30 + Math.random() * 50,
-        color: randomColor,
-      };
-      meteors.push(meteor);
-    }
-
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
-      }
-    }
-
-    // Restante do código permanece inalterado...
-
-    // Adicione qualquer outro código de inicialização aqui, como adicionar event listeners para as teclas
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('keyup', keyUpHandler, false);
-
-    function keyDownHandler(event) {
-      if (event.key === 'Left' || event.key === 'ArrowLeft') {
-        leftPressed = true;
-      }
-      if (event.key === 'Right' || event.key === 'ArrowRight') {
-        rightPressed = true;
-      }
-      if (event.key === 'Up' || event.key === 'ArrowUp') {
-        upPressed = true;
-      }
-      if (event.key === 'Down' || event.key === 'ArrowDown') {
-        downPressed = true;
-      }
-    }
-
-    function keyUpHandler(event) {
-      if (event.key === 'Left' || event.key === 'ArrowLeft') {
-        leftPressed = false;
-      }
-      if (event.key === 'Right' || event.key === 'ArrowRight') {
-        rightPressed = false;
-      }
-      if (event.key === 'Up' || event.key === 'ArrowUp') {
-        upPressed = false;
-      }
-      if (event.key === 'Down' || event.key === 'ArrowDown') {
-        downPressed = false;
-      }
-    }
-
-    // Funções de inicialização
-    setInterval(createMeteor, 1000); // Cria um novo meteoro a cada segundo
-
-    draw(); // Inicia o jogo
-
-  </script>
-</body>
-</html>
