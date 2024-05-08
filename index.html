@@ -452,16 +452,48 @@
     });
 
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
-      phase = 1;
+      // Reinicia o jogo na fase 1
       score = 0;
-      gameEnded = false;
-      meteors = [];
+      phase = 1;
       phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
       lives = 3;
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
+      meteors = [];
+      bullets = [];
     }
+
+    function checkCollisionWithShip() {
+      meteors.forEach((meteor, meteorIndex) => {
+        if (shipX < meteor.x + meteor.width &&
+            shipX + shipSize > meteor.x &&
+            shipY < meteor.y + meteor.height &&
+            shipY + shipSize > meteor.y) {
+          // Colisão detectada, executa a explosão
+          drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
+          // Subtrai uma vida
+          lives--;
+          // Remove o meteoro
+          meteors.splice(meteorIndex, 1);
+          // Verifica se o jogo acabou
+          if (lives <= 0) {
+            gameOver();
+          }
+        }
+      });
+    }
+
+    function gameOver() {
+      // Mostra a mensagem de fim de jogo
+      phaseMessage = 'Game Over';
+      gameEnded = true;
+      // Mostra o botão de reiniciar o jogo
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'block';
+    }
+
+    setInterval(checkCollisionWithShip, 100);
+
   </script>
 </body>
 </html>
