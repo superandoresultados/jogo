@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 10</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
@@ -130,14 +130,12 @@
       drawShip();
       drawBullets();
       drawMeteors();
-      drawGreenBall(); // Desenha a bola verde
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
       moveShip();
       moveBullets();
       moveMeteors();
-      moveGreenBall(); // Move a bola verde
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
@@ -166,14 +164,6 @@
     function drawScore() {
       const scorePanel = document.getElementById('scorePanel');
       scorePanel.textContent = `Score: ${score}`;
-    }
-
-    // Função para desenhar a bola verde
-    function drawGreenBall() {
-      ctx.fillStyle = 'green';
-      ctx.beginPath();
-      ctx.arc(greenBall.x, greenBall.y, greenBall.width, 0, Math.PI * 2);
-      ctx.fill();
     }
 
     function moveShip() {
@@ -205,17 +195,6 @@
       meteors = meteors.filter(meteor => meteor.y < canvas.height);
     }
 
-    // Função para mover a bola verde
-    function moveGreenBall() {
-      // Move a bola para baixo
-      greenBall.y += greenBall.speed;
-      // Se a bola atingir o fundo do canvas, reposiciona-a no topo
-      if (greenBall.y > canvas.height) {
-        greenBall.y = -greenBall.height;
-        greenBall.x = Math.random() * (canvas.width - greenBall.width);
-      }
-    }
-
     function checkCollisions() {
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
@@ -232,15 +211,6 @@
           }
         });
       });
-
-      // Verifica colisão com a bola verde
-      if (shipX < greenBall.x + greenBall.width &&
-          shipX + shipSize > greenBall.x &&
-          shipY < greenBall.y + greenBall.height &&
-          shipY + shipSize > greenBall.y) {
-        // Colisão detectada, ação a ser tomada
-        // Por exemplo, reduzir vidas, reiniciar jogo, etc.
-      }
     }
 
     function checkMeteorBottom() {
@@ -338,39 +308,6 @@
       ctx.beginPath();
       ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
       ctx.fill();
-    }
-
-    // Variáveis ​​e funções relacionadas à bola verde
-    let greenBall = {
-      x: Math.random() * canvas.width,
-      y: -50, // Começa acima do canvas
-      width: 20,
-      height: 20,
-      speed: 1 // Velocidade de descida da bola verde
-    };
-
-    function createGreenBall() {
-      // Gera uma nova posição aleatória para a bola verde
-      greenBall.x = Math.random() * canvas.width;
-      greenBall.y = -50; // Começa acima do canvas
-    }
-
-    // Função para desenhar a bola verde
-    function drawGreenBall() {
-      ctx.fillStyle = 'green';
-      ctx.beginPath();
-      ctx.arc(greenBall.x, greenBall.y, greenBall.width, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Função para mover a bola verde
-    function moveGreenBall() {
-      // Move a bola para baixo
-      greenBall.y += greenBall.speed;
-      // Se a bola atingir o fundo do canvas, reposiciona-a no topo
-      if (greenBall.y > canvas.height) {
-        createGreenBall(); // Cria uma nova bola verde
-      }
     }
 
     function createMeteor() {
