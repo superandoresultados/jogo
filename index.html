@@ -68,7 +68,7 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let shootPressed = false; // Variável para controlar o tiro
+    let shootPressed = false; // Adiciona variável para controle do tiro na versão mobile
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -388,8 +388,6 @@
       } else {
         downPressed = true;
       }
-      // Adiciona a variável para controlar o tiro
-      shootPressed = true;
     }
 
     function handleRelease(event) {
@@ -398,7 +396,15 @@
       rightPressed = false;
       upPressed = false;
       downPressed = false;
-      // Reseta a variável para controlar o tiro
+    }
+
+    function handleShoot(event) { // Adiciona função para controle do tiro na versão mobile
+      event.preventDefault();
+      shootPressed = true;
+    }
+
+    function handleShootRelease(event) { // Adiciona função para controle do tiro na versão mobile
+      event.preventDefault();
       shootPressed = false;
     }
 
@@ -418,8 +424,10 @@
     // Event listeners para teclado e touch
     window.addEventListener('keydown', keyDownHandler, false);
     window.addEventListener('keyup', keyUpHandler, false);
-    canvas.addEventListener('touchstart', handleTouch, false);
-    canvas.addEventListener('touchend', handleRelease, false);
+    window.addEventListener('touchstart', handleTouch, false);
+    window.addEventListener('touchend', handleRelease, false);
+    window.addEventListener('touchstart', handleShoot, false); // Adiciona event listener para controle do tiro na versão mobile
+    window.addEventListener('touchend', handleShootRelease, false); // Adiciona event listener para controle do tiro na versão mobile
 
     function keyDownHandler(event) {
       if (event.key === 'ArrowLeft' || event.key === 'Left') {
@@ -432,8 +440,7 @@
       } else if (event.key === 'ArrowDown' || event.key === 'Down') {
         downPressed = true;
       }
-      // Verifica se a tecla pressionada é a barra de espaço ou se o tiro foi acionado pelo toque
-      if ((event.key === ' ' || shootPressed) && !gameEnded) {
+      if (event.key === ' ' && !gameEnded) {
         // Impede que o jogador atire após o fim do jogo
         bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
       }
