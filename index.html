@@ -211,6 +211,18 @@
           }
         });
       });
+
+      // Verifica colisões com a bola verde
+      meteors.forEach((meteor, meteorIndex) => {
+        if (meteor.color === 'green' &&
+            shipX < meteor.x + meteor.width &&
+            shipX + shipSize > meteor.x &&
+            shipY < meteor.y + meteor.height &&
+            shipY + shipSize > meteor.y) {
+          score += 500; // Adiciona 500 pontos ao tocar na bola verde
+          meteors.splice(meteorIndex, 1); // Remove a bola verde da tela
+        }
+      });
     }
 
     function checkMeteorBottom() {
