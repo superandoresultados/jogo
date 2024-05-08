@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 8</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
@@ -64,7 +64,7 @@
     shipImg.src = 'nave.png';
 
     const shipSize = 75; // Aumento de 50% no tamanho da nave
-    const shipSpeed = 5;
+    let shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
     let leftPressed = false;
