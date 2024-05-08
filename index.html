@@ -62,7 +62,7 @@
     let shipImg = new Image();
     shipImg.src = 'nave.png';
 
-    const shipSize = 50;
+    const shipSize = 75; // Aumentando o tamanho da nave em 50%
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
@@ -76,13 +76,13 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    const meteorImages = {
-      yellow: 'rock1.png',
-      green: 'rock2.png',
-      red: 'rock3.png',
-      blue: 'rock4.png',
-      purple: 'rock5.png'
-    };
+    const rockImg = new Image();
+    rockImg.src = 'rock1.png';
+
+    const rockWidth = 30;
+    const rockHeight = 30;
+    const rockSpeed = 2;
+    let rocks = [];
 
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
@@ -108,20 +108,21 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawShip();
       drawBullets();
-      drawMeteors();
+      drawRocks();
       drawScore();
       drawPhaseMessage();
       drawWinMessage();
       moveShip();
       moveBullets();
-      moveMeteors();
+      moveRocks();
       checkCollisions();
-      checkMeteorBottom();
+      checkRockBottom();
       checkPhase();
       requestAnimationFrame(draw);
     }
 
     function drawShip() {
+      // Ajustando o tamanho da nave
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
     }
 
@@ -132,11 +133,9 @@
       });
     }
 
-    function drawMeteors() {
-      meteors.forEach(meteor => {
-        const meteorImg = new Image();
-        meteorImg.src = meteorImages[meteor.color];
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
+    function drawRocks() {
+      rocks.forEach(rock => {
+        ctx.drawImage(rockImg, rock.x, rock.y, rockWidth, rockHeight);
       });
     }
 
@@ -168,35 +167,33 @@
       bullets = bullets.filter(bullet => bullet.y > 0);
     }
 
-    function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
+    function moveRocks() {
+      rocks.forEach(rock => {
+        rock.y += rockSpeed;
       });
-      meteors = meteors.filter(meteor => meteor.y < canvas.height);
+      rocks = rocks.filter(rock => rock.y < canvas.height);
     }
 
     function checkCollisions() {
       bullets.forEach(bullet => {
-        meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
-              bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
-              bullet.y + bulletHeight > meteor.y) {
+        rocks.forEach((rock, rockIndex) => {
+          if (bullet.x < rock.x + rockWidth &&
+              bullet.x + bulletWidth > rock.x &&
+              bullet.y < rock.y + rockHeight &&
+              bullet.y + bulletHeight > rock.y) {
             bullets = bullets.filter(b => b !== bullet);
-            score += getMeteorScore(meteor.color);
-            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-            meteors.splice(meteorIndex, 1);
+            score += 10;
+            drawExplosion(rock.x + rockWidth / 2, rock.y + rockHeight / 2);
+            rocks.splice(rockIndex, 1);
           }
         });
       });
     }
 
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          meteors.splice(meteorIndex, 1);
+    function checkRockBottom() {
+      rocks.forEach((rock, rockIndex) => {
+        if (rock.y + rockHeight >= canvas.height) {
+          rocks.splice(rockIndex, 1);
         }
       });
     }
@@ -228,7 +225,7 @@
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
       const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      const messageX = (canvas.width - messageWidth) / 2;
       ctx.fillText(phaseMessage, messageX, canvas.height / 2);
       if ((phase === 2 || phase === 3) && !gameEnded) {
         // Contagem regressiva de 3 segundos para a próxima fase
@@ -253,20 +250,6 @@
         // Desenha um botão para reiniciar o jogo
         const restartButton = document.querySelector('.restart-button');
         restartButton.style.display = 'block';
-      }
-    }
-
-    function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      } else if (color === 'blue') {
-        return 50;
-      } else if (color === 'purple') {
-        return 100;
       }
     }
 
@@ -349,54 +332,11 @@
 
     draw();
 
-    function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
+    // Controles da nave
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
 
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-
-      if (touchX < canvas.width / 2) {
-        leftPressed = true;
-      } else {
-        rightPressed = true;
-      }
-
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-    }
-
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
-
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    document.addEventListener('keydown', function(e) {
+    function keyDownHandler(e) {
       if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
       }
@@ -409,9 +349,9 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-    });
+    }
 
-    document.addEventListener('keyup', function(e) {
+    function keyUpHandler(e) {
       if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
       }
@@ -424,34 +364,11 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
-    });
+    }
 
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-        }
-      }
-    });
-
+    // Função para reiniciar o jogo
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
-      phase = 1;
-      score = 0;
-      gameEnded = false;
-      meteors = [];
-      phaseMessage = '';
-      lives = 3;
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
+      window.location.reload();
     }
   </script>
 </body>
