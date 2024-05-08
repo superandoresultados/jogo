@@ -74,36 +74,25 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('keyup', keyUpHandler, false);
+    const yellowMeteorWidth = 30;
+    const yellowMeteorHeight = 30;
+    const greenMeteorWidth = 45;
+    const greenMeteorHeight = 45;
+    const redMeteorWidth = 60;
+    const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
+    const meteorSpeed = 2;
+    let meteors = [];
 
-    function keyDownHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-      if (e.key === ' ') {
-        // Adiciona um novo tiro quando a tecla de espaço é pressionada
-        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
-      }
-    }
-
-    function keyUpHandler(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = false;
-      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = false;
-      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = false;
-      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = false;
-      }
-    }
+    let score = 0;
+    let phase = 1;
+    let phaseMessage = '';
+    let phaseStartTime = 0;
+    let gameEnded = false;
+    let lives = 3; // Vidas iniciais
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -123,19 +112,15 @@
       requestAnimationFrame(draw);
     }
 
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
-      }
+    function drawBackground() {
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Desenha a barra superior para o score e vidas
+      ctx.fillStyle = '#181818';
+      ctx.fillRect(0, 0, canvas.width, 40);
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Roboto';
+      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, canvas.width - 100, 30);
     }
 
     function drawShip() {
@@ -147,24 +132,6 @@
       bullets.forEach(bullet => {
         ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
       });
-    }
-
-    function moveBullets() {
-      bullets.forEach(bullet => {
-        bullet.y -= bulletSpeed;
-      });
-      bullets = bullets.filter(bullet => bullet.y > 0);
-    }
-
-    function drawBackground() {
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // Desenha a barra superior para o score e vidas
-      ctx.fillStyle = '#181818';
-      ctx.fillRect(0, 0, canvas.width, 40);
-      ctx.fillStyle = 'white';
-      ctx.font = '20px Roboto';
-      ctx.fillText(`Vidas: ${lives.toString().padStart(2, '0')}`, canvas.width - 100, 30);
     }
 
     function drawMeteors() {
@@ -188,36 +155,26 @@
       ctx.fillText(`Score: ${score}`, 10, 30);
     }
 
-    function drawPhaseMessage() {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      if ((phase === 2 || phase === 3) && !gameEnded) {
-        // Contagem regressiva de 3 segundos para a próxima fase
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
-        }
+    function moveShip() {
+      if (leftPressed && shipX > 0) {
+        shipX -= shipSpeed;
+      }
+      if (rightPressed && shipX < canvas.width - shipSize) {
+        shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
       }
     }
 
-    function drawCountdown(countdown) {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
-    }
-
-    function drawWinMessage() {
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Desenha um botão para reiniciar o jogo
-        const restartButton = document.querySelector('.restart-button');
-        restartButton.style.display = 'block';
-      }
+    function moveBullets() {
+      bullets.forEach(bullet => {
+        bullet.y -= bulletSpeed;
+      });
+      bullets = bullets.filter(bullet => bullet.y > 0);
     }
 
     function moveMeteors() {
@@ -240,6 +197,20 @@
             meteors.splice(meteorIndex, 1);
           }
         });
+      });
+
+      meteors.forEach((meteor, meteorIndex) => {
+        if (shipX < meteor.x + meteor.width &&
+            shipX + shipSize > meteor.x &&
+            shipY < meteor.y + meteor.height &&
+            shipY + shipSize > meteor.y) {
+          drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
+          lives--;
+          meteors.splice(meteorIndex, 1);
+          if (lives <= 0) {
+            gameOver();
+          }
+        }
       });
     }
 
@@ -274,6 +245,52 @@
 
     function increaseLife() {
       lives++; // Incrementa uma vida
+    }
+
+    function drawPhaseMessage() {
+      ctx.fillStyle = 'white';
+      ctx.font = '48px Arial';
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      if ((phase === 2 || phase === 3) && !gameEnded) {
+        // Contagem regressiva de 3 segundos para a próxima fase
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
+    }
+
+    function drawCountdown(countdown) {
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    }
+
+    function drawWinMessage() {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        const restartButton = document.querySelector('.restart-button');
+        restartButton.style.display = 'block';
+      }
+    }
+
+    function getMeteorScore(color) {
+      if (color === 'yellow') {
+        return 10;
+      } else if (color === 'green') {
+        return 20;
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
+      }
     }
 
     function drawExplosion(x, y) {
@@ -360,34 +377,81 @@
       const touch = event.touches[0];
       const touchX = touch.clientX;
       const touchY = touch.clientY;
-
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        const buttonWidth = 200;
-        const buttonHeight = 50;
-        if (touchX >= buttonX && touchX <= buttonX + buttonWidth &&
-            touchY >= buttonY && touchY <= buttonY + buttonHeight) {
-          restartGame();
-        }
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+      if (touchY < canvas.height / 2) {
+        upPressed = true;
+      } else {
+        downPressed = true;
       }
     }
 
-    canvas.addEventListener('touchstart', handleTouch, false);
+    function handleRelease(event) {
+      event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
 
     function restartGame() {
-      lives = 3;
       score = 0;
       phase = 1;
       phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3; // Restaura as vidas iniciais
       meteors = [];
       bullets = [];
-      gameEnded = false;
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
 
+    // Event listeners para teclado e touch
+    window.addEventListener('keydown', keyDownHandler, false);
+    window.addEventListener('keyup', keyUpHandler, false);
+    canvas.addEventListener('touchstart', handleTouch, false);
+    canvas.addEventListener('touchend', handleRelease, false);
+
+    function keyDownHandler(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+        leftPressed = true;
+      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
+        rightPressed = true;
+      }
+      if (event.key === 'ArrowUp' || event.key === 'Up') {
+        upPressed = true;
+      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
+        downPressed = true;
+      }
+      if (event.key === ' ' && !gameEnded) {
+        // Impede que o jogador atire após o fim do jogo
+        bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
+      }
+    }
+
+    function keyUpHandler(event) {
+      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+        leftPressed = false;
+      } else if (event.key === 'ArrowRight' || event.key === 'Right') {
+        rightPressed = false;
+      }
+      if (event.key === 'ArrowUp' || event.key === 'Up') {
+        upPressed = false;
+      } else if (event.key === 'ArrowDown' || event.key === 'Down') {
+        downPressed = false;
+      }
+    }
+
+    function gameOver() {
+      phaseMessage = 'Game Over';
+      gameEnded = true;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'block';
+    }
   </script>
 </body>
 </html>
