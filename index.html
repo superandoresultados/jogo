@@ -51,6 +51,8 @@
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <script>
+    // Cole o código JavaScript aqui
+
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
@@ -368,132 +370,55 @@
         // Verifica se o toque foi no botão de reiniciar o jogo
         const buttonX = canvas.width / 2 - 100;
         const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 40) {
           restartGame();
-          return;
         }
-      }
-
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-
-      if (touchX < canvas.width / 2) {
-        leftPressed = true;
       } else {
-        rightPressed = true;
-      }
-
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-    }
-
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
-
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
-
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = false;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
+        // Verifica se o toque foi na parte esquerda ou direita da tela para mover a nave
+        if (touchX < canvas.width / 2) {
+          leftPressed = true;
+          rightPressed = false;
+        } else {
+          leftPressed = false;
+          rightPressed = true;
+        }
+        // Verifica se o toque foi na parte superior ou inferior da tela para mover a nave
+        if (touchY < canvas.height / 2) {
+          upPressed = true;
+          downPressed = false;
+        } else {
+          upPressed = false;
+          downPressed = true;
         }
       }
-    });
+    }
 
     function restartGame() {
-      // Reinicia o jogo na fase 1
+      // Reinicia todas as variáveis do jogo
       score = 0;
       phase = 1;
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
       lives = 3;
-      meteors = [];
       bullets = [];
-    }
-
-    function checkCollisionWithShip() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (shipX < meteor.x + meteor.width &&
-            shipX + shipSize > meteor.x &&
-            shipY < meteor.y + meteor.height &&
-            shipY + shipSize > meteor.y) {
-          // Colisão detectada, executa a explosão
-          drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
-          // Subtrai uma vida
-          lives--;
-          // Remove o meteoro
-          meteors.splice(meteorIndex, 1);
-          // Verifica se o jogo acabou
-          if (lives <= 0) {
-            gameOver();
-          }
-        }
-      });
-    }
-
-    function gameOver() {
-      // Mostra a mensagem de fim de jogo
-      phaseMessage = 'Game Over';
-      gameEnded = true;
-      // Mostra o botão de reiniciar o jogo
+      meteors = [];
       const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'block';
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar o jogo
     }
 
-    setInterval(checkCollisionWithShip, 100);
+    function handleTouchEnd() {
+      // Para de mover a nave quando o toque é levantado
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
 
+    // Adiciona event listeners para toques na tela
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchmove', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
   </script>
 </body>
 </html>
