@@ -114,6 +114,11 @@
     const meteorSpeed = 2;
     let meteors = [];
 
+    const greenBallRadius = 20;
+    const greenBallSpeed = 3;
+    let greenBallX, greenBallY;
+    let greenBallActive = false;
+
     let score = 0;
     let phase = 1;
     let phaseMessage = '';
@@ -139,6 +144,7 @@
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
+      drawGreenBall(); // Adiciona a bola verde
       requestAnimationFrame(draw);
     }
 
@@ -193,6 +199,44 @@
         meteor.y += meteorSpeed;
       });
       meteors = meteors.filter(meteor => meteor.y < canvas.height);
+    }
+
+    function drawGreenBall() {
+      if (!greenBallActive) {
+        // Ativa a bola verde a cada 1 minuto
+        greenBallActive = true;
+        setTimeout(() => {
+          greenBallActive = false;
+          greenBallX = Math.random() * (canvas.width - 2 * greenBallRadius) + greenBallRadius;
+          greenBallY = -greenBallRadius;
+        }, 60000);
+      }
+
+      if (greenBallActive) {
+        // Desenha a bola verde se estiver ativa
+        ctx.beginPath();
+        ctx.arc(greenBallX, greenBallY, greenBallRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.closePath();
+
+        // Move a bola verde para baixo
+        greenBallY += greenBallSpeed;
+
+        // Verifica se a nave encostou na bola verde
+        if (
+          shipX < greenBallX + greenBallRadius &&
+          shipX + shipSize > greenBallX - greenBallRadius &&
+          shipY < greenBallY + greenBallRadius &&
+          shipY + shipSize > greenBallY
+        ) {
+          // Adiciona pontos e reseta a posição da bola verde
+          score += 500;
+          greenBallActive = false;
+          greenBallX = Math.random() * (canvas.width - 2 * greenBallRadius) + greenBallRadius;
+          greenBallY = -greenBallRadius;
+        }
+      }
     }
 
     function checkCollisions() {
@@ -393,29 +437,26 @@
         }
       }
 
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-
+      // Verifica se o toque foi na parte esquerda ou direita da tela para mover a nave
       if (touchX < canvas.width / 2) {
         leftPressed = true;
+        rightPressed = false;
       } else {
+        leftPressed = false;
         rightPressed = true;
       }
 
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
+      // Verifica se o toque foi na parte superior ou inferior da tela para mover a nave
+      if (touchY < canvas.height / 2) {
+        upPressed = true;
+        downPressed = false;
+      } else {
+        upPressed = false;
+        downPressed = true;
+      }
     }
 
-    function handleTouchEnd(event) {
+    function handleRelease(event) {
       event.preventDefault();
       leftPressed = false;
       rightPressed = false;
@@ -423,68 +464,23 @@
       downPressed = false;
     }
 
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
-
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = false;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-        }
-      }
-    });
-
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
-      phase = 1;
+      // Reseta as variáveis do jogo
       score = 0;
-      gameEnded = false;
-      meteors = [];
+      phase = 1;
       phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
       lives = 3;
+      bullets = [];
+      meteors = [];
       const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar
     }
+
+    // Adiciona eventos de toque para dispositivos móveis
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleRelease);
   </script>
 </body>
 </html>
