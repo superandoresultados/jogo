@@ -68,7 +68,6 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let spacePressed = false;
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -186,32 +185,18 @@
     }
 
     function checkCollisions() {
-      bullets.forEach((bullet, bulletIndex) => {
+      bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
           if (bullet.x < meteor.x + meteor.width &&
               bullet.x + bulletWidth > meteor.x &&
               bullet.y < meteor.y + meteor.height &&
               bullet.y + bulletHeight > meteor.y) {
-            bullets.splice(bulletIndex, 1);
-            meteors.splice(meteorIndex, 1);
+            bullets = bullets.filter(b => b !== bullet);
             score += getMeteorScore(meteor.color);
             drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            meteors.splice(meteorIndex, 1);
           }
         });
-      });
-
-      meteors.forEach((meteor, meteorIndex) => {
-        if (shipX < meteor.x + meteor.width &&
-            shipX + shipSize > meteor.x &&
-            shipY < meteor.y + meteor.height &&
-            shipY + shipSize > meteor.y) {
-          meteors.splice(meteorIndex, 1);
-          explodeShip();
-          loseLife();
-          if (lives === 0) {
-            endGame();
-          }
-        }
       });
     }
 
@@ -246,6 +231,52 @@
 
     function increaseLife() {
       lives++; // Incrementa uma vida
+    }
+
+    function drawPhaseMessage() {
+      ctx.fillStyle = 'white';
+      ctx.font = '48px Arial';
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      if ((phase === 2 || phase === 3) && !gameEnded) {
+        // Contagem regressiva de 3 segundos para a próxima fase
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
+    }
+
+    function drawCountdown(countdown) {
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    }
+
+    function drawWinMessage() {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        const restartButton = document.querySelector('.restart-button');
+        restartButton.style.display = 'block';
+      }
+    }
+
+    function getMeteorScore(color) {
+      if (color === 'yellow') {
+        return 10;
+      } else if (color === 'green') {
+        return 20;
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
+      }
     }
 
     function drawExplosion(x, y) {
@@ -360,9 +391,7 @@
       }
 
       // Adiciona um tiro quando tocar na tela
-      if (!gameEnded) {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
     }
 
     function handleTouchEnd(event) {
@@ -389,10 +418,6 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (e.code === 'Space' && !gameEnded) {
-        spacePressed = true;
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -408,65 +433,34 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-      if (e.code === 'Space') {
-        spacePressed = false;
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
       }
     });
 
     function restartGame() {
-      score = 0;
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
+      score = 0;
       gameEnded = false;
-      lives = 3; // Reinicia as vidas
       meteors = [];
-      bullets = [];
-    }
-
-    function drawPhaseMessage() {
-      if (phaseMessage && !gameEnded) {
-        ctx.fillStyle = 'white';
-        ctx.font = '40px Arial';
-        ctx.fillText(phaseMessage, canvas.width / 2 - 100, canvas.height / 2);
-      }
-    }
-
-    function drawWinMessage() {
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        ctx.fillStyle = 'white';
-        ctx.font = '40px Arial';
-        ctx.fillText('Você venceu!', canvas.width / 2 - 100, canvas.height / 2);
-        // Mostra o botão de reiniciar o jogo
-        const restartButton = document.querySelector('.restart-button');
-        restartButton.style.display = 'block';
-      }
-    }
-
-    function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      } else if (color === 'blue') {
-        return 40;
-      } else if (color === 'purple') {
-        return 50;
-      }
-    }
-
-    function explodeShip() {
-      drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
-    }
-
-    function loseLife() {
-      lives--; // Perde uma vida
-    }
-
-    function endGame() {
-      gameEnded = true;
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
   </script>
 </body>
