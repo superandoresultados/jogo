@@ -47,11 +47,24 @@
     .restart-button:hover {
       background-color: #45a049;
     }
+
+    /* Estilo para o painel de score */
+    .score-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 24px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
+  <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -64,7 +77,7 @@
     shipImg.src = 'nave.png';
 
     const shipSize = 75; // Aumento de 50% no tamanho da nave
-    let shipSpeed = 5;
+    const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
     let leftPressed = false;
@@ -146,9 +159,8 @@
     }
 
     function drawScore() {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Score: ${score}`, 10, 30);
+      const scorePanel = document.getElementById('scorePanel');
+      scorePanel.textContent = `Score: ${score}`;
     }
 
     function moveShip() {
