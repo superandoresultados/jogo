@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 7</title>
+  <title>Space Game Beta 8</title>
   <style>
     body, html {
       margin: 0;
@@ -52,6 +52,7 @@
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
+  <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -106,6 +107,7 @@
 
     let shootSound = new Audio('shoot.wav');
     let explosionSound = new Audio('bum.wav');
+    let completeSound = new Audio('complete.wav');
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -214,12 +216,16 @@
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
         increaseLife(); // Aumenta uma vida ao passar de fase
+        completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
+        completeSound.play(); // Toca a música de passagem de fase
       }
       if (score >= 2000 && phase === 2) {
         phase = 3;
         phaseMessage = 'Venceu';
         phaseStartTime = Date.now();
         increaseLife(); // Aumenta uma vida ao passar de fase
+        completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
+        completeSound.play(); // Toca a música de passagem de fase
       }
       if (score >= 5000 && phase === 3) {
         phaseMessage = 'Vencedor';
