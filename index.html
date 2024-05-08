@@ -127,8 +127,8 @@
     }
 
     function drawMeteors() {
+      ctx.fillStyle = 'yellow';
       meteors.forEach(meteor => {
-        ctx.fillStyle = 'yellow';
         ctx.fillRect(meteor.x, meteor.y, yellowMeteorWidth, yellowMeteorHeight);
       });
     }
