@@ -68,7 +68,7 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let shootPressed = false; // Adiciona variável para controle do tiro na versão mobile
+    let shootPressed = false; // Variável para controlar o tiro na versão mobile
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -396,16 +396,7 @@
       rightPressed = false;
       upPressed = false;
       downPressed = false;
-    }
-
-    function handleShoot(event) { // Adiciona função para controle do tiro na versão mobile
-      event.preventDefault();
-      shootPressed = true;
-    }
-
-    function handleShootRelease(event) { // Adiciona função para controle do tiro na versão mobile
-      event.preventDefault();
-      shootPressed = false;
+      shootPressed = false; // Define shootPressed como falso ao soltar o toque
     }
 
     function restartGame() {
@@ -424,10 +415,8 @@
     // Event listeners para teclado e touch
     window.addEventListener('keydown', keyDownHandler, false);
     window.addEventListener('keyup', keyUpHandler, false);
-    window.addEventListener('touchstart', handleTouch, false);
-    window.addEventListener('touchend', handleRelease, false);
-    window.addEventListener('touchstart', handleShoot, false); // Adiciona event listener para controle do tiro na versão mobile
-    window.addEventListener('touchend', handleShootRelease, false); // Adiciona event listener para controle do tiro na versão mobile
+    canvas.addEventListener('touchstart', handleTouch, false);
+    canvas.addEventListener('touchend', handleRelease, false);
 
     function keyDownHandler(event) {
       if (event.key === 'ArrowLeft' || event.key === 'Left') {
