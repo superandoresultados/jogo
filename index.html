@@ -68,7 +68,6 @@
     let rightPressed = false;
     let upPressed = false;
     let downPressed = false;
-    let shootPressed = false; // Variável para controlar se o jogador está atirando
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -240,7 +239,6 @@
     function handleShoot(event) {
       event.preventDefault();
       if (!gameEnded) {
-        // Impede que o jogador atire após o fim do jogo
         bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
       }
     }
