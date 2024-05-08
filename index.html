@@ -60,6 +60,20 @@
     let shipImg = new Image();
     shipImg.src = 'nave.png';
 
+    let meteorImages = {
+      yellow: new Image(),
+      green: new Image(),
+      red: new Image(),
+      blue: new Image(),
+      purple: new Image()
+    };
+
+    meteorImages.yellow.src = 'meteor_yellow.png';
+    meteorImages.green.src = 'meteor_green.png';
+    meteorImages.red.src = 'meteor_red.png';
+    meteorImages.blue.src = 'meteor_blue.png';
+    meteorImages.purple.src = 'meteor_purple.png';
+
     const shipSize = 50;
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
@@ -74,16 +88,20 @@
     const bulletSpeed = 5;
     let bullets = [];
 
-    const yellowMeteorWidth = 30;
-    const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 45;
-    const greenMeteorHeight = 45;
-    const redMeteorWidth = 60;
-    const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 50;
-    const purpleMeteorHeight = 50;
+    const meteorWidths = {
+      yellow: 30,
+      green: 45,
+      red: 60,
+      blue: 40,
+      purple: 50
+    };
+    const meteorHeights = {
+      yellow: 30,
+      green: 45,
+      red: 60,
+      blue: 40,
+      purple: 50
+    };
     const meteorSpeed = 2;
     let meteors = [];
 
@@ -136,16 +154,7 @@
 
     function drawMeteors() {
       meteors.forEach(meteor => {
-        ctx.fillStyle = meteor.color;
-        ctx.beginPath();
-        ctx.moveTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.25);
-        ctx.lineTo(meteor.x + meteor.width, meteor.y + meteor.height * 0.5);
-        ctx.lineTo(meteor.x + meteor.width * 0.75, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x + meteor.width * 0.25, meteor.y + meteor.height * 0.75);
-        ctx.lineTo(meteor.x, meteor.y + meteor.height * 0.5);
-        ctx.closePath();
-        ctx.fill();
+        ctx.drawImage(meteorImages[meteor.color], meteor.x, meteor.y, meteorWidths[meteor.color], meteorHeights[meteor.color]);
       });
     }
 
@@ -187,13 +196,13 @@
     function checkCollisions() {
       bullets.forEach(bullet => {
         meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
+          if (bullet.x < meteor.x + meteorWidths[meteor.color] &&
               bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
+              bullet.y < meteor.y + meteorHeights[meteor.color] &&
               bullet.y + bulletHeight > meteor.y) {
             bullets = bullets.filter(b => b !== bullet);
             score += getMeteorScore(meteor.color);
-            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            drawExplosion(meteor.x + meteorWidths[meteor.color] / 2, meteor.y + meteorHeights[meteor.color] / 2);
             meteors.splice(meteorIndex, 1);
           }
         });
@@ -202,9 +211,9 @@
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
+        if (meteor.y + meteorHeights[meteor.color] >= canvas.height) {
           score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+          drawExplosion(meteor.x + meteorWidths[meteor.color] / 2, meteor.y + meteorHeights[meteor.color] / 2);
           meteors.splice(meteorIndex, 1);
         }
       });
@@ -295,61 +304,28 @@
       let x, y, color, width, height;
       if (phase === 1) {
         // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
-        x = Math.random() * (canvas.width - yellowMeteorWidth);
-        y = -yellowMeteorHeight;
+        x = Math.random() * (canvas.width - meteorWidths.yellow);
+        y = -meteorHeights.yellow;
         const colors = ['yellow', 'green', 'red'];
         color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        }
+        width = meteorWidths[color];
+        height = meteorHeights[color];
       } else if (phase === 2) {
         // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
-        x = Math.random() * (canvas.width - blueMeteorWidth);
-        y = -blueMeteorHeight;
+        x = Math.random() * (canvas.width - meteorWidths.blue);
+        y = -meteorHeights.blue;
         const colors = ['yellow', 'green', 'red', 'blue'];
         color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        }
+        width = meteorWidths[color];
+        height = meteorHeights[color];
       } else if (phase === 3) {
         // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
-        x = Math.random() * (canvas.width - purpleMeteorWidth);
-        y = -purpleMeteorHeight;
+        x = Math.random() * (canvas.width - meteorWidths.purple);
+        y = -meteorHeights.purple;
         const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
         color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        } else if (color === 'purple') {
-          width = purpleMeteorWidth;
-          height = purpleMeteorHeight;
-        }
+        width = meteorWidths[color];
+        height = meteorHeights[color];
       }
       meteors.push({ x, y, color, width, height });
     }
