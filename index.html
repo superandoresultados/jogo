@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 7</title>
+  <title>Space Game Beta 5</title>
   <style>
     body, html {
       margin: 0;
@@ -105,7 +105,6 @@
     let lives = 3; // Vidas iniciais
 
     let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav'); // Novo som de explosão
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -188,8 +187,6 @@
             bullets = bullets.filter(b => b !== bullet);
             score += getMeteorScore(meteor.color);
             drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-            explosionSound.play(); // Toca o som da explosão
             meteors.splice(meteorIndex, 1);
           }
         });
@@ -201,8 +198,6 @@
         if (meteor.y + meteor.height >= canvas.height) {
           score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
           drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-          explosionSound.play(); // Toca o som da explosão
           meteors.splice(meteorIndex, 1);
         }
       });
@@ -381,56 +376,89 @@
       } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
         downPressed = true;
       }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
     }
 
-    function handleRelease(event) {
+    function handleTouchEnd(event) {
       event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
       upPressed = false;
       downPressed = false;
     }
 
-    function handleKeydown(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'a') {
-        leftPressed = true;
-      } else if (event.key === 'ArrowRight' || event.key === 'd') {
-        rightPressed = true;
-      } else if (event.key === 'ArrowUp' || event.key === 'w') {
-        upPressed = true;
-      } else if (event.key === 'ArrowDown' || event.key === 's') {
-        downPressed = true;
-      } else if (event.key === ' ' || event.key === 'Spacebar') {
-        shootBullet();
-      }
-    }
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
 
-    function handleKeyup(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'a') {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
-      } else if (event.key === 'ArrowRight' || event.key === 'd') {
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
-      } else if (event.key === 'ArrowUp' || event.key === 'w') {
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
-      } else if (event.key === 'ArrowDown' || event.key === 's') {
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-    }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
 
-    function shootBullet() {
-      bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som de tiro
-    }
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
 
     function restartGame() {
-      location.reload();
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
-
-    window.addEventListener('keydown', handleKeydown);
-    window.addEventListener('keyup', handleKeyup);
-    window.addEventListener('touchstart', handleTouch);
-    window.addEventListener('touchend', handleRelease);
-    window.addEventListener('touchcancel', handleRelease);
-
   </script>
 </body>
 </html>
