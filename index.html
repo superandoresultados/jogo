@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 10</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
@@ -373,80 +373,118 @@
       meteors.push({ x, y, color, width, height });
     }
 
-    function restartGame() {
-      bullets = [];
-      meteors = [];
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      lives = 3; // Reinicia as vidas
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-      gameEnded = false;
-    }
+    setInterval(createMeteor, 1000);
 
-    function handleTouchStart(e) {
-      e.preventDefault();
-      const touchX = e.touches[0].clientX;
-      const touchY = e.touches[0].clientY;
-      if (touchX < shipX + shipSize &&
-          touchX > shipX &&
-          touchY < shipY + shipSize &&
-          touchY > shipY) {
-        // Se o toque estiver na nave, ativar o movimento
-        if (touchX < shipX + shipSize / 2) {
-          leftPressed = true;
-        } else {
-          rightPressed = true;
-        }
-        if (touchY < shipY + shipSize / 2) {
-          upPressed = true;
-        } else {
-          downPressed = true;
+    draw();
+
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
         }
       }
+
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
     }
 
-    function handleTouchEnd(e) {
-      e.preventDefault();
+    function handleTouchEnd(event) {
+      event.preventDefault();
       leftPressed = false;
       rightPressed = false;
       upPressed = false;
       downPressed = false;
     }
 
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
-    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
-    function keyDownHandler(e) {
-      if (e.key === 'Left' || e.key === 'ArrowLeft') {
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
-      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = true;
-      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = true;
-      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-    }
+    });
 
-    function keyUpHandler(e) {
-      if (e.key === 'Left' || e.key === 'ArrowLeft') {
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
-      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
-      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
-      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
+    });
+
+    function restartGame() {
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
+      phase = 1;
+      score = 0;
+      gameEnded = false;
+      meteors = [];
+      phaseMessage = '';
+      lives = 3;
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
     }
-
-    setInterval(createMeteor, 1000);
-
-    draw();
   </script>
 </body>
 </html>
