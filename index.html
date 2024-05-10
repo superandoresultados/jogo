@@ -1,3 +1,6 @@
+“Space game beta11”
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,34 +72,11 @@
       font-family: 'Roboto', sans-serif;
       opacity: 1.0;
     }
-    
-    .fire {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 100px;
-      background: url('fire_sprite.png') no-repeat;
-      background-size: cover;
-      animation: fireAnimation 0.5s steps(4) infinite;
-      z-index: 1;
-    }
-
-    @keyframes fireAnimation {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: -200px 0;
-      }
-    }
   </style>
 </head>
 <body>
   <canvas id="backgroundCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
-  <div class="fire"></div> <!-- Aqui está a animação de fogo -->
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
