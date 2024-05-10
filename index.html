@@ -184,38 +184,46 @@
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '38px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
-    }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawScore();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '38px Arial';
 
-    function togglePausePlay() {
-      isPaused = !isPaused; // Alternar entre pausado e não pausado
-      const pausePlayButton = document.querySelector('.pause-play-button');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-      if (!isPaused) {
-        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
-      }
-    }
+    // Calcula a posição horizontal central
+    const textWidth = ctx.measureText('Jogo Pausado').width;
+    const textX = (canvas.width - textWidth) / 2;
+
+    // Calcula a posição vertical central
+    const textY = canvas.height / 2;
+
+    ctx.fillText('Jogo Pausado', textX, textY);
+  }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
+}
+
+function togglePausePlay() {
+  isPaused = !isPaused; // Alternar entre pausado e não pausado
+  const pausePlayButton = document.querySelector('.pause-play-button');
+  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+  if (!isPaused) {
+    draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+  }
+}
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
