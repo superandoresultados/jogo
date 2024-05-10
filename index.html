@@ -223,13 +223,7 @@ function togglePausePlay() {
   if (!isPaused) {
     draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
   }
-}
-
-document.querySelector('.pause-play-button').addEventListener('click', togglePausePlay);
-
-// Remova os event listeners para a barra de espaço
-document.removeEventListener('keydown', handleKeyDown);
-document.removeEventListener('keyup', handleKeyUp);
+} 
 
 
 
