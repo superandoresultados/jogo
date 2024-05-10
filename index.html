@@ -225,6 +225,13 @@ function togglePausePlay() {
   }
 }
 
+document.querySelector('.pause-play-button').addEventListener('click', togglePausePlay);
+
+// Remova os event listeners para a barra de espaço
+document.removeEventListener('keydown', handleKeyDown);
+document.removeEventListener('keyup', handleKeyUp);
+
+
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
