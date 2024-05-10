@@ -185,6 +185,7 @@
 
     function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
     drawShip();
     drawBullets();
@@ -211,6 +212,7 @@
 
     ctx.fillText('Jogo Pausado', textX, textY);
   }
+
   if (!isPaused) {
     requestAnimationFrame(draw);
   }
@@ -223,7 +225,14 @@ function togglePausePlay() {
   if (!isPaused) {
     draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
   }
-} 
+}
+
+document.querySelector('.pause-play-button').addEventListener('click', togglePausePlay);
+
+// Remova os event listeners para a barra de espaço
+document.removeEventListener('keydown', handleKeyDown);
+document.removeEventListener('keyup', handleKeyUp);
+
 
 
 
