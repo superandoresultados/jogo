@@ -1,9 +1,12 @@
+“Space game beta11”
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 11</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
@@ -68,24 +71,6 @@
       border-radius: 0 0 10px 10px;
       font-family: 'Roboto', sans-serif;
       opacity: 1.0;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .pause-button {
-      padding: 10px 20px;
-      background-color: #f44336;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-left: 10px;
-    }
-
-    .pause-button:hover {
-      background-color: #d32f2f;
     }
   </style>
 </head>
@@ -93,10 +78,7 @@
   <canvas id="backgroundCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
-  <div class="score-panel" id="scorePanel">
-    <span id="scoreText"></span>
-    <button class="pause-button" onclick="togglePause()">Pause</button>
-  </div>
+  <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -178,21 +160,7 @@
     let explosionSound = new Audio('bum.wav');
     let completeSound = new Audio('complete.wav');
 
-    let paused = false;
-
-    function togglePause() {
-      paused = !paused;
-      const pauseButton = document.querySelector('.pause-button');
-      if (paused) {
-        pauseButton.textContent = 'Play';
-      } else {
-        pauseButton.textContent = 'Pause';
-        requestAnimationFrame(draw);
-      }
-    }
-
     function draw() {
-      if (paused) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawShip();
       drawBullets();
@@ -544,13 +512,11 @@
     function restartGame() {
       // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
       score = 0;
-      lives = 3;
-      bullets = [];
+      gameEnded = false;
       meteors = [];
+      phaseMessage = '';
+      lives = 3;
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
