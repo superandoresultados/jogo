@@ -3,40 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 10</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
+      overflow: hidden;
       width: 100%;
       height: 100%;
-      overflow: hidden;
-      position: relative;
+      background-image: url('space.png');
+      background-size: cover;
     }
     canvas {
       display: block;
       margin: auto;
-      z-index: 1;
-      position: relative;
-    }
-    .background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 200%;
-      background-image: url('space.png');
-      background-size: cover;
-      z-index: 0;
-      animation: scrollBackground 10s linear infinite;
-    }
-    @keyframes scrollBackground {
-      0% {
-        transform: translateY(0%);
-      }
-      100% {
-        transform: translateY(50%);
-      }
     }
     /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
     @media screen and (max-width: 600px) {
@@ -62,7 +42,6 @@
       cursor: pointer;
       font-size: 16px;
       display: none;
-      z-index: 2;
     }
 
     .restart-button:hover {
@@ -82,12 +61,10 @@
       border-radius: 0 0 10px 10px;
       font-family: 'Roboto', sans-serif;
       opacity: 1.0;
-      z-index: 2;
     }
   </style>
 </head>
 <body>
-  <div class="background"></div>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
@@ -462,11 +439,6 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      if (e.key === ' ') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
     });
 
     document.addEventListener('keyup', function(e) {
@@ -482,17 +454,34 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+        }
+      }
     });
 
     function restartGame() {
-      score = 0;
+      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
+      score = 0;
       gameEnded = false;
-      lives = 3; // Reinicia as vidas
-      bullets = [];
       meteors = [];
+      phaseMessage = '';
+      lives = 3;
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
