@@ -183,13 +183,8 @@
     let explosionSound = new Audio('bum.wav');
     let completeSound = new Audio('complete.wav');
 
-  // Variáveis do jogo
-let isPaused = false;
-
-// Função para desenhar na tela
-function draw() {
+  function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
     drawShip();
     drawBullets();
@@ -203,7 +198,6 @@ function draw() {
     checkCollisions();
     checkMeteorBottom();
     checkPhase();
-    requestAnimationFrame(draw); // Chama novamente a função para desenhar na próxima animação
   } else {
     ctx.fillStyle = 'white';
     ctx.font = '38px Arial';
@@ -217,24 +211,19 @@ function draw() {
 
     ctx.fillText('Jogo Pausado', textX, textY);
   }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
 }
 
-// Função para alternar entre pausar e continuar o jogo
 function togglePausePlay() {
   isPaused = !isPaused; // Alternar entre pausado e não pausado
   const pausePlayButton = document.querySelector('.pause-play-button');
   pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-}
-
-// Adiciona um event listener para o clique do botão de pausar/jogar
-document.querySelector('.pause-play-button').addEventListener('click', togglePausePlay);
-
-// Remova os event listeners para a barra de espaço
-document.removeEventListener('keydown', handleKeyDown);
-document.removeEventListener('keyup', handleKeyUp);
-
-// Inicia o ciclo de desenho
-draw();
+  if (!isPaused) {
+    draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+  }
+} 
 
 
     function drawShip() {
