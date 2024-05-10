@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 9</title>
+  <title>Space Game Beta 12</title>
   <style>
     body, html {
       margin: 0;
@@ -556,11 +556,10 @@
       phaseStartTime = 0;
       gameEnded = false;
       lives = 3; // Reinicia o número de vidas
-      bullets = []; // Remove todos os tiros na tela
-      meteors = []; // Remove todos os meteoros na tela
+      bullets = []; // Limpa os tiros
+      meteors = []; // Limpa os meteoros
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none'; // Esconde o botão de reiniciar o jogo
-      draw(); // Reinicia o ciclo de desenho
     }
   </script>
 </body>
