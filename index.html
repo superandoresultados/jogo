@@ -185,15 +185,20 @@
 
     function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  drawShip();
-  drawBullets();
-  drawMeteors();
-  drawScore();
-  drawPhaseMessage();
-  drawWinMessage();
-
-  if (isPaused) {
+  if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawScore();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
     ctx.fillStyle = 'white';
     ctx.font = '38px Arial';
 
@@ -205,15 +210,7 @@
     const textY = canvas.height / 2;
 
     ctx.fillText('Jogo Pausado', textX, textY);
-  } else {
-    moveShip();
-    moveBullets();
-    moveMeteors();
-    checkCollisions();
-    checkMeteorBottom();
-    checkPhase();
   }
-
   if (!isPaused) {
     requestAnimationFrame(draw);
   }
@@ -226,9 +223,7 @@ function togglePausePlay() {
   if (!isPaused) {
     draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
   }
-}
-
-document.querySelector('.pause-play-button').addEventListener('click', togglePausePlay);
+} 
 
 
 
