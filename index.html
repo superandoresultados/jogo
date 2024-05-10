@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 8</title>
+  <title>Space Game Beta 9</title>
   <style>
     body, html {
       margin: 0;
@@ -47,11 +47,27 @@
     .restart-button:hover {
       background-color: #45a049;
     }
+
+    /* Estilo para o painel de score */
+    .score-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 24px;
+      border-radius: 0 0 10px 10px;
+      font-family: 'Roboto', sans-serif;
+      opacity: 1.0;
+    }
   </style>
 </head>
 <body>
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
+  <div class="score-panel" id="scorePanel"></div>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -146,9 +162,8 @@
     }
 
     function drawScore() {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Score: ${score}`, 10, 30);
+      const scorePanel = document.getElementById('scorePanel');
+      scorePanel.textContent = `Score: ${score}`;
     }
 
     function moveShip() {
@@ -358,46 +373,24 @@
       meteors.push({ x, y, color, width, height });
     }
 
-    setInterval(createMeteor, 1000);
-
-    draw();
-
-    function handleTouch(event) {
+    function handleTouchMove(event) {
       event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-
+      const touchX = event.touches[0].clientX;
+      const touchY = event.touches[0].clientY;
       if (touchX < canvas.width / 2) {
         leftPressed = true;
+        rightPressed = false;
       } else {
         rightPressed = true;
+        leftPressed = false;
       }
-
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
+      if (touchY < canvas.height / 2) {
+        upPressed = true;
+        downPressed = false;
+      } else {
+        downPressed = true;
+        upPressed = false;
+      }
     }
 
     function handleTouchEnd(event) {
@@ -408,68 +401,60 @@
       downPressed = false;
     }
 
-    canvas.addEventListener('touchstart', handleTouch);
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
+    canvas.addEventListener('touchstart', handleTouchMove);
+    canvas.addEventListener('touchmove', handleTouchMove);
     canvas.addEventListener('touchend', handleTouchEnd);
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyDownHandler(event) {
+      if (event.key === 'ArrowLeft') {
         leftPressed = true;
       }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      if (event.key === 'ArrowRight') {
         rightPressed = true;
       }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      if (event.key === 'ArrowUp') {
         upPressed = true;
       }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      if (event.key === 'ArrowDown') {
         downPressed = true;
       }
-    });
+    }
 
-    document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function keyUpHandler(event) {
+      if (event.key === 'ArrowLeft') {
         leftPressed = false;
       }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      if (event.key === 'ArrowRight') {
         rightPressed = false;
       }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      if (event.key === 'ArrowUp') {
         upPressed = false;
       }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      if (event.key === 'ArrowDown') {
         downPressed = false;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-        }
-      }
-    });
+    }
 
     function restartGame() {
-      // Reinicia o jogo na fase 1 com Score 0 e 3 vidas
-      phase = 1;
+      // Reinicia as variáveis do jogo
       score = 0;
-      gameEnded = false;
-      meteors = [];
+      phase = 1;
       phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
       lives = 3;
+      bullets = [];
+      meteors = [];
+      // Oculta o botão de reiniciar jogo
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    setInterval(createMeteor, 1000);
+
+    draw();
   </script>
 </body>
 </html>
