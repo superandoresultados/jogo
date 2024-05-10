@@ -94,8 +94,10 @@
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
-  <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
+  <button class="pause-play-button" id="pausePlayButton">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+  <audio id="shootSound" src="shoot.wav"></audio>
+  <audio id="explosionSound" src="bum.wav"></audio>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -206,12 +208,16 @@
 
     function togglePausePlay() {
       isPaused = !isPaused; // Alternar entre pausado e não pausado
-      const pausePlayButton = document.querySelector('.pause-play-button');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+      const pausePlayButton = document.getElementById('pausePlayButton');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Altera o texto do botão de acordo com o estado de pausa
       if (!isPaused) {
-        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+        draw(); // Se o jogo for retomado, continue desenhando
       }
     }
+
+    document.getElementById('pausePlayButton').addEventListener('click', togglePausePlay);
+
+    shipImg.onload = draw; // Inicia o ciclo de desenho quando a imagem da nave for carregada
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
@@ -525,11 +531,6 @@
       if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
     });
 
     canvas.addEventListener('click', function(event) {
@@ -550,17 +551,16 @@
     });
 
     function restartGame() {
+      lives = 3;
       score = 0;
       phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
+      meteors = [];
+      bullets = [];
       gameEnded = false;
-      lives = 3; // Reinicia o número de vidas
-      bullets = []; // Limpa os tiros
-      meteors = []; // Limpa os meteoros
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none'; // Esconde o botão de reiniciar o jogo
+      phaseMessage = 'Fase 1';
+      restartButton.style.display = 'none';
     }
   </script>
 </body>
+
 </html>
