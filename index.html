@@ -1,6 +1,3 @@
-“Space game beta11”
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,6 +69,24 @@
       font-family: 'Roboto', sans-serif;
       opacity: 1.0;
     }
+
+    /* Estilo para o botão de pause e play */
+    .pause-play-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .pause-play-button:hover {
+      background-color: #005F6B;
+    }
   </style>
 </head>
 <body>
@@ -79,6 +94,7 @@
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
+  <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -91,6 +107,7 @@
     backgroundImage.src = 'space.png';
 
     let bgY = 0;
+    let isPaused = false;
 
     function drawBackground() {
       bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
@@ -100,7 +117,9 @@
       if (bgY >= backgroundCanvas.height) {
         bgY = 0;
       }
-      requestAnimationFrame(drawBackground);
+      if (!isPaused) {
+        requestAnimationFrame(drawBackground);
+      }
     }
 
     backgroundImage.onload = drawBackground;
@@ -174,7 +193,9 @@
       checkCollisions();
       checkMeteorBottom();
       checkPhase();
-      requestAnimationFrame(draw);
+      if (!isPaused) {
+        requestAnimationFrame(draw);
+      }
     }
 
     function drawShip() {
