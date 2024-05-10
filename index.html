@@ -94,10 +94,8 @@
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
-  <button class="pause-play-button" id="pausePlayButton">Pause</button>
+  <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <audio id="shootSound" src="shoot.wav"></audio>
-  <audio id="explosionSound" src="bum.wav"></audio>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -208,16 +206,12 @@
 
     function togglePausePlay() {
       isPaused = !isPaused; // Alternar entre pausado e não pausado
-      const pausePlayButton = document.getElementById('pausePlayButton');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Altera o texto do botão de acordo com o estado de pausa
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
       if (!isPaused) {
-        draw(); // Se o jogo for retomado, continue desenhando
+        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
       }
     }
-
-    document.getElementById('pausePlayButton').addEventListener('click', togglePausePlay);
-
-    shipImg.onload = draw; // Inicia o ciclo de desenho quando a imagem da nave for carregada
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
@@ -454,131 +448,119 @@
 
     draw();
 
-   function handleTouch(event) {
-    event.preventDefault();
-    const touch = event.touches[0];
-    const touchX = touch.clientX;
-    const touchY = touch.clientY;
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
 
-    if (score >= 5000 && phase === 3 && gameEnded) {
-      // Verifica se o toque foi no botão de reiniciar o jogo
-      const buttonX = canvas.width / 2 - 100;
-      const buttonY = canvas.height / 2 + 100;
-      if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-        restartGame();
-        return;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o toque foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
       }
+
+      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
+        upPressed = true;
+      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
+        downPressed = true;
+      }
+
+      if (touchX < canvas.width / 2) {
+        leftPressed = true;
+      } else {
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
     }
 
-    if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
-      upPressed = true;
-    } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-      upPressed = true;
-    } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-      downPressed = true;
-    } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-      downPressed = true;
-    }
-
-    if (touchX < canvas.width / 2) {
-      leftPressed = true;
-    } else {
-      rightPressed = true;
-    }
-
-    // Adiciona um tiro quando tocar na tela
-    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-    shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-    shootSound.play(); // Toca o som do tiro
-  }
-
-  function handleTouchEnd(event) {
-    event.preventDefault();
-    leftPressed = false;
-    rightPressed = false;
-    upPressed = false;
-    downPressed = false;
-  }
-
-  canvas.addEventListener('touchstart', handleTouch);
-  canvas.addEventListener('touchend', handleTouchEnd);
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowLeft' || e.key === 'Left') {
-      leftPressed = true;
-    }
-    if (e.key === 'ArrowRight' || e.key === 'Right') {
-      rightPressed = true;
-    }
-    if (e.key === 'ArrowUp' || e.key === 'Up') {
-      upPressed = true;
-    }
-    if (e.key === 'ArrowDown' || e.key === 'Down') {
-      downPressed = true;
-    }
-  });
-
-  document.addEventListener('keyup', function(e) {
-    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    function handleTouchEnd(event) {
+      event.preventDefault();
       leftPressed = false;
-    }
-    if (e.key === 'ArrowRight' || e.key === 'Right') {
       rightPressed = false;
-    }
-    if (e.key === 'ArrowUp' || e.key === 'Up') {
       upPressed = false;
-    }
-    if (e.key === 'ArrowDown' || e.key === 'Down') {
       downPressed = false;
     }
-  });
 
-  canvas.addEventListener('click', function(event) {
-    const clickX = event.clientX;
-    const clickY = event.clientY;
-    if (score >= 5000 && phase === 3 && gameEnded) {
-      // Verifica se o clique foi no botão de reiniciar o jogo
-      const buttonX = canvas.width / 2 - 100;
-      const buttonY = canvas.height / 2 + 100;
-      if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-        restartGame();
-        return;
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
       }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = false;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = false;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = false;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = false;
+      }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
+
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
+      }
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
+    });
+
+    function restartGame() {
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3; // Reinicia o número de vidas
+      bullets = []; // Limpa os tiros
+      meteors = []; // Limpa os meteoros
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar o jogo
     }
-    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-    shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-    shootSound.play(); // Toca o som do tiro
-  });
-
-  function restartGame() {
-    lives = 3;
-    score = 0;
-    phase = 1;
-    meteors = [];
-    bullets = [];
-    gameEnded = false;
-    phaseMessage = 'Fase 1';
-    const restartButton = document.querySelector('.restart-button');
-    restartButton.style.display = 'none';
-  }
-</script>
-
-<button class="pause-play-button" id="pausePlayButton">Pause</button>
-<audio id="completeSound" src="complete.wav"></audio>
-<script>
-  // O restante do seu JavaScript permanece inalterado
-  const pausePlayButton = document.getElementById('pausePlayButton');
-
-  pausePlayButton.addEventListener('click', togglePausePlay);
-
-  function togglePausePlay() {
-    isPaused = !isPaused; // Alternar entre pausado e não pausado
-    pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-    if (!isPaused) {
-      draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
-    }
-  }
-</script>
+  </script>
 </body>
-
 </html>
