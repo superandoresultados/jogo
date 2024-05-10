@@ -218,14 +218,12 @@
 
 function togglePausePlay() {
   isPaused = !isPaused; // Alternar entre pausado e não pausado
-  const pausePlayButton = document.getElementById('pausePlayButton');
+  const pausePlayButton = document.querySelector('.pause-play-button');
   pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
   if (!isPaused) {
     draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
   }
 }
-
-document.getElementById('pausePlayButton').addEventListener('click', togglePausePlay);
 
 
     function drawShip() {
