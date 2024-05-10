@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 9</title>
+  <title>Space Game Beta 10</title>
   <style>
     body, html {
       margin: 0;
@@ -373,28 +373,42 @@
       meteors.push({ x, y, color, width, height });
     }
 
-    function handleTouchMove(event) {
-      event.preventDefault();
-      const touchX = event.touches[0].clientX;
-      const touchY = event.touches[0].clientY;
-      if (touchX < canvas.width / 2) {
-        leftPressed = true;
-        rightPressed = false;
-      } else {
-        rightPressed = true;
-        leftPressed = false;
-      }
-      if (touchY < canvas.height / 2) {
-        upPressed = true;
-        downPressed = false;
-      } else {
-        downPressed = true;
-        upPressed = false;
+    function restartGame() {
+      bullets = [];
+      meteors = [];
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      lives = 3; // Reinicia as vidas
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+      gameEnded = false;
+    }
+
+    function handleTouchStart(e) {
+      e.preventDefault();
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      if (touchX < shipX + shipSize &&
+          touchX > shipX &&
+          touchY < shipY + shipSize &&
+          touchY > shipY) {
+        // Se o toque estiver na nave, ativar o movimento
+        if (touchX < shipX + shipSize / 2) {
+          leftPressed = true;
+        } else {
+          rightPressed = true;
+        }
+        if (touchY < shipY + shipSize / 2) {
+          upPressed = true;
+        } else {
+          downPressed = true;
+        }
       }
     }
 
-    function handleTouchEnd(event) {
-      event.preventDefault();
+    function handleTouchEnd(e) {
+      e.preventDefault();
       leftPressed = false;
       rightPressed = false;
       upPressed = false;
@@ -403,53 +417,31 @@
 
     document.addEventListener('keydown', keyDownHandler);
     document.addEventListener('keyup', keyUpHandler);
-    canvas.addEventListener('touchstart', handleTouchMove);
-    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchstart', handleTouchStart);
     canvas.addEventListener('touchend', handleTouchEnd);
 
-    function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft') {
+    function keyDownHandler(e) {
+      if (e.key === 'Left' || e.key === 'ArrowLeft') {
         leftPressed = true;
-      }
-      if (event.key === 'ArrowRight') {
+      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
         rightPressed = true;
-      }
-      if (event.key === 'ArrowUp') {
+      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
         upPressed = true;
-      }
-      if (event.key === 'ArrowDown') {
+      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
         downPressed = true;
       }
     }
 
-    function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft') {
+    function keyUpHandler(e) {
+      if (e.key === 'Left' || e.key === 'ArrowLeft') {
         leftPressed = false;
-      }
-      if (event.key === 'ArrowRight') {
+      } else if (e.key === 'Right' || e.key === 'ArrowRight') {
         rightPressed = false;
-      }
-      if (event.key === 'ArrowUp') {
+      } else if (e.key === 'Up' || e.key === 'ArrowUp') {
         upPressed = false;
-      }
-      if (event.key === 'ArrowDown') {
+      } else if (e.key === 'Down' || e.key === 'ArrowDown') {
         downPressed = false;
       }
-    }
-
-    function restartGame() {
-      // Reinicia as variáveis do jogo
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
-      // Oculta o botão de reiniciar jogo
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
     }
 
     setInterval(createMeteor, 1000);
