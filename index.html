@@ -233,24 +233,21 @@
     }
 
     function drawScore() {
-      const scorePanel = document.getElementById('scorePanel');
-      scorePanel.textContent = `Score: ${score}`;
-    }
+  // Remove a div score-panel existente se já houver
+  const existingScorePanel = document.getElementById('scorePanel');
+  if (existingScorePanel) {
+    existingScorePanel.parentNode.removeChild(existingScorePanel);
+  }
 
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
-      }
-    }
+  // Cria uma nova div score-panel
+  const scorePanel = document.createElement('div');
+  scorePanel.className = 'score-panel';
+  scorePanel.id = 'scorePanel';
+  scorePanel.textContent = `Score: ${score}`;
+
+  // Adiciona a nova div score-panel ao body do documento
+  document.body.appendChild(scorePanel);
+}
 
     function moveBullets() {
       bullets.forEach(bullet => {
