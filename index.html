@@ -344,7 +344,7 @@ function playCompleteSound() {
   const messageX = (canvas.width - messageWidth) / 2;
   ctx.fillText(phaseMessage, messageX, canvas.height / 2);
 
-  if (phase > 3 && !gameEnded && phaseMessage.startsWith("Fase")) {
+  if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
     // Contagem regressiva de 3 segundos para a próxima fase
     const elapsedTime = Date.now() - phaseStartTime;
     const countdown = 3 - Math.floor(elapsedTime / 1000);
