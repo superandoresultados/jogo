@@ -87,6 +87,31 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
+
+    .special-collectible {
+  position: absolute;
+  width: 40px; /* Ajuste conforme necessário */
+  height: 40px; /* Ajuste conforme necessário */
+  background-color: yellow; /* Cor de fundo dos coletáveis especiais */
+  border-radius: 50%; /* Para criar uma forma de círculo */
+  z-index: 1; /* Garante que os coletáveis especiais apareçam acima dos outros elementos */
+    }
+    
+    #gameCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1; /* Certifique-se de que os coletáveis especiais apareçam sobre o canvas do jogo */
+    }
+
+.supply {
+  width: 30px; /* Largura do coletável */
+  height: 30px; /* Altura do coletável */
+  position: absolute;
+  background-image: url('supply.png'); /* Imagem para representar o coletável */
+  background-size: cover; /* Ajusta o tamanho da imagem */
+  z-index: 2; /* Certifique-se de que os coletáveis especiais apareçam sobre o background */
+   }
   </style>
 </head>
 <body>
@@ -96,6 +121,11 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+<!-- Outros elementos do jogo omitidos por brevidade -->
+  <!-- Adicione um elemento div para representar cada coletável especial -->
+  <div class="supply" style="top: 100px; left: 200px;"></div>
+  <div class="supply" style="top: 300px; left: 400px;"></div>
+  <!-- Adicione mais elementos div conforme necessário para os coletáveis especiais -->
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -599,6 +629,57 @@ function playCompleteSound() {
       meteors = [];
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
+    }
+
+    const supplyImage = new Image();
+    supplyImage.src = 'supply.png'; // Imagem para representar o coletável especial
+
+    const supplyWidth = 30; // Largura do coletável
+    const supplyHeight = 30; // Altura do coletável
+    const supplySpeed = 2; // Velocidade de movimento do coletável
+    let supplies = []; // Array para armazenar os coletáveis especiais
+
+    function drawSupplies() {
+      supplies.forEach(supply => {
+        ctx.drawImage(supplyImage, supply.x, supply.y, supplyWidth, supplyHeight);
+      });
+    }
+
+    function moveSupplies() {
+      supplies.forEach(supply => {
+        supply.y += supplySpeed;
+      });
+      supplies = supplies.filter(supply => supply.y < canvas.height); // Remover os coletáveis que saíram da tela
+    }
+
+    function createSupply() {
+      const x = Math.random() * (canvas.width - supplyWidth); // Posição horizontal aleatória
+      const y = -supplyHeight; // Começa acima da tela
+      supplies.push({ x, y }); // Adiciona o coletável à lista
+    }
+
+    setInterval(createSupply, 5000); // Cria um novo coletável a cada 5 segundos
+    setInterval(moveSupplies, 30); // Move os coletáveis a cada 30 milissegundos
+
+    function checkCollisionsWithSupplies() {
+      supplies.forEach((supply, index) => {
+        if (
+          shipX < supply.x + supplyWidth &&
+          shipX + shipSize > supply.x &&
+          shipY < supply.y + supplyHeight &&
+          shipY + shipSize > supply.y
+        ) {
+          lives++; // Aumenta o número de vidas
+          supplies.splice(index, 1); // Remove o coletável da tela
+        }
+      });
+    }
+
+    function draw() {
+      // Código existente omitido por brevidade
+      drawSupplies(); // Desenha os coletáveis
+      checkCollisionsWithSupplies(); // Verifica colisões com os coletáveis
+      // Código existente omitido por brevidade
     }
   </script>
 </body>
