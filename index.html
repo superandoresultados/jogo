@@ -318,6 +318,26 @@
     }
   }
 
+    // Função para reiniciar o jogo
+  function restartGame() {
+    // Reinicia as variáveis do jogo
+    score = 0;
+    phase = 1;
+    phaseMessage = '';
+    phaseStartTime = 0;
+    gameEnded = false;
+    lives = 3;
+    bullets = [];
+    meteors = [];
+    const restartButton = document.querySelector('.restart-button');
+    restartButton.style.display = 'none';
+    // Reinicia os pontos necessários para avançar de fase
+    phase4Score = 5000;
+    phase5Score = 10000;
+  }
+
+
+    
     function increaseLife() {
       lives++; // Incrementa uma vida
     }
