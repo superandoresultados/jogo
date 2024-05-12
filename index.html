@@ -338,22 +338,23 @@ function playCompleteSound() {
     }
 
     function drawPhaseMessage() {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      const messageWidth = ctx.measureText(phaseMessage).width;
-      const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      if ((phase === 2 || phase === 3) && !gameEnded) {
-        // Contagem regressiva de 3 segundos para a próxima fase
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
-        }
-      }
+  ctx.fillStyle = 'white';
+  ctx.font = '48px Arial';
+  const messageWidth = ctx.measureText(phaseMessage).width;
+  const messageX = (canvas.width - messageWidth) / 2;
+  ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+
+  if (phase > 3 && !gameEnded) {
+    // Contagem regressiva de 3 segundos para a próxima fase
+    const elapsedTime = Date.now() - phaseStartTime;
+    const countdown = 3 - Math.floor(elapsedTime / 1000);
+    if (countdown > 0) {
+      drawCountdown(countdown);
+    } else {
+      phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
     }
+  }
+}
 
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
