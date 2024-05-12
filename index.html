@@ -88,38 +88,28 @@
       background-color: #0fae4b;
     }
 
-    /* Estilo para os coletáveis especiais */
-.special-collectible {
-  position: absolute;
-  /* Defina as dimensões do coletável */
-  width: 50px;
-  height: 50px;
-  /* Adicione uma imagem ou cor de fundo para representar o coletável */
-  background-image: url('coletavel.png');
-  background-size: cover; /* Ajusta o tamanho da imagem para cobrir o elemento */
-  /* Centraliza o coletável no meio do jogo */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* Adicione bordas arredondadas para um visual mais agradável */
-  border-radius: 50%;
-  /* Adicione uma sombra sutil para dar destaque ao coletável */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  /* Adicione animações ou transições para um efeito visual interessante */
-  transition: transform 0.3s ease-in-out;
-}
+   /* Adicione os estilos para o coletável especial */
+    .special-collectible {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-image: url('supply.png');
+      background-size: cover;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease-in-out;
+    }
 
-/* Estilo quando o cursor está sobre o coletável */
-.special-collectible:hover {
-  /* Redimensiona ligeiramente o coletável para indicar interatividade */
-  transform: scale(1.1);
-}
+    .special-collectible:hover {
+      transform: scale(1.1);
+    }
 
-/* Estilo quando o coletável é clicado ou tocado */
-.special-collectible:active {
-  /* Reduz ligeiramente o coletável para indicar ação */
-  transform: scale(0.9);
-}
+    .special-collectible:active {
+      transform: scale(0.9);
+    }
 
   </style>
 </head>
