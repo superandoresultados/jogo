@@ -561,16 +561,17 @@
     });
 
     function restartGame() {
+      // Reinicia as variáveis do jogo
       score = 0;
       phase = 1;
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
-      lives = 3; // Reinicia o número de vidas
-      bullets = []; // Limpa os tiros
-      meteors = []; // Limpa os meteoros
+      lives = 3;
+      bullets = [];
+      meteors = [];
       const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none'; // Esconde o botão de reiniciar o jogo
+      restartButton.style.display = 'none';
     }
   </script>
 </body>
