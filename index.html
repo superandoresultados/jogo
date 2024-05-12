@@ -465,11 +465,7 @@
       const touchX = touch.clientX;
       const touchY = touch.clientY;
 
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o toque foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        // Determina a direção do movimento baseada no toque
+      // Determina a direção do movimento baseada no toque
       if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
         upPressed = true;
         leftPressed = true;
