@@ -693,31 +693,22 @@ function draw() {
   // ... outros códigos de desenho
 }
 
+// Novo código para criar coletáveis especiais
+function createSpecialCollectible() {
+  const specialCollectible = document.createElement('div');
+  specialCollectible.classList.add('special-collectible');
+  specialCollectible.style.backgroundImage = "url('supply.png')";
 
-  // Código JavaScript anterior...
+  const randomX = Math.random() * (canvas.width - 50);
+  const randomY = Math.random() * (canvas.height - 50);
+  specialCollectible.style.left = randomX + 'px';
+  specialCollectible.style.top = randomY + 'px';
 
-  // Novo código para criar coletáveis especiais
-  function createSpecialCollectible() {
-    const specialCollectible = document.createElement('div');
-    specialCollectible.classList.add('special-collectible');
-    specialCollectible.style.backgroundImage = "url('supply.png')";
+  const specialCollectiblesContainer = document.getElementById('specialCollectiblesContainer');
+  specialCollectiblesContainer.appendChild(specialCollectible);
+}
 
-    // Posiciona o coletável em uma posição aleatória na tela
-    const randomX = Math.random() * (canvas.width - 50); // 50 é a largura do coletável
-    const randomY = Math.random() * (canvas.height - 50); // 50 é a altura do coletável
-    specialCollectible.style.left = randomX + 'px';
-    specialCollectible.style.top = randomY + 'px';
-
-    // Adiciona o coletável ao contêiner de coletáveis especiais
-    const specialCollectiblesContainer = document.getElementById('specialCollectiblesContainer');
-    specialCollectiblesContainer.appendChild(specialCollectible);
-  }
-
-  // Chama a função para criar coletáveis especiais a cada 10 segundos
-  setInterval(createSpecialCollectible, 10000);
-
-
-    
+setInterval(createSpecialCollectible, 10000);
 
   </script>
 </body>
