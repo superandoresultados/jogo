@@ -215,14 +215,19 @@
   requestAnimationFrame(drawBackground);
 }
 
-    function togglePausePlay() {
-      isPaused = !isPaused; // Alternar entre pausado e não pausado
-      const pausePlayButton = document.querySelector('.pause-play-button');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-      if (!isPaused) {
-        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
-      }
-    }
+    function togglePausePlay(event) {
+  if (event && event.type === 'click') {
+    // Verifica se o evento foi acionado por um clique de mouse
+    return;
+  }
+  isPaused = !isPaused; // Alternar entre pausado e não pausado
+  const pausePlayButton = document.querySelector('.pause-play-button');
+  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+  if (!isPaused) {
+    draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+  }
+}
+
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
