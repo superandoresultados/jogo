@@ -87,6 +87,13 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
+
+    /* Estilo para a imagem dos coletáveis especiais */
+#supplyImg {
+  position: absolute;
+  z-index: 1; /* Para garantir que os coletáveis fiquem acima do fundo */
+}
+
   </style>
 </head>
 <body>
@@ -96,6 +103,7 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+  <img id="supplyImg" src="supply.png" style="display: none;">
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -600,6 +608,81 @@ function playCompleteSound() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    // Adicione uma nova variável para representar os coletáveis especiais
+let supplies = [];
+
+// Função para desenhar os coletáveis especiais
+function drawSupplies() {
+  supplies.forEach(supply => {
+    ctx.drawImage(supplyImg, supply.x, supply.y, 30, 30); // Tamanho da cápsula de resgate
+  });
+}
+
+// Função para mover os coletáveis especiais
+function moveSupplies() {
+  supplies.forEach(supply => {
+    supply.y += 2; // Velocidade de descida dos coletáveis
+  });
+  // Filtra os coletáveis especiais que saem da tela
+  supplies = supplies.filter(supply => supply.y < canvas.height);
+}
+
+// Função para criar novos coletáveis especiais
+function createSupply() {
+  const x = Math.random() * (canvas.width - 30); // Posição aleatória no eixo x
+  const y = -30; // Começa acima da tela
+  supplies.push({ x, y });
+}
+
+// Chama a função para criar coletáveis a cada 1 minuto
+setInterval(createSupply, 60000); // 60000 milissegundos = 1 minuto
+
+// Adicione a função drawSupplies à função draw para desenhar os coletáveis
+function draw() {
+  // ...
+  if (!isPaused) {
+    drawSupplies(); // Desenha os coletáveis especiais
+    requestAnimationFrame(draw);
+  }
+}
+
+// Adicione a função moveSupplies à função draw para mover os coletáveis
+function draw() {
+  // ...
+  if (!isPaused) {
+    drawSupplies(); // Desenha os coletáveis especiais
+    moveSupplies(); // Move os coletáveis especiais
+    requestAnimationFrame(draw);
+  }
+}
+
+// Função para verificar a colisão da nave com os coletáveis
+function checkSupplyCollision() {
+  supplies.forEach((supply, index) => {
+    if (
+      shipX < supply.x + 30 &&
+      shipX + shipSize > supply.x &&
+      shipY < supply.y + 30 &&
+      shipY + shipSize > supply.y
+    ) {
+      // Se houver colisão, conceda uma vida ao jogador
+      increaseLife();
+      // Remova o coletável da lista
+      supplies.splice(index, 1);
+    }
+  });
+}
+
+// Adicione a chamada para checkSupplyCollision na função checkCollisions
+function checkCollisions() {
+  // ...
+  if (!isPaused) {
+    checkSupplyCollision(); // Verifica a colisão com os coletáveis especiais
+    requestAnimationFrame(draw);
+  }
+}
+
   </script>
 </body>
 </html>
