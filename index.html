@@ -96,6 +96,8 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+  <button class="pause-play-button" onclick="togglePausePlay('click')">Pause</button>
+
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -227,8 +229,6 @@
     draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
   }
 }
-
-    <button class="pause-play-button" onclick="togglePausePlay('click')">Pause</button>
 
 
 
