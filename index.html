@@ -469,25 +469,26 @@
         // Verifica se o toque foi no botão de reiniciar o jogo
         const buttonX = canvas.width / 2 - 100;
         const buttonY = canvas.height / 2 + 100;
-        if (touchX >= buttonX && touchX <= buttonX + 200 && touchY >= buttonY && touchY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-
-      if (touchX < canvas.width / 2 && touchY < canvas.height / 2) {
+        // Determina a direção do movimento baseada no toque
+      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
         upPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY < canvas.height / 2) {
-        upPressed = true;
-      } else if (touchX < canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      } else if (touchX > canvas.width / 2 && touchY > canvas.height / 2) {
-        downPressed = true;
-      }
-
-      if (touchX < canvas.width / 2) {
         leftPressed = true;
-      } else {
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        leftPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+        leftPressed = true;
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
         rightPressed = true;
       }
 
