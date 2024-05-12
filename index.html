@@ -490,10 +490,11 @@
 
       // Adiciona um tiro quando tocar na tela
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
+      shootSound.currentTime = 0;
+      shootSound.play();
     }
 
+    // Função para lidar com o fim do toque na tela
     function handleTouchEnd(event) {
       event.preventDefault();
       leftPressed = false;
@@ -502,6 +503,7 @@
       downPressed = false;
     }
 
+    // Adiciona event listeners para toque na tela
     canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
