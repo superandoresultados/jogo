@@ -352,148 +352,215 @@
         // Desenha um botão para reiniciar o jogo
         const restartButton = document.querySelector('.restart-button');
         restartButton.style.display = 'block';
-        restartButton.textContent = 'Jogar Novamente';
-        restartButton.onclick = restartGame;
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        const winMessage = 'Parabéns, você venceu!';
-        const messageWidth = ctx.measureText(winMessage).width;
-        const messageX = (canvas.width - messageWidth) / 2; // Centraliza o texto na tela
-        ctx.fillText(winMessage, messageX, canvas.height / 2 - 100);
       }
-    }
-
-    function restartGame() {
-      location.reload(); // Recarrega a página para reiniciar o jogo
-    }
-
-    function drawExplosion(x, y) {
-      ctx.beginPath();
-      ctx.arc(x, y, 50, 0, Math.PI * 2);
-      ctx.fillStyle = 'orange';
-      ctx.fill();
-      ctx.closePath();
     }
 
     function getMeteorScore(color) {
-      switch (color) {
-        case 'yellow':
-          return 10;
-        case 'green':
-          return 20;
-        case 'red':
-          return 30;
-        case 'blue':
-          return 40;
-        case 'purple':
-          return 50;
-        default:
-          return 0;
+      if (color === 'yellow') {
+        return 10;
+      } else if (color === 'green') {
+        return 20;
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
       }
     }
 
-    function randomIntFromRange(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
+    function drawExplosion(x, y) {
+      const explosionRadius = 50;
+      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      ctx.fillStyle = explosionGradient;
+      ctx.beginPath();
+      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    function spawnMeteor() {
-      const x = randomIntFromRange(0, canvas.width - 100);
-      const colorIndex = randomIntFromRange(0, 4);
-      const colors = Object.keys(meteorImages);
-      const color = colors[colorIndex];
-      const width = getColorMeteorWidth(color);
-      const height = getColorMeteorHeight(color);
-      const meteor = {
-        x: x,
-        y: -height,
-        color: color,
-        width: width,
-        height: height
-      };
-      meteors.push(meteor);
-    }
-
-    function getColorMeteorWidth(color) {
-      switch (color) {
-        case 'yellow':
-          return yellowMeteorWidth;
-        case 'green':
-          return greenMeteorWidth;
-        case 'red':
-          return redMeteorWidth;
-        case 'blue':
-          return blueMeteorWidth;
-        case 'purple':
-          return purpleMeteorWidth;
-        default:
-          return 0;
+    function createMeteor() {
+      let x, y, color, width, height;
+      if (phase === 1) {
+        // Fase 1: Apenas meteoros amarelos, verdes e vermelhos
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        }
+      } else if (phase === 2) {
+        // Fase 2: Além dos meteoros da fase 1, também adiciona meteoros azuis
+        x = Math.random() * (canvas.width - blueMeteorWidth);
+        y = -blueMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        }
+      } else if (phase === 3) {
+        // Fase 3: Além dos meteoros das fases anteriores, também adiciona meteoros roxos
+        x = Math.random() * (canvas.width - purpleMeteorWidth);
+        y = -purpleMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
       }
+      meteors.push({ x, y, color, width, height });
     }
 
-    function getColorMeteorHeight(color) {
-      switch (color) {
-        case 'yellow':
-          return yellowMeteorHeight;
-        case 'green':
-          return greenMeteorHeight;
-        case 'red':
-          return redMeteorHeight;
-        case 'blue':
-          return blueMeteorHeight;
-        case 'purple':
-          return purpleMeteorHeight;
-        default:
-          return 0;
-      }
-    }
+    setInterval(createMeteor, 1000);
 
-    function startSpawningMeteors() {
-      setInterval(spawnMeteor, 2000); // Altera a velocidade de spawn aqui
-    }
+    draw();
 
-    function keyDownHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      // Determina a direção do movimento baseada no toque
+      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
         leftPressed = true;
-      }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        leftPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+        leftPressed = true;
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
         rightPressed = true;
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0;
+      shootSound.play();
+    }
+
+    // Função para lidar com o fim do toque na tela
+    function handleTouchEnd(event) {
+      event.preventDefault();
+      leftPressed = false;
+      rightPressed = false;
+      upPressed = false;
+      downPressed = false;
+    }
+
+    // Adiciona event listeners para toque na tela
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = true;
       }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = true;
       }
-      // Aqui está a lógica para atirar com a tecla de espaço
-      if (event.key === ' ' && !isPaused) {
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som de tiro
-        const bullet = {
-          x: shipX + shipSize / 2 - bulletWidth / 2,
-          y: shipY - bulletHeight
-        };
-        bullets.push(bullet);
-      }
-    }
+    });
 
-    function keyUpHandler(event) {
-      if (event.key === 'ArrowLeft' || event.key === 'Left') {
+    document.addEventListener('keyup', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = false;
       }
-      if (event.key === 'ArrowRight' || event.key === 'Right') {
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
         rightPressed = false;
       }
-      if (event.key === 'ArrowUp' || event.key === 'Up') {
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
         upPressed = false;
       }
-      if (event.key === 'ArrowDown' || event.key === 'Down') {
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
         downPressed = false;
       }
-    }
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
+      }
+    });
 
-    startSpawningMeteors();
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
+      }
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
+    });
+
+    function restartGame() {
+      // Reinicia as variáveis do jogo
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      bullets = [];
+      meteors = [];
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+    }
   </script>
 </body>
 </html>
