@@ -107,13 +107,13 @@
     backgroundImage.src = 'space.png';
 
     let bgY = 0;
-    let isPaused = false;
+    let isPaused = false; // Variável para controlar o estado de pausa
 
     function drawBackground() {
       bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-      bgY += 1;
+      bgY += 1; // Ajuste a velocidade aqui
       if (bgY >= backgroundCanvas.height) {
         bgY = 0;
       }
@@ -133,7 +133,7 @@
     let shipImg = new Image();
     shipImg.src = 'nave.png';
 
-    const shipSize = 75;
+    const shipSize = 75; // Aumento de 50% no tamanho da nave
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
@@ -157,112 +157,151 @@
 
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 40;
-    const greenMeteorHeight = 40;
-    const redMeteorWidth = 50;
-    const redMeteorHeight = 50;
-    const blueMeteorWidth = 60;
-    const blueMeteorHeight = 60;
-    const purpleMeteorWidth = 70;
-    const purpleMeteorHeight = 70;
+    const greenMeteorWidth = 45;
+    const greenMeteorHeight = 45;
+    const redMeteorWidth = 60;
+    const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
     const meteorSpeed = 2;
-    const meteorSpawnRate = 50; // Probabilidade de um meteoro aparecer (quanto menor, mais frequente)
+    let meteors = [];
 
     let score = 0;
+    let phase = 1;
+    let phaseMessage = '';
+    let phaseStartTime = 0;
+    let gameEnded = false;
+    let lives = 3; // Vidas iniciais
 
-    function drawShip() {
-      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
-    }
-
-    function drawBullets() {
-      bullets.forEach((bullet, index) => {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-        bullet.y -= bulletSpeed;
-
-        // Remove o tiro se ele sair do canvas
-        if (bullet.y < 0) {
-          bullets.splice(index, 1);
-        }
-      });
-    }
-
-    function drawMeteors() {
-      for (let i = 0; i < meteors.length; i++) {
-        ctx.drawImage(meteors[i].img, meteors[i].x, meteors[i].y, meteors[i].width, meteors[i].height);
-        meteors[i].y += meteorSpeed;
-
-        // Detecta colisão entre o meteoro e a nave
-        if (
-          shipX < meteors[i].x + meteors[i].width &&
-          shipX + shipSize > meteors[i].x &&
-          shipY < meteors[i].y + meteors[i].height &&
-          shipY + shipSize > meteors[i].y
-        ) {
-          gameOver();
-        }
-
-        // Remove o meteoro se ele sair do canvas
-        if (meteors[i].y > canvas.height) {
-          meteors.splice(i, 1);
-          i--;
-        }
-      }
-    }
+    let shootSound = new Audio('shoot.wav');
+    let explosionSound = new Audio('explosion.wav');
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawShip();
-      drawBullets();
-      drawMeteors();
-      drawScore();
+
+      // Desenha a nave
+      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
+
+      // Desenha os tiros
+      bullets.forEach(bullet => {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+      });
+
+      // Desenha os meteoros
+      meteors.forEach(meteor => {
+        ctx.drawImage(meteor.image, meteor.x, meteor.y, meteor.width, meteor.height);
+      });
+
+      // Desenha o painel de pontuação
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Arial';
+      ctx.fillText('Pontuação: ' + score, 20, 30);
+      ctx.fillText('Fase: ' + phase, 20, 60);
+      ctx.fillText('Vidas: ' + lives, 20, 90);
+
+      // Se o jogo não estiver pausado, continua desenhando
       if (!isPaused) {
         requestAnimationFrame(draw);
       }
     }
 
-    // Função para adicionar event listeners da tecla de espaço
-    function addSpaceKeyListeners() {
-      document.addEventListener('keydown', spaceKeyDown);
-      document.addEventListener('keyup', spaceKeyUp);
-    }
-
-    // Função para remover event listeners da tecla de espaço
-    function removeSpaceKeyListeners() {
-      document.removeEventListener('keydown', spaceKeyDown);
-      document.removeEventListener('keyup', spaceKeyUp);
-    }
-
-    // Função para controlar a tecla de espaço pressionada
-    function spaceKeyDown(e) {
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        togglePausePlay();
-      }
-    }
-
-    // Função para controlar a tecla de espaço solta
-    function spaceKeyUp(e) {
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        togglePausePlay();
-      }
-    }
-
-    // Função para alternar entre pausado e não pausado
     function togglePausePlay() {
       isPaused = !isPaused;
       const pausePlayButton = document.querySelector('.pause-play-button');
       pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
       if (!isPaused) {
         draw();
-        addSpaceKeyListeners(); // Adiciona os event listeners da tecla de espaço quando o jogo é despausado
-      } else {
-        removeSpaceKeyListeners(); // Remove os event listeners da tecla de espaço quando o jogo é pausado
       }
     }
 
-    // Event listener para o botão "Pause" e "Play"
-    const pausePlayButton = document.querySelector('.pause-play-button');
-    pausePlayButton.addEventListener('click', togglePausePlay);
+    function spaceKeyDown(e) {
+      if ((e.key === ' ' || e.key === 'Spacebar') && !isPaused) {
+        shoot();
+      }
+    }
+
+    function spaceKeyUp(e) {
+      // Você pode adicionar lógica adicional aqui, se necessário
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function (e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = false;
+      } else if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = false;
+      } else if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = false;
+      } else if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = false;
+      }
+    });
+
+    function shoot() {
+      bullets.push({
+        x: shipX + shipSize / 2 - bulletWidth / 2,
+        y: shipY,
+        width: bulletWidth,
+        height: bulletHeight
+      });
+      shootSound.currentTime = 0;
+      shootSound.play();
+    }
+
+    function restartGame() {
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      bullets = [];
+      meteors = [];
+      isPaused = false;
+      document.querySelector('.restart-button').style.display = 'none';
+      startPhase();
+    }
+
+    function startPhase() {
+      // Lógica para iniciar a próxima fase
+    }
+
+    // Carregar imagens de meteoros
+    Object.keys(meteorImages).forEach(color => {
+      const img = new Image();
+      img.src = meteorImages[color];
+      img.onload = () => {
+        meteors.push({
+          image: img,
+          x: Math.random() * (canvas.width - img.width),
+          y: -img.height,
+          width: img.width,
+          height: img.height,
+          color
+        });
+      };
+    });
+
+    // Inicia o jogo
+    startPhase();
+
+    // Adiciona event listeners para controlar a tecla de espaço
+    document.addEventListener('keydown', spaceKeyDown);
+    document.addEventListener('keyup', spaceKeyUp);
 
 
 
