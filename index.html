@@ -497,69 +497,46 @@
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      if (e.key === 'ArrowLeft') {
         leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      } else if (e.key === 'ArrowRight') {
         rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      } else if (e.key === 'ArrowUp') {
         upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      } else if (e.key === 'ArrowDown') {
         downPressed = true;
+      } else if (e.key === ' ') {
+        // Espaço agora não faz pausa, então essa parte foi removida
+        // bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        // shootSound.currentTime = 0;
+        // shootSound.play();
       }
     });
 
     document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      if (e.key === 'ArrowLeft') {
         leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
+      } else if (e.key === 'ArrowRight') {
         rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
+      } else if (e.key === 'ArrowUp') {
         upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
+      } else if (e.key === 'ArrowDown') {
         downPressed = false;
       }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
     });
 
     function restartGame() {
-      // Reinicia as variáveis do jogo
+      // Reinicia todas as variáveis para seus valores iniciais
+      bullets = [];
+      meteors = [];
       score = 0;
       phase = 1;
       phaseMessage = '';
       phaseStartTime = 0;
       gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
+      lives = 3; // Reinicia o número de vidas
       const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
+      restartButton.style.display = 'none'; // Esconde o botão de reiniciar
     }
   </script>
 </body>
