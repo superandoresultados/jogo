@@ -96,8 +96,6 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <button class="pause-play-button" onclick="togglePausePlay('click')">Pause</button>
-
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -109,13 +107,13 @@
     backgroundImage.src = 'space.png';
 
     let bgY = 0;
-    let isPaused = false; // Variável para controlar o estado de pausa
+    let isPaused = false;
 
     function drawBackground() {
       bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-      bgY += 1; // Ajuste a velocidade aqui
+      bgY += 1;
       if (bgY >= backgroundCanvas.height) {
         bgY = 0;
       }
@@ -135,7 +133,7 @@
     let shipImg = new Image();
     shipImg.src = 'nave.png';
 
-    const shipSize = 75; // Aumento de 50% no tamanho da nave
+    const shipSize = 75;
     const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
     let shipY = canvas.height - shipSize - 10;
@@ -159,72 +157,112 @@
 
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 45;
-    const greenMeteorHeight = 45;
-    const redMeteorWidth = 60;
-    const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 50;
-    const purpleMeteorHeight = 50;
+    const greenMeteorWidth = 40;
+    const greenMeteorHeight = 40;
+    const redMeteorWidth = 50;
+    const redMeteorHeight = 50;
+    const blueMeteorWidth = 60;
+    const blueMeteorHeight = 60;
+    const purpleMeteorWidth = 70;
+    const purpleMeteorHeight = 70;
     const meteorSpeed = 2;
-    let meteors = [];
+    const meteorSpawnRate = 50; // Probabilidade de um meteoro aparecer (quanto menor, mais frequente)
 
     let score = 0;
-    let phase = 1;
-    let phaseMessage = '';
-    let phaseStartTime = 0;
-    let gameEnded = false;
-    let lives = 3; // Vidas iniciais
 
-    let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav');
-    let completeSound = new Audio('complete.wav');
+    function drawShip() {
+      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
+    }
+
+    function drawBullets() {
+      bullets.forEach((bullet, index) => {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+        bullet.y -= bulletSpeed;
+
+        // Remove o tiro se ele sair do canvas
+        if (bullet.y < 0) {
+          bullets.splice(index, 1);
+        }
+      });
+    }
+
+    function drawMeteors() {
+      for (let i = 0; i < meteors.length; i++) {
+        ctx.drawImage(meteors[i].img, meteors[i].x, meteors[i].y, meteors[i].width, meteors[i].height);
+        meteors[i].y += meteorSpeed;
+
+        // Detecta colisão entre o meteoro e a nave
+        if (
+          shipX < meteors[i].x + meteors[i].width &&
+          shipX + shipSize > meteors[i].x &&
+          shipY < meteors[i].y + meteors[i].height &&
+          shipY + shipSize > meteors[i].y
+        ) {
+          gameOver();
+        }
+
+        // Remove o meteoro se ele sair do canvas
+        if (meteors[i].y > canvas.height) {
+          meteors.splice(i, 1);
+          i--;
+        }
+      }
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
+      drawShip();
+      drawBullets();
+      drawMeteors();
+      drawScore();
       if (!isPaused) {
         requestAnimationFrame(draw);
       }
     }
 
-    function drawBackground() {
-  bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-  bgY += 1; // Ajuste a velocidade aqui
-  if (bgY >= backgroundCanvas.height) {
-    bgY = 0;
-  }
-  requestAnimationFrame(drawBackground);
-}
+    // Função para adicionar event listeners da tecla de espaço
+    function addSpaceKeyListeners() {
+      document.addEventListener('keydown', spaceKeyDown);
+      document.addEventListener('keyup', spaceKeyUp);
+    }
 
+    // Função para remover event listeners da tecla de espaço
+    function removeSpaceKeyListeners() {
+      document.removeEventListener('keydown', spaceKeyDown);
+      document.removeEventListener('keyup', spaceKeyUp);
+    }
+
+    // Função para controlar a tecla de espaço pressionada
+    function spaceKeyDown(e) {
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        togglePausePlay();
+      }
+    }
+
+    // Função para controlar a tecla de espaço solta
+    function spaceKeyUp(e) {
+      if (e.key === ' ' || e.key === 'Spacebar') {
+        togglePausePlay();
+      }
+    }
+
+    // Função para alternar entre pausado e não pausado
     function togglePausePlay() {
-  isPaused = !isPaused; // Alternar entre pausado e não pausado
-  const pausePlayButton = document.querySelector('.pause-play-button');
-  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-  if (!isPaused) {
-    draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
-  }
-}
+      isPaused = !isPaused;
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
+      if (!isPaused) {
+        draw();
+        addSpaceKeyListeners(); // Adiciona os event listeners da tecla de espaço quando o jogo é despausado
+      } else {
+        removeSpaceKeyListeners(); // Remove os event listeners da tecla de espaço quando o jogo é pausado
+      }
+    }
+
+    // Event listener para o botão "Pause" e "Play"
+    const pausePlayButton = document.querySelector('.pause-play-button');
+    pausePlayButton.addEventListener('click', togglePausePlay);
 
 
 
