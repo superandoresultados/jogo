@@ -512,24 +512,30 @@
     });
 
     document.addEventListener('keyup', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = false;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = false;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = false;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = false;
-      }
-      if (e.key === ' ' || e.key === 'Spacebar') {
-        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        shootSound.play(); // Toca o som do tiro
-      }
-    });
+  if (!isPaused) { // Verifica se o jogo não está pausado
+    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      leftPressed = false;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'Right') {
+      rightPressed = false;
+    }
+    if (e.key === 'ArrowUp' || e.key === 'Up') {
+      upPressed = false;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'Down') {
+      downPressed = false;
+    }
+    if (e.key === ' ' || e.key === 'Spacebar') {
+      // Adiciona um novo tiro à lista de balas
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      // Reinicia o áudio para evitar intervalos
+      shootSound.currentTime = 0;
+      // Toca o som do tiro
+      shootSound.play();
+    }
+  }
+});
+
 
     canvas.addEventListener('click', function(event) {
       const clickX = event.clientX;
