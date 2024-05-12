@@ -179,29 +179,41 @@
     let explosionSound = new Audio('bum.wav');
     let completeSound = new Audio('complete.wav');
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
+   // Defina a pontuação inicial
+let score = 0;
+
+// Chame drawScore uma vez no início do jogo
+drawScore();
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+  }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
+}
+
+// Função para desenhar a pontuação
+function drawScore() {
+  const scorePanel = document.getElementById('scorePanel');
+  scorePanel.textContent = `Score: ${score}`;
+}
     }
 
     function togglePausePlay() {
