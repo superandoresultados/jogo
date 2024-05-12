@@ -297,35 +297,35 @@
     }
 
     function checkPhase() {
-  if (score >= 1000 && phase === 1) {
-    phase = 2;
-    phaseMessage = 'Fase 2';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
+  const phases = [
+    { score: 1000, message: 'Fase 2' },
+    { score: 2000, message: 'Fase 3' },
+    { score: 5000, message: 'Venceu' },
+    { score: 10000, message: 'Fase 5' },
+    { score: 20000, message: 'Fase 6' },
+    { score: 40000, message: 'Fase 7' },
+    // Adicione mais fases conforme necessário
+  ];
+
+  for (let i = 0; i < phases.length; i++) {
+    if (score >= phases[i].score && phase === i + 1) {
+      phase = i + 2;
+      phaseMessage = phases[i].message;
+      phaseStartTime = Date.now();
+      increaseLife(); // Aumenta uma vida ao passar de fase
+      if (phaseMessage.startsWith('Fase')) {
+        completeSound.currentTime = 0;
+        completeSound.play();
+      }
+    }
   }
-  if (score >= 2000 && phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
+  
+  // Verifica se a pontuação atual ultrapassa a pontuação da última fase definida
+  if (score >= phases[phases.length - 1].score) {
+    const nextPhaseScore = phases[phases.length - 1].score * 2; // Pontuação necessária para a próxima fase
+    const nextPhaseMessage = 'Fase ' + (phases.length + 1); // Mensagem para a próxima fase
+    phases.push({ score: nextPhaseScore, message: nextPhaseMessage }); // Adiciona a próxima fase à lista
   }
-  if (score >= 5000 && phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-  }
-  if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-  }
-  // Adicione outras condições para as próximas fases aqui
 }
 
 function playCompleteSound() {
