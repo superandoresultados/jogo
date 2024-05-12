@@ -96,6 +96,7 @@
   border-radius: 50%; /* Para criar uma forma de círculo */
   z-index: 1; /* Garante que os coletáveis especiais apareçam acima dos outros elementos */
 }
+    
   </style>
 </head>
 <body>
@@ -634,6 +635,18 @@ function drawSpecialCollectible() {
   specialCollectible.style.left = randomX + 'px';
   specialCollectible.style.top = randomY + 'px';
   
+  // Função para desenhar os coletáveis especiais na tela
+function drawSpecialCollectible() {
+  const specialCollectible = document.createElement('div');
+  specialCollectible.classList.add('special-collectible');
+  
+  // Definir posição aleatória dos coletáveis especiais
+  const randomX = Math.random() * (canvas.width - 40); // Subtrai 40 para evitar que os coletáveis especiais saiam da tela
+  const randomY = Math.random() * (canvas.height - 40); // Subtrai 40 para evitar que os coletáveis especiais saiam da tela
+  
+  specialCollectible.style.left = randomX + 'px';
+  specialCollectible.style.top = randomY + 'px';
+  
   // Adicionar coletável especial à tela
   document.body.appendChild(specialCollectible);
 }
@@ -661,7 +674,7 @@ function checkSpecialCollectibleCollision() {
       shipRect.y < collectibleRect.y + collectibleRect.height &&
       shipRect.y + shipRect.height > collectibleRect.y
     ) {
-      collectLifeSound(); // Executar a função quando o jogador coletar um coletável especial
+      handleSpecialCollectible(); // Executar a função quando o jogador coletar um coletável especial
       collectible.remove(); // Remover o coletável especial da tela
     }
   });
@@ -671,7 +684,8 @@ function checkSpecialCollectibleCollision() {
 function handleSpecialCollectible() {
   addLife(); // Adicionar uma vida ao jogador
 }
-Esses códigos lidam com a criação, movimento, colisão e ação dos coletáveis especiais no jogo. Você pode ajustar os estilos CSS e a lógica JavaScript conforme necessário para atender aos requisitos do seu jogo.
+  
+
 
   </script>
 </body>
