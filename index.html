@@ -780,29 +780,28 @@ function playCompleteSound() {
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
-    }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+  }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
+}
 
     function togglePausePlay() {
       isPaused = !isPaused; // Alternar entre pausado e não pausado
