@@ -130,90 +130,7 @@
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let shipImg = new Image();
-    shipImg.src = 'nave.png';
-
-    const shipSize = 75; // Aumento de 50% no tamanho da nave
-    const shipSpeed = 5;
-    let shipX = (canvas.width - shipSize) / 2;
-    let shipY = canvas.height - shipSize - 10;
-    let leftPressed = false;
-    let rightPressed = false;
-    let upPressed = false;
-    let downPressed = false;
-
-    const bulletWidth = 5;
-    const bulletHeight = 15;
-    const bulletSpeed = 5;
-    let bullets = [];
-
-    const meteorImages = {
-      yellow: 'rock1.png',
-      green: 'rock2.png',
-      red: 'rock3.png',
-      blue: 'rock4.png',
-      purple: 'rock5.png'
-    };
-
-    const yellowMeteorWidth = 30;
-    const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 45;
-    const greenMeteorHeight = 45;
-    const redMeteorWidth = 60;
-    const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 50;
-    const purpleMeteorHeight = 50;
-    const meteorSpeed = 2;
-    let meteors = [];
-
-    let score = 0;
-    let phase = 1;
-    let phaseMessage = '';
-    let phaseStartTime = 0;
-    let gameEnded = false;
-    let lives = 3; // Vidas iniciais
-
-    let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav');
-    let completeSound = new Audio('complete.wav');
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
-    }
-
-	function drawBackground() {
-  bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-  bgY += 1; // Ajuste a velocidade aqui
-  if (bgY >= backgroundCanvas.height) {
-    bgY = 0;
-  }
-  requestAnimationFrame(drawBackground);
-}
+    // Definindo variáveis globais e configurando o canvas...
 
     function togglePausePlay() {
       isPaused = !isPaused; // Alternar entre pausado e não pausado
@@ -221,6 +138,14 @@
       pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
       if (!isPaused) {
         draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+      }
+    }
+
+    function shoot() {
+      if (!isPaused) {
+        bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+        shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        shootSound.play(); // Toca o som do tiro
       }
     }
 
