@@ -87,30 +87,6 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
-
-   /* Adicione os estilos para o coletável especial */
-    .special-collectible {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background-image: url('supply.png');
-      background-size: cover;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s ease-in-out;
-    }
-
-    .special-collectible:hover {
-      transform: scale(1.1);
-    }
-
-    .special-collectible:active {
-      transform: scale(0.9);
-    }
-
   </style>
 </head>
 <body>
@@ -120,7 +96,6 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <div id="specialCollectiblesContainer"></div>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -625,81 +600,6 @@ function playCompleteSound() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
-
-    const supplyBoxImage = new Image();
-supplyBoxImage.src = 'supply_box.png'; // Substitua 'supply_box.png' pelo caminho da imagem da caixa de suprimentos
-
-const supplyBoxWidth = 50;
-const supplyBoxHeight = 50;
-const supplyBoxSpeed = 2;
-let supplyBoxes = [];
-
-function drawSupplyBoxes() {
-  supplyBoxes.forEach(supplyBox => {
-    ctx.drawImage(supplyBoxImage, supplyBox.x, supplyBox.y, supplyBoxWidth, supplyBoxHeight);
-  });
-}
-
-function moveSupplyBoxes() {
-  supplyBoxes.forEach(supplyBox => {
-    supplyBox.y += supplyBoxSpeed;
-  });
-  supplyBoxes = supplyBoxes.filter(supplyBox => supplyBox.y < canvas.height);
-}
-
-function checkSupplyBoxCollision() {
-  supplyBoxes.forEach((supplyBox, index) => {
-    if (shipX < supplyBox.x + supplyBoxWidth &&
-        shipX + shipSize > supplyBox.x &&
-        shipY < supplyBox.y + supplyBoxHeight &&
-        shipY + shipSize > supplyBox.y) {
-      increaseLife(); // Aumenta uma vida ao coletar a caixa de suprimentos
-      supplyBoxes.splice(index, 1); // Remove a caixa de suprimentos coletada
-    }
-  });
-}
-
-function createSupplyBox() {
-  const x = Math.random() * (canvas.width - supplyBoxWidth);
-  const y = -supplyBoxHeight;
-  supplyBoxes.push({ x, y });
-}
-
-setInterval(createSupplyBox, 10000); // Gera uma nova caixa de suprimentos a cada 10 segundos
-
-function increaseLife() {
-  lives++; // Incrementa uma vida
-}
-
-function draw() {
-  // ... outros códigos de desenho
-
-  if (!isPaused) {
-    drawSupplyBoxes(); // Desenha as caixas de suprimentos
-    moveSupplyBoxes(); // Move as caixas de suprimentos
-    checkSupplyBoxCollision(); // Verifica a colisão com as caixas de suprimentos
-  }
-
-  // ... outros códigos de desenho
-}
-
-// Novo código para criar coletáveis especiais
-function createSpecialCollectible() {
-  const specialCollectible = document.createElement('div');
-  specialCollectible.classList.add('special-collectible');
-  specialCollectible.style.backgroundImage = "url('supply.png')";
-
-  const randomX = Math.random() * (canvas.width - 50);
-  const randomY = Math.random() * (canvas.height - 50);
-  specialCollectible.style.left = randomX + 'px';
-  specialCollectible.style.top = randomY + 'px';
-
-  const specialCollectiblesContainer = document.getElementById('specialCollectiblesContainer');
-  specialCollectiblesContainer.appendChild(specialCollectible);
-}
-
-setInterval(createSpecialCollectible, 10000);
-
   </script>
 </body>
 </html>
