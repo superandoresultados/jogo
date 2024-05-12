@@ -204,6 +204,17 @@
       }
     }
 
+    function drawBackground() {
+  bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+  bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
+  bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
+  bgY += 1; // Ajuste a velocidade aqui
+  if (bgY >= backgroundCanvas.height) {
+    bgY = 0;
+  }
+  requestAnimationFrame(drawBackground);
+}
+
     function togglePausePlay() {
       isPaused = !isPaused; // Alternar entre pausado e não pausado
       const pausePlayButton = document.querySelector('.pause-play-button');
