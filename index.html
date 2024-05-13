@@ -191,13 +191,6 @@ function updatePowerUp() {
   }
 }
 
-    function updateAndDrawPowerUp() {
-  updatePowerUp();
-  drawPowerUp();
-  checkPowerUpCollision();
-  updatePowerUpTimer(); // Certifique-se de chamar também a função para atualizar o temporizador do power-up
-}
-
     // Função para verificar a colisão entre o tiro da nave e o power-up
 function checkPowerUpCollision() {
   if (
@@ -227,6 +220,28 @@ function checkPowerUpCollision() {
     }
   }
 }
+
+    function gameLoop() {
+  // Atualizações de jogo
+  updatePlayer();
+  updateEnemies();
+  updateAndDrawPowerUp();
+  
+  // Renderização de jogo
+  clearCanvas();
+  drawPlayer();
+  drawEnemies();
+  drawPowerUp();
+  
+  // Outras lógicas do jogo
+  
+  // Repetição do loop
+  requestAnimationFrame(gameLoop);
+}
+
+// Inicialização do loop do jogo
+gameLoop();
+
 
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
