@@ -88,11 +88,14 @@
       background-color: #0fae4b;
     }
 
-    /* Estilo para a imagem dos coletáveis especiais */
-    #supplyImg {
-      position: absolute;
-      z-index: 1; /* Para garantir que os coletáveis fiquem acima do fundo */
-    }
+    .supply {
+  background-image: url('supply.png'); /* Imagem da cápsula de resgate */
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 1; /* Coloca os coletáveis acima dos outros elementos do jogo */
+}
 
   </style>
 </head>
@@ -105,6 +108,71 @@
   <audio id="completeSound" src="complete.wav"></audio>
   <img id="supplyImg" src="supply.png" style="display: none;">
   <script>
+    
+    // Variáveis para os coletáveis especiais
+let supplies = [];
+let lastSupplyDropTime = 0;
+
+// Função para criar um novo coletável especial
+function createSupply() {
+  const supplyWidth = 30;
+  const supplyHeight = 30;
+  const supplyX = Math.random() * (canvas.width - supplyWidth);
+  const supplyY = 0 - supplyHeight; // Começa acima do canvas
+  supplies.push({ x: supplyX, y: supplyY, width: supplyWidth, height: supplyHeight });
+}
+
+// Função para desenhar os coletáveis especiais
+function drawSupplies() {
+  ctx.fillStyle = 'gold';
+  supplies.forEach(supply => {
+    ctx.fillRect(supply.x, supply.y, supply.width, supply.height);
+  });
+}
+
+// Função para mover os coletáveis especiais
+function moveSupplies() {
+  supplies.forEach(supply => {
+    supply.y += 1; // Velocidade de descida
+  });
+  supplies = supplies.filter(supply => supply.y < canvas.height); // Remove os coletáveis quando chegam ao final do canvas
+}
+
+// Função para verificar a colisão da nave com os coletáveis especiais
+function checkSupplyCollision() {
+  supplies.forEach((supply, index) => {
+    if (
+      shipX < supply.x + supply.width &&
+      shipX + shipSize > supply.x &&
+      shipY < supply.y + supply.height &&
+      shipY + shipSize > supply.y
+    ) {
+      increaseLife(); // Aumenta uma vida ao jogador
+      supplies.splice(index, 1); // Remove o coletável após ser coletado
+    }
+  });
+}
+
+// Função para atualizar o jogo
+function update() {
+  // Se passou 1 minuto desde o último coletável especial, cria um novo
+  if (Date.now() - lastSupplyDropTime > 60000) {
+    createSupply();
+    lastSupplyDropTime = Date.now();
+  }
+
+  // Move e desenha os coletáveis especiais
+  moveSupplies();
+  drawSupplies();
+
+  // Verifica colisão com os coletáveis especiais
+  checkSupplyCollision();
+
+  // Restante do código de atualização do jogo...
+}
+
+// Restante do seu código JavaScript para o jogo...
+    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
   const bgCtx = backgroundCanvas.getContext('2d');
 
