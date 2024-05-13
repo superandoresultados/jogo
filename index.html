@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,13 +88,6 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
-
-    .supply {
-  position: absolute;
-  top: 100px; /* Defina a posição vertical desejada */
-  left: 100px; /* Defina a posição horizontal desejada */
-  /* Adicione outros estilos conforme necessário */
-}
   </style>
 </head>
 <body>
@@ -103,80 +97,7 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <img src="supply.png" class="supply" alt="Supply Object">
   <script>
-
-   class Supply {
-  constructor() {
-    this.width = 50;
-    this.height = 50;
-    this.x = Math.random() * (canvas.width - this.width);
-    this.y = -this.height;
-    this.image = new Image();
-    this.image.src = 'supply.png';
-  }
-
-  draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-  }
-
-  move() {
-    this.y += 1;
-  }
-
-  checkCollisionWithBullets() {
-    bullets.forEach((bullet, index) => {
-      if (
-        bullet.x < this.x + this.width &&
-        bullet.x + bulletWidth > this.x &&
-        bullet.y < this.y + this.height &&
-        bullet.y + bulletHeight > this.y
-      ) {
-        bullets.splice(index, 1);
-      }
-    });
-  }
-
-  checkBottom() {
-    if (this.y + this.height >= canvas.height) {
-      this.reset();
-    }
-  }
-
-  reset() {
-    this.x = Math.random() * (canvas.width - this.width);
-    this.y = -this.height;
-  }
-}
-
-const supply = new Supply();
-
-function drawSupply() {
-  supply.draw();
-}
-
-function moveSupply() {
-  supply.move();
-}
-
-function checkSupplyCollision() {
-  supply.checkCollisionWithBullets();
-}
-
-function checkSupplyBottom() {
-  supply.checkBottom();
-}
-
-function resetSupply() {
-  supply.reset();
-}
-
-setInterval(createSupply, 60000); // Cria um novo objeto Supply a cada 1 minuto
-
-function createSupply() {
-  resetSupply();
-}
-    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
 
