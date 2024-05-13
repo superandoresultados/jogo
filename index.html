@@ -246,16 +246,16 @@ gameLoop();
     canvas.height = window.innerHeight;
 
     let shipImg = new Image();
-    shipImg.src = 'nave.png';
+shipImg.src = 'nave.png';
 
-    const shipSize = 75; // Aumento de 50% no tamanho da nave
-    const shipSpeed = 5;
-    let shipX = (canvas.width - shipSize) / 2;
-    let shipY = canvas.height - shipSize - 10;
-    let leftPressed = false;
-    let rightPressed = false;
-    let upPressed = false;
-    let downPressed = false;
+const shipSize = 75; // Aumento de 50% no tamanho da nave
+const shipSpeed = 5;
+let shipX = (canvas.width - shipSize) / 2;
+let shipY = canvas.height - shipSize - 10;
+let leftPressed = false;
+let rightPressed = false;
+let upPressed = false;
+let downPressed = false;
 
     const bulletWidth = 5;
     const bulletHeight = 15;
