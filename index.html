@@ -87,16 +87,6 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
-
-    .supply {
-  background-image: url('supply.png'); /* Imagem da cápsula de resgate */
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  z-index: 1; /* Coloca os coletáveis acima dos outros elementos do jogo */
-}
-
   </style>
 </head>
 <body>
@@ -106,672 +96,510 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <img id="supplyImg" src="supply.png" style="display: none;">
   <script>
-    
-    // Variáveis para os coletáveis especiais
-let supplies = [];
-let lastSupplyDropTime = 0;
-
-// Função para criar um novo coletável especial
-function createSupply() {
-  const supplyWidth = 30;
-  const supplyHeight = 30;
-  const supplyX = Math.random() * (canvas.width - supplyWidth);
-  const supplyY = 0 - supplyHeight; // Começa acima do canvas
-  supplies.push({ x: supplyX, y: supplyY, width: supplyWidth, height: supplyHeight });
-}
-
-// Função para desenhar os coletáveis especiais
-function drawSupplies() {
-  ctx.fillStyle = 'gold';
-  supplies.forEach(supply => {
-    ctx.fillRect(supply.x, supply.y, supply.width, supply.height);
-  });
-}
-
-// Função para mover os coletáveis especiais
-function moveSupplies() {
-  supplies.forEach(supply => {
-    supply.y += 1; // Velocidade de descida
-  });
-  supplies = supplies.filter(supply => supply.y < canvas.height); // Remove os coletáveis quando chegam ao final do canvas
-}
-
-// Função para verificar a colisão da nave com os coletáveis especiais
-function checkSupplyCollision() {
-  supplies.forEach((supply, index) => {
-    if (
-      shipX < supply.x + supply.width &&
-      shipX + shipSize > supply.x &&
-      shipY < supply.y + supply.height &&
-      shipY + shipSize > supply.y
-    ) {
-      increaseLife(); // Aumenta uma vida ao jogador
-      supplies.splice(index, 1); // Remove o coletável após ser coletado
-    }
-  });
-}
-
-// Função para atualizar o jogo
-function update() {
-  // Se passou 1 minuto desde o último coletável especial, cria um novo
-  if (Date.now() - lastSupplyDropTime > 60000) {
-    createSupply();
-    lastSupplyDropTime = Date.now();
-  }
-
-  // Move e desenha os coletáveis especiais
-  moveSupplies();
-  drawSupplies();
-
-  // Verifica colisão com os coletáveis especiais
-  checkSupplyCollision();
-
-  // Restante do código de atualização do jogo...
-}
-
-// Restante do seu código JavaScript para o jogo...
-    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
-  const bgCtx = backgroundCanvas.getContext('2d');
+    const bgCtx = backgroundCanvas.getContext('2d');
 
-  backgroundCanvas.width = window.innerWidth;
-  backgroundCanvas.height = window.innerHeight;
+    backgroundCanvas.width = window.innerWidth;
+    backgroundCanvas.height = window.innerHeight;
 
-  const backgroundImage = new Image();
-  backgroundImage.src = 'space.png';
+    const backgroundImage = new Image();
+    backgroundImage.src = 'space.png';
 
-  let bgY = 0;
-  let isPaused = false; // Variável para controlar o estado de pausa
+    let bgY = 0;
+    let isPaused = false; // Variável para controlar o estado de pausa
 
-  function drawBackground() {
-    bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-    bgY += 1; // Ajuste a velocidade aqui
-    if (bgY >= backgroundCanvas.height) {
-      bgY = 0;
-    }
-    if (!isPaused) {
-      requestAnimationFrame(drawBackground);
-    }
-  }
-
-  backgroundImage.onload = drawBackground;
-
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let shipImg = new Image();
-  shipImg.src = 'nave.png';
-
-  // Restante do código permanece inalterado
-  // ...
-
-  // Função para desenhar os coletáveis especiais e movê-los
-  function drawSuppliesAndMove() {
-    drawSupplies(); // Desenha os coletáveis especiais
-    moveSupplies(); // Move os coletáveis especiais
-  }
-
-  supplyImg.onload = () => {
-    draw(); // Chama a função draw() após a imagem dos coletáveis especiais ser carregada
-  };
-
-  // Adicione a função drawSupplies à função draw para desenhar os coletáveis
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-      drawShip();
-      drawBullets();
-      drawMeteors();
-      drawScore();
-      drawPhaseMessage();
-      drawWinMessage();
-      drawSuppliesAndMove(); // Desenha e move os coletáveis especiais
-      moveShip();
-      moveBullets();
-      moveMeteors();
-      checkCollisions();
-      checkMeteorBottom();
-      checkPhase();
-    } else {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-    }
-    if (!isPaused) {
-      requestAnimationFrame(draw);
-    }
-  }
-
-  // Adicione a chamada para drawSuppliesAndMove à função draw para desenhar e mover os coletáveis
-  function draw() {
-    // ...
-    drawSuppliesAndMove(); // Desenha e move os coletáveis especiais
-    if (!isPaused) {
-      requestAnimationFrame(draw);
-    }
-  }
-
-  // Função para verificar a colisão da nave com os coletáveis
-  function checkSupplyCollision() {
-    supplies.forEach((supply, index) => {
-      if (
-        shipX < supply.x + 30 &&
-        shipX + shipSize > supply.x &&
-        shipY < supply.y + 30 &&
-        shipY + shipSize > supply.y
-      ) {
-        // Se houver colisão, conceda uma vida ao jogador
-        increaseLife();
-        // Remova o coletável da lista
-        supplies.splice(index, 1);
+    function drawBackground() {
+      bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+      bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
+      bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
+      bgY += 1; // Ajuste a velocidade aqui
+      if (bgY >= backgroundCanvas.height) {
+        bgY = 0;
       }
-    });
-  }
+      if (!isPaused) {
+        requestAnimationFrame(drawBackground);
+      }
+    }
 
-  // Adicione a chamada para checkSupplyCollision na função checkCollisions
-  function checkCollisions() {
-    // ...
-    bullets.forEach(bullet => {
+    backgroundImage.onload = drawBackground;
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let shipImg = new Image();
+    shipImg.src = 'nave.png';
+
+    const shipSize = 75; // Aumento de 50% no tamanho da nave
+    const shipSpeed = 5;
+    let shipX = (canvas.width - shipSize) / 2;
+    let shipY = canvas.height - shipSize - 10;
+    let leftPressed = false;
+    let rightPressed = false;
+    let upPressed = false;
+    let downPressed = false;
+
+    const bulletWidth = 5;
+    const bulletHeight = 15;
+    const bulletSpeed = 5;
+    let bullets = [];
+
+    const meteorImages = {
+      yellow: 'rock1.png',
+      green: 'rock2.png',
+      red: 'rock3.png',
+      blue: 'rock4.png',
+      purple: 'rock5.png'
+    };
+
+    const yellowMeteorWidth = 30;
+    const yellowMeteorHeight = 30;
+    const greenMeteorWidth = 45;
+    const greenMeteorHeight = 45;
+    const redMeteorWidth = 60;
+    const redMeteorHeight = 60;
+    const blueMeteorWidth = 40;
+    const blueMeteorHeight = 40;
+    const purpleMeteorWidth = 50;
+    const purpleMeteorHeight = 50;
+    const meteorSpeed = 2;
+    let meteors = [];
+
+    let score = 0;
+    let phase = 1;
+    let phaseMessage = '';
+    let phaseStartTime = 0;
+    let gameEnded = false;
+    let lives = 3; // Vidas iniciais
+
+    let shootSound = new Audio('shoot.wav');
+    let explosionSound = new Audio('bum.wav');
+    let completeSound = new Audio('complete.wav');
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+        drawShip();
+        drawBullets();
+        drawMeteors();
+        drawScore();
+        drawPhaseMessage();
+        drawWinMessage();
+        moveShip();
+        moveBullets();
+        moveMeteors();
+        checkCollisions();
+        checkMeteorBottom();
+        checkPhase();
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+      }
+      if (!isPaused) {
+        requestAnimationFrame(draw);
+      }
+    }
+
+    function togglePausePlay() {
+      isPaused = !isPaused; // Alternar entre pausado e não pausado
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+      if (!isPaused) {
+        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+      }
+    }
+
+    function drawShip() {
+      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
+    }
+
+    function drawBullets() {
+      ctx.fillStyle = 'red';
+      bullets.forEach(bullet => {
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+      });
+    }
+
+    function drawMeteors() {
+      meteors.forEach(meteor => {
+        const meteorImg = new Image();
+        meteorImg.src = meteorImages[meteor.color];
+        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
+      });
+    }
+
+    function drawScore() {
+      const scorePanel = document.getElementById('scorePanel');
+      scorePanel.textContent = `Score: ${score}`;
+    }
+
+    function moveShip() {
+      if (leftPressed && shipX > 0) {
+        shipX -= shipSpeed;
+      }
+      if (rightPressed && shipX < canvas.width - shipSize) {
+        shipX += shipSpeed;
+      }
+      if (upPressed && shipY > 0) {
+        shipY -= shipSpeed;
+      }
+      if (downPressed && shipY < canvas.height - shipSize) {
+        shipY += shipSpeed;
+      }
+    }
+
+    function moveBullets() {
+      bullets.forEach(bullet => {
+        bullet.y -= bulletSpeed;
+      });
+      bullets = bullets.filter(bullet => bullet.y > 0);
+    }
+
+    function moveMeteors() {
+      meteors.forEach(meteor => {
+        meteor.y += meteorSpeed;
+      });
+      meteors = meteors.filter(meteor => meteor.y < canvas.height);
+    }
+
+    function checkCollisions() {
+      bullets.forEach(bullet => {
+        meteors.forEach((meteor, meteorIndex) => {
+          if (bullet.x < meteor.x + meteor.width &&
+              bullet.x + bulletWidth > meteor.x &&
+              bullet.y < meteor.y + meteor.height &&
+              bullet.y + bulletHeight > meteor.y) {
+            bullets = bullets.filter(b => b !== bullet);
+            score += getMeteorScore(meteor.color);
+            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+            explosionSound.play(); // Toca o som da explosão
+            meteors.splice(meteorIndex, 1);
+          }
+        });
+      });
+    }
+
+    function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
-        if (bullet.x < meteor.x + meteor.width &&
-          bullet.x + bulletWidth > meteor.x &&
-          bullet.y < meteor.y + meteor.height &&
-          bullet.y + bulletHeight > meteor.y) {
-          bullets = bullets.filter(b => b !== bullet);
-          score += getMeteorScore(meteor.color);
+        if (meteor.y + meteor.height >= canvas.height) {
+          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
           drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
           explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
           explosionSound.play(); // Toca o som da explosão
           meteors.splice(meteorIndex, 1);
         }
       });
-    });
-    checkSupplyCollision(); // Verifica a colisão com os coletáveis especiais
-  }
-
-  // ...
-</script>
-Com estas alterações, seu jogo deve ser
-
-User
-Talvez seja melhor você escrever o código JS completo do jogo para eu substituir tudo. Pode ser?
-ChatGPT
-Claro, aqui está o código JavaScript completo para o seu jogo, incluindo a integração das funcionalidades dos coletáveis especiais:
-
-html
-Copy code
-<script>
-  // Funções e variáveis para o fundo do jogo
-
-  const backgroundCanvas = document.getElementById('backgroundCanvas');
-  const bgCtx = backgroundCanvas.getContext('2d');
-
-  backgroundCanvas.width = window.innerWidth;
-  backgroundCanvas.height = window.innerHeight;
-
-  const backgroundImage = new Image();
-  backgroundImage.src = 'space.png';
-
-  let bgY = 0;
-  let isPaused = false; // Variável para controlar o estado de pausa
-
-  function drawBackground() {
-    bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-    bgY += 1; // Ajuste a velocidade aqui
-    if (bgY >= backgroundCanvas.height) {
-      bgY = 0;
     }
-    if (!isPaused) {
-      requestAnimationFrame(drawBackground);
+
+    function checkPhase() {
+  if (score >= 1000 && phase === 1) {
+    phase = 2;
+    phaseMessage = 'Fase 2';
+    phaseStartTime = Date.now();
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+  }
+  if (score >= 2000 && phase === 2) {
+    phase = 3;
+    phaseMessage = 'Fase 3';
+    phaseStartTime = Date.now();
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+  }
+  if (score >= 5000 && phase === 3) {
+    phase = 4;
+    phaseMessage = 'Fase 4';
+    phaseStartTime = Date.now();
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+  }
+  if (score >= 10000 && phase === 4) {
+    phase = 5;
+    phaseMessage = 'Fase 5';
+    phaseStartTime = Date.now();
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+  }
+  // Adicione outras condições para as próximas fases aqui
+}
+
+function playCompleteSound() {
+  completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
+  completeSound.play(); // Toca a música de passagem de fase
+}
+
+    function increaseLife() {
+      lives++; // Incrementa uma vida
     }
-  }
 
-  backgroundImage.onload = drawBackground;
+    function drawPhaseMessage() {
+  ctx.fillStyle = 'white';
+  ctx.font = '48px Arial';
+  const messageWidth = ctx.measureText(phaseMessage).width;
+  const messageX = (canvas.width - messageWidth) / 2;
+  ctx.fillText(phaseMessage, messageX, canvas.height / 2);
 
-  // Funções e variáveis para a nave do jogador
-
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  let shipImg = new Image();
-  shipImg.src = 'nave.png';
-
-  const shipSize = 75; // Aumento de 50% no tamanho da nave
-  const shipSpeed = 5;
-  let shipX = (canvas.width - shipSize) / 2;
-  let shipY = canvas.height - shipSize - 10;
-  let leftPressed = false;
-  let rightPressed = false;
-  let upPressed = false;
-  let downPressed = false;
-
-  // Funções e variáveis para os tiros
-
-  const bulletWidth = 5;
-  const bulletHeight = 15;
-  const bulletSpeed = 5;
-  let bullets = [];
-
-  // Funções e variáveis para os meteoros
-
-  const meteorImages = {
-    yellow: 'rock1.png',
-    green: 'rock2.png',
-    red: 'rock3.png',
-    blue: 'rock4.png',
-    purple: 'rock5.png'
-  };
-
-  const yellowMeteorWidth = 30;
-  const yellowMeteorHeight = 30;
-  const greenMeteorWidth = 45;
-  const greenMeteorHeight = 45;
-  const redMeteorWidth = 60;
-  const redMeteorHeight = 60;
-  const blueMeteorWidth = 40;
-  const blueMeteorHeight = 40;
-  const purpleMeteorWidth = 50;
-  const purpleMeteorHeight = 50;
-  const meteorSpeed = 2;
-  let meteors = [];
-
-  // Funções e variáveis para o score e fases
-
-  let score = 0;
-  let phase = 1;
-  let phaseMessage = '';
-  let phaseStartTime = 0;
-  let gameEnded = false;
-  let lives = 3; // Vidas iniciais
-
-  // Funções e variáveis para os sons
-
-  let shootSound = new Audio('shoot.wav');
-  let explosionSound = new Audio('bum.wav');
-  let completeSound = new Audio('complete.wav');
-
-  // Função para desenhar a nave do jogador
-
-  function drawShip() {
-    ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
-  }
-
-  // Função para desenhar os tiros
-
-  function drawBullets() {
-    ctx.fillStyle = 'red';
-    bullets.forEach(bullet => {
-      ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-    });
-  }
-
-  // Função para desenhar os meteoros
-
-  function drawMeteors() {
-    meteors.forEach(meteor => {
-      const meteorImg = new Image();
-      meteorImg.src = meteorImages[meteor.color];
-      ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-    });
-  }
-
-  // Função para desenhar o score
-
-  function drawScore() {
-    const scorePanel = document.getElementById('scorePanel');
-    scorePanel.textContent = `Score: ${score}`;
-  }
-
-  // Função para mover a nave do jogador
-
-  function moveShip() {
-    if (leftPressed && shipX > 0) {
-      shipX -= shipSpeed;
-    }
-    if (rightPressed && shipX < canvas.width - shipSize) {
-      shipX += shipSpeed;
-    }
-    if (upPressed && shipY > 0) {
-      shipY -= shipSpeed;
-    }
-    if (downPressed && shipY < canvas.height - shipSize) {
-      shipY += shipSpeed;
-    }
-  }
-
-  // Função para mover os tiros
-
-  function moveBullets() {
-    bullets.forEach(bullet => {
-      bullet.y -= bulletSpeed;
-    });
-    bullets = bullets.filter(bullet => bullet.y > 0);
-  }
-
-  // Função para mover os meteoros
-
-  function moveMeteors() {
-    meteors.forEach(meteor => {
-      meteor.y += meteorSpeed;
-    });
-    meteors = meteors.filter(meteor => meteor.y < canvas.height);
-  }
-
-  // Função para desenhar uma mensagem de fase
-
-  function drawPhaseMessage() {
-    const phasePanel = document.getElementById('phasePanel');
-    phasePanel.textContent = phaseMessage;
-  }
-
-  // Função para desenhar uma mensagem de vitória
-
-  function drawWinMessage() {
-    if (gameEnded && meteors.length === 0) {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      ctx.fillText('Você venceu!', canvas.width / 2 - 150, canvas.height / 2);
-    }
-  }
-
-  // Função para desenhar uma explosão
-
-  function drawExplosion(x, y) {
-    ctx.fillStyle = 'orange';
-    ctx.beginPath();
-    ctx.arc(x, y, 30, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // Função para verificar a colisão entre tiros e meteoros
-
-  function checkCollisions() {
-    bullets.forEach(bullet => {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (bullet.x < meteor.x + meteor.width &&
-          bullet.x + bulletWidth > meteor.x &&
-          bullet.y < meteor.y + meteor.height &&
-          bullet.y + bulletHeight > meteor.y) {
-          bullets = bullets.filter(b => b !== bullet);
-          score += getMeteorScore(meteor.color);
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-          explosionSound.play(); // Toca o som da explosão
-          meteors.splice(meteorIndex, 1);
-        }
-      });
-    });
-  }
-
-  // Função para verificar se algum meteoro chegou ao fim da tela
-
-  function checkMeteorBottom() {
-    meteors.forEach((meteor, meteorIndex) => {
-      if (meteor.y + meteor.height > canvas.height) {
-        meteors.splice(meteorIndex, 1);
-        loseLife(); // Reduz uma vida ao jogador
-      }
-    });
-  }
-
-  // Função para verificar a fase atual do jogo
-
-  function checkPhase() {
-    if (phaseMessage !== '') {
-      const currentTime = new Date().getTime();
-      if (currentTime - phaseStartTime >= 3000) { // Tempo da mensagem da fase
-        phaseMessage = '';
-      }
+  if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
+    // Contagem regressiva de 3 segundos para a próxima fase
+    const elapsedTime = Date.now() - phaseStartTime;
+    const countdown = 3 - Math.floor(elapsedTime / 1000);
+    if (countdown > 0) {
+      drawCountdown(countdown);
     } else {
-      if (meteors.length === 0) {
-        phase++;
-        startPhase();
+      phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+    }
+  }
+}
+
+    function drawCountdown(countdown) {
+      ctx.fillStyle = 'white';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
+    }
+
+    function drawWinMessage() {
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Desenha um botão para reiniciar o jogo
+        const restartButton = document.querySelector('.restart-button');
+        restartButton.style.display = 'block';
       }
     }
-  }
 
-  // Função para iniciar uma nova fase
-
-  function startPhase() {
-    phaseMessage = `Fase ${phase}`;
-    phaseStartTime = new Date().getTime();
-    generateMeteors(phase);
-    completeSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-    completeSound.play(); // Toca o som de conclusão da fase
-  }
-
-  // Função para gerar meteoros com base na fase atual
-
-  function generateMeteors(phase) {
-    const numMeteors = 5 + phase * 2; // Aumenta o número de meteoros com a fase
-    for (let i = 0; i < numMeteors; i++) {
-      const color = getRandomMeteorColor();
-      const width = getMeteorWidth(color);
-      const height = getMeteorHeight(color);
-      const x = Math.random() * (canvas.width - width);
-      const y = Math.random() * -canvas.height;
-      meteors.push({ x, y, color, width, height });
-    }
-  }
-
-  // Função para obter uma cor aleatória para os meteoros
-
-  function getRandomMeteorColor() {
-    const colors = Object.keys(meteorImages);
-    return colors[Math.floor(Math.random() * colors.length)];
-  }
-
-  // Função para obter a largura de um meteoro com base na cor
-
-  function getMeteorWidth(color) {
-    switch (color) {
-      case 'yellow':
-        return yellowMeteorWidth;
-      case 'green':
-        return greenMeteorWidth;
-      case 'red':
-        return redMeteorWidth;
-      case 'blue':
-        return blueMeteorWidth;
-      case 'purple':
-        return purpleMeteorWidth;
-    }
-  }
-
-  // Função para obter a altura de um meteoro com base na cor
-
-  function getMeteorHeight(color) {
-    switch (color) {
-      case 'yellow':
-        return yellowMeteorHeight;
-      case 'green':
-        return greenMeteorHeight;
-      case 'red':
-        return redMeteorHeight;
-      case 'blue':
-        return blueMeteorHeight;
-      case 'purple':
-        return purpleMeteorHeight;
-    }
-  }
-
-  // Função para obter a pontuação de um meteoro com base na cor
-
-  function getMeteorScore(color) {
-    switch (color) {
-      case 'yellow':
-        return 5;
-      case 'green':
+    function getMeteorScore(color) {
+      if (color === 'yellow') {
         return 10;
-      case 'red':
-        return 15;
-      case 'blue':
+      } else if (color === 'green') {
         return 20;
-      case 'purple':
-        return 25;
-    }
-  }
-
-  // Função para controlar a lógica quando o jogador perde uma vida
-
-  function loseLife() {
-    lives--;
-    if (lives <= 0) {
-      gameOver();
-    }
-  }
-
-  // Função para controlar a lógica quando o jogador ganha o jogo
-
-  function gameOver() {
-    gameEnded = true;
-    ctx.fillStyle = 'white';
-    ctx.font = '48px Arial';
-    ctx.fillText('Game Over', canvas.width / 2 - 150, canvas.height / 2);
-  }
-
-  // Função para aumentar uma vida ao jogador
-
-  function increaseLife() {
-    lives++;
-  }
-
-  // Função para desenhar os coletáveis especiais
-
-  function drawSupplies() {
-    ctx.fillStyle = 'gold';
-    supplies.forEach(supply => {
-      ctx.fillRect(supply.x, supply.y, 30, 30);
-    });
-  }
-
-  // Função para mover os coletáveis especiais
-
-  function moveSupplies() {
-    supplies.forEach(supply => {
-      supply.y += 1; // Ajuste a velocidade aqui
-    });
-    supplies = supplies.filter(supply => supply.y < canvas.height);
-  }
-
-  // Função para verificar a colisão da nave com os coletáveis especiais
-
-  function checkSupplyCollision() {
-    supplies.forEach((supply, index) => {
-      if (
-        shipX < supply.x + 30 &&
-        shipX + shipSize > supply.x &&
-        shipY < supply.y + 30 &&
-        shipY + shipSize > supply.y
-      ) {
-        // Se houver colisão, conceda uma vida ao jogador
-        increaseLife();
-        // Remova o coletável da lista
-        supplies.splice(index, 1);
+      } else if (color === 'red') {
+        return 30;
+      } else if (color === 'blue') {
+        return 50;
+      } else if (color === 'purple') {
+        return 100;
       }
-    });
-  }
-
-  // Função principal para desenhar e controlar o jogo
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-      drawShip();
-      drawBullets();
-      drawMeteors();
-      drawScore();
-      drawPhaseMessage();
-      drawWinMessage();
-      drawSupplies(); // Desenha os coletáveis especiais
-      moveShip();
-      moveBullets();
-      moveMeteors();
-      checkCollisions();
-      checkMeteorBottom();
-      checkPhase();
-      checkSupplyCollision(); // Verifica a colisão com os coletáveis especiais
-    } else {
-      ctx.fillStyle = 'white';
-      ctx.font = '48px Arial';
-      ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
     }
-    if (!gameEnded && !isPaused) {
-      requestAnimationFrame(draw);
+
+    function drawExplosion(x, y) {
+      const explosionRadius = 50;
+      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      ctx.fillStyle = explosionGradient;
+      ctx.beginPath();
+      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function createMeteor() {
+  let x, y, color, width, height;
+  if (phase === 1) {
+    x = Math.random() * (canvas.width - yellowMeteorWidth);
+    y = -yellowMeteorHeight;
+    const colors = ['yellow', 'green', 'red'];
+    color = colors[Math.floor(Math.random() * colors.length)];
+    if (color === 'yellow') {
+      width = yellowMeteorWidth;
+      height = yellowMeteorHeight;
+    } else if (color === 'green') {
+      width = greenMeteorWidth;
+      height = greenMeteorHeight;
+    } else if (color === 'red') {
+      width = redMeteorWidth;
+      height = redMeteorHeight;
+    }
+  } else if (phase === 2) {
+    x = Math.random() * (canvas.width - blueMeteorWidth);
+    y = -blueMeteorHeight;
+    const colors = ['yellow', 'green', 'red', 'blue'];
+    color = colors[Math.floor(Math.random() * colors.length)];
+    if (color === 'yellow') {
+      width = yellowMeteorWidth;
+      height = yellowMeteorHeight;
+    } else if (color === 'green') {
+      width = greenMeteorWidth;
+      height = greenMeteorHeight;
+    } else if (color === 'red') {
+      width = redMeteorWidth;
+      height = redMeteorHeight;
+    } else if (color === 'blue') {
+      width = blueMeteorWidth;
+      height = blueMeteorHeight;
+    }
+  } else if (phase === 3) {
+    x = Math.random() * (canvas.width - purpleMeteorWidth);
+    y = -purpleMeteorHeight;
+    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+    color = colors[Math.floor(Math.random() * colors.length)];
+    if (color === 'yellow') {
+      width = yellowMeteorWidth;
+      height = yellowMeteorHeight;
+    } else if (color === 'green') {
+      width = greenMeteorWidth;
+      height = greenMeteorHeight;
+    } else if (color === 'red') {
+      width = redMeteorWidth;
+      height = redMeteorHeight;
+    } else if (color === 'blue') {
+      width = blueMeteorWidth;
+      height = blueMeteorHeight;
+    } else if (color === 'purple') {
+      width = purpleMeteorWidth;
+      height = purpleMeteorHeight;
+    }
+  } else { // Para todas as fases posteriores
+    x = Math.random() * (canvas.width - yellowMeteorWidth);
+    y = -yellowMeteorHeight;
+    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+    color = colors[Math.floor(Math.random() * colors.length)];
+    if (color === 'yellow') {
+      width = yellowMeteorWidth;
+      height = yellowMeteorHeight;
+    } else if (color === 'green') {
+      width = greenMeteorWidth;
+      height = greenMeteorHeight;
+    } else if (color === 'red') {
+      width = redMeteorWidth;
+      height = redMeteorHeight;
+    } else if (color === 'blue') {
+      width = blueMeteorWidth;
+      height = blueMeteorHeight;
+    } else if (color === 'purple') {
+      width = purpleMeteorWidth;
+      height = purpleMeteorHeight;
     }
   }
+  meteors.push({ x, y, color, width, height });
+}
 
-  // Funções para controlar os eventos do teclado
+    setInterval(createMeteor, 1000);
 
-  document.addEventListener('keydown', keyDownHandler, false);
-  document.addEventListener('keyup', keyUpHandler, false);
+    draw();
 
-  function keyDownHandler(e) {
-    if (e.key === 'Left' || e.key === 'ArrowLeft') {
-      leftPressed = true;
-    } else if (e.key === 'Right' || e.key === 'ArrowRight') {
-      rightPressed = true;
-    } else if (e.key === 'Up' || e.key === 'ArrowUp') {
-      upPressed = true;
-    } else if (e.key === 'Down' || e.key === 'ArrowDown') {
-      downPressed = true;
-    } else if (e.key === ' ' && !gameEnded) {
-      shoot();
-    } else if (e.key === 'Escape') {
-      togglePause();
+    function handleTouch(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const touchX = touch.clientX;
+      const touchY = touch.clientY;
+
+      // Determina a direção do movimento baseada no toque
+      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+        leftPressed = true;
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
+        upPressed = true;
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        leftPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
+        rightPressed = true;
+      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+        leftPressed = true;
+      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
+        downPressed = true;
+        rightPressed = true;
+      }
+
+      // Adiciona um tiro quando tocar na tela
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0;
+      shootSound.play();
     }
-  }
 
-  function keyUpHandler(e) {
-    if (e.key === 'Left' || e.key === 'ArrowLeft') {
+    // Função para lidar com o fim do toque na tela
+    function handleTouchEnd(event) {
+      event.preventDefault();
       leftPressed = false;
-    } else if (e.key === 'Right' || e.key === 'ArrowRight') {
       rightPressed = false;
-    } else if (e.key === 'Up' || e.key === 'ArrowUp') {
       upPressed = false;
-    } else if (e.key === 'Down' || e.key === 'ArrowDown') {
       downPressed = false;
     }
-  }
 
-  // Função para atirar
+    // Adiciona event listeners para toque na tela
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchend', handleTouchEnd);
 
-  function shoot() {
-    const bulletX = shipX + (shipSize / 2) - (bulletWidth / 2);
-    const bulletY = shipY;
-    bullets.push({ x: bulletX, y: bulletY });
-    shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-    shootSound.play(); // Toca o som de tiro
-  }
-
-  // Função para pausar o jogo
-
-  function togglePause() {
-    isPaused = !isPaused;
-    if (!gameEnded) {
-      if (!isPaused) {
-        draw(); // Reinicia o jogo se ele não estiver pausado
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
       }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
+
+    document.addEventListener('keyup', function(e) {
+  if (!isPaused) { // Verifica se o jogo não está pausado
+    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      leftPressed = false;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'Right') {
+      rightPressed = false;
+    }
+    if (e.key === 'ArrowUp' || e.key === 'Up') {
+      upPressed = false;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'Down') {
+      downPressed = false;
+    }
+    if (e.key === ' ' || e.key === 'Spacebar') {
+      // Adiciona um novo tiro à lista de balas
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      // Reinicia o áudio para evitar intervalos
+      shootSound.currentTime = 0;
+      // Toca o som do tiro
+      shootSound.play();
     }
   }
+});
 
-  // Início do jogo
 
-  startPhase(); // Inicia a primeira fase
-  draw(); // Inicia o loop principal de desenho do jogo
+    canvas.addEventListener('click', function(event) {
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+      if (score >= 5000 && phase === 3 && gameEnded) {
+        // Verifica se o clique foi no botão de reiniciar o jogo
+        const buttonX = canvas.width / 2 - 100;
+        const buttonY = canvas.height / 2 + 100;
+        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+          restartGame();
+          return;
+        }
+      }
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+      shootSound.play(); // Toca o som do tiro
+    });
 
+    function restartGame() {
+      // Reinicia as variáveis do jogo
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      bullets = [];
+      meteors = [];
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+    }
   </script>
 </body>
 </html>
