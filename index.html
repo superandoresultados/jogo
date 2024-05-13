@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Space Game Beta 12</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  
   <style>
     body, html {
       margin: 0;
@@ -88,6 +89,10 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
+
+    .power-up {
+      position: absolute;
+    }
   </style>
 </head>
 <body>
@@ -97,7 +102,91 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+  <img id="powerUp" src="power1.png" class="power-up" style="display: none;">
+
   <script>
+    class PowerUp {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 50; // Largura do power-up
+    this.height = 50; // Altura do power-up
+    this.isActive = false; // Indica se o power-up está ativo na tela
+  }
+
+  // Método para gerar o power-up em uma posição aleatória na tela
+  generateRandomPosition() {
+    this.x = Math.random() * (canvas.width - this.width);
+    this.y = Math.random() * (canvas.height - this.height);
+  }
+
+  // Método para desenhar o power-up na tela
+  draw(ctx) {
+    const powerUpImg = new Image();
+    powerUpImg.src = 'power1.png';
+    ctx.drawImage(powerUpImg, this.x, this.y, this.width, this.height);
+  }
+}
+
+// Instanciar um novo power-up
+const powerUp = new PowerUp(0, 0);
+
+// Função para desenhar o power-up
+function drawPowerUp() {
+  if (powerUp.isActive) {
+    powerUp.draw(ctx);
+  }
+}
+
+// Função para atualizar a posição do power-up
+function updatePowerUp() {
+  if (!powerUp.isActive) {
+    powerUp.generateRandomPosition();
+    powerUp.isActive = true;
+  }
+}
+
+// Função para verificar a colisão entre a nave e o power-up
+function checkPowerUpCollision() {
+  if (
+    shipX < powerUp.x + powerUp.width &&
+    shipX + shipSize > powerUp.x &&
+    shipY < powerUp.y + powerUp.height &&
+    shipY + shipSize > powerUp.y
+  ) {
+    // A nave coletou o power-up
+    powerUp.isActive = false;
+    // Implemente aqui a lógica para aumentar o poder da nave
+    // Por exemplo, aumentar a velocidade dos tiros ou a força dos tiros
+  }
+}
+
+// Função para chamar a atualização e desenho do power-up
+function updateAndDrawPowerUp() {
+  updatePowerUp();
+  drawPowerUp();
+}
+
+    // Função para atualizar a posição do power-up e verificar a colisão com a nave
+function updateAndDrawPowerUp() {
+  updatePowerUp();
+  drawPowerUp();
+  checkPowerUpCollision();
+}
+
+// Variável para controlar o temporizador do power-up
+let powerUpTimer = 0;
+
+// Função para atualizar o temporizador do power-up
+function updatePowerUpTimer() {
+  powerUpTimer++;
+  if (powerUpTimer >= 60) { // A cada 60 quadros (aproximadamente 1 minuto)
+    powerUpTimer = 0;
+    updatePowerUp(); // Atualiza a posição do power-up
+  }
+}
+
+    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
 
