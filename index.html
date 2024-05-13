@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  
+  <title>Space Game Beta 12</title>
   <style>
     body, html {
       margin: 0;
@@ -26,7 +25,6 @@
       display: block;
       margin: auto;
     }
-
     /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
     @media screen and (max-width: 600px) {
       canvas {
@@ -89,10 +87,6 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
-
-    .power-up {
-      position: absolute;
-    }
   </style>
 </head>
 <body>
@@ -102,14 +96,7 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-  <img id="powerUp" src="power1.png" class="power-up" style="display: none;">
-
   <script>
-  
-
-
-
-    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
 
@@ -144,16 +131,16 @@
     canvas.height = window.innerHeight;
 
     let shipImg = new Image();
-shipImg.src = 'nave.png';
+    shipImg.src = 'nave.png';
 
-const shipSize = 75; // Aumento de 50% no tamanho da nave
-const shipSpeed = 5;
-let shipX = (canvas.width - shipSize) / 2;
-let shipY = canvas.height - shipSize - 10;
-let leftPressed = false;
-let rightPressed = false;
-let upPressed = false;
-let downPressed = false;
+    const shipSize = 75; // Aumento de 50% no tamanho da nave
+    const shipSpeed = 5;
+    let shipX = (canvas.width - shipSize) / 2;
+    let shipY = canvas.height - shipSize - 10;
+    let leftPressed = false;
+    let rightPressed = false;
+    let upPressed = false;
+    let downPressed = false;
 
     const bulletWidth = 5;
     const bulletHeight = 15;
