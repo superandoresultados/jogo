@@ -152,35 +152,7 @@ function updatePowerUp() {
   }
 }
 
-// Função para verificar a colisão entre a nave e o power-up
-function checkPowerUpCollision() {
-  if (
-    shipX < powerUp.x + powerUp.width &&
-    shipX + shipSize > powerUp.x &&
-    shipY < powerUp.y + powerUp.height &&
-    shipY + shipSize > powerUp.y
-  ) {
-    // A nave coletou o power-up
-    powerUp.isActive = false;
-    // Implemente aqui a lógica para aumentar o poder da nave
-    // Por exemplo, aumentar a velocidade dos tiros ou a força dos tiros
-  }
 
-  // Verificar colisão entre tiro e power-up
-  for (let i = 0; i < bullets.length; i++) {
-    if (
-      bullets[i].x < powerUp.x + powerUp.width &&
-      bullets[i].x + bulletWidth > powerUp.x &&
-      bullets[i].y < powerUp.y + powerUp.height &&
-      bullets[i].y + bulletHeight > powerUp.y
-    ) {
-      // O tiro atingiu o power-up
-      // Aqui você pode adicionar lógica para o tiro não destruir o power-up
-      // Por exemplo, ignorar a colisão ou desativar o tiro
-      bullets.splice(i, 1); // Remover o tiro que atingiu o power-up
-    }
-  }
-}
 
 // Função para chamar a atualização e desenho do power-up
 function updateAndDrawPowerUp(ctx) {
