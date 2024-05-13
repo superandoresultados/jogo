@@ -615,9 +615,15 @@ let supplies = [];
 // Função para desenhar os coletáveis especiais
 function drawSupplies() {
   supplies.forEach(supply => {
-    ctx.drawImage(supplyImg, supply.x, supply.y, 30, 30); // Tamanho da cápsula de resgate
+    ctx.drawImage(supplyImg, supply.x, supply.y, 30, 30); // Usando a variável supplyImg
   });
 }
+
+supplyImg.onload = () => {
+  draw(); // Chama a função draw() após a imagem dos coletáveis especiais ser carregada
+};
+
+
 
 // Função para mover os coletáveis especiais
 function moveSupplies() {
