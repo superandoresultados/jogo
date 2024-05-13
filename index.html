@@ -105,61 +105,7 @@
   <img id="powerUp" src="power1.png" class="power-up" style="display: none;">
 
   <script>
-    class PowerUp {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-    this.width = 50; // Largura do power-up
-    this.height = 50; // Altura do power-up
-    this.isActive = false; // Indica se o power-up está ativo na tela
-  }
-
-  // Método para gerar o power-up em uma posição aleatória na tela
-  generateRandomPosition() {
-    this.x = Math.random() * (canvas.width - this.width);
-    this.y = Math.random() * (canvas.height - this.height);
-  }
-
-  // Método para desenhar o power-up na tela
-  draw(ctx) {
-    const powerUpImg = new Image();
-    powerUpImg.src = 'power1.png';
-    ctx.drawImage(powerUpImg, this.x, this.y, this.width, this.height);
-  }
-}
-
-// Variáveis relacionadas à nave e aos tiros
-let shipX, shipY, shipSize, bullets, bulletWidth, bulletHeight;
-
-// Instanciar um novo power-up
-const powerUp = new PowerUp(0, 0);
-
-// Função para desenhar o power-up
-function drawPowerUp(ctx) {
-  if (powerUp.isActive) {
-    powerUp.draw(ctx);
-  }
-}
-
-// Função para atualizar a posição do power-up
-function updatePowerUp() {
-  if (!powerUp.isActive) {
-    powerUp.generateRandomPosition();
-    powerUp.isActive = true;
-  } else {
-    // Atualiza a posição Y para fazer o power-up descer
-    powerUp.y += 1; // Você pode ajustar a velocidade de descida conforme necessário
-  }
-}
-
-
-
-// Função para chamar a atualização e desenho do power-up
-function updateAndDrawPowerUp(ctx) {
-  updatePowerUp();
-  drawPowerUp(ctx);
-  checkPowerUpCollision();
-}
+  
 
 
 
