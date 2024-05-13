@@ -124,27 +124,14 @@
   draw(ctx) {
     const powerUpImg = new Image();
     powerUpImg.src = 'power1.png';
-    ctx.drawImage(powerUpImg, this.x, this.y, this.width, this.height);
+    powerUpImg.onload = () => {
+      ctx.drawImage(powerUpImg, this.x, this.y, this.width, this.height);
+    };
   }
 }
 
 // Instanciar um novo power-up
 const powerUp = new PowerUp(0, 0);
-
-// Função para desenhar o power-up
-function drawPowerUp() {
-  if (powerUp.isActive) {
-    powerUp.draw(ctx);
-  }
-}
-
-// Função para atualizar a posição do power-up
-function updatePowerUp() {
-  if (!powerUp.isActive) {
-    powerUp.generateRandomPosition();
-    powerUp.isActive = true;
-  }
-}
 
 // Função para verificar a colisão entre a nave e o power-up
 function checkPowerUpCollision() {
@@ -161,86 +148,46 @@ function checkPowerUpCollision() {
   }
 }
 
-    // Função para atualizar a posição do power-up e verificar a colisão com a nave
-function updateAndDrawPowerUp() {
-  updatePowerUp();
-  drawPowerUp();
-  checkPowerUpCollision();
-}
-
-// Variável para controlar o temporizador do power-up
-let powerUpTimer = 0;
-
-// Função para atualizar o temporizador do power-up
-function updatePowerUpTimer() {
-  powerUpTimer++;
-  if (powerUpTimer >= 60) { // A cada 60 quadros (aproximadamente 1 minuto)
-    powerUpTimer = 0;
-    updatePowerUp(); // Atualiza a posição do power-up
-  }
-}
-
-    // Função para atualizar a posição do power-up
-function updatePowerUp() {
+// Função para atualizar e desenhar o power-up
+function updateAndDrawPowerUp(ctx) {
   if (!powerUp.isActive) {
     powerUp.generateRandomPosition();
     powerUp.isActive = true;
-  } else {
-    // Atualiza a posição Y para fazer o power-up descer
-    powerUp.y += 1; // Você pode ajustar a velocidade de descida conforme necessário
   }
+  powerUp.draw(ctx);
+  checkPowerUpCollision();
 }
 
-    // Função para verificar a colisão entre o tiro da nave e o power-up
-function checkPowerUpCollision() {
-  if (
-    shipX < powerUp.x + powerUp.width &&
-    shipX + shipSize > powerUp.x &&
-    shipY < powerUp.y + powerUp.height &&
-    shipY + shipSize > powerUp.y
-  ) {
-    // A nave coletou o power-up
-    powerUp.isActive = false;
-    // Implemente aqui a lógica para aumentar o poder da nave
-    // Por exemplo, aumentar a velocidade dos tiros ou a força dos tiros
-  }
-
-  // Verificar colisão entre tiro e power-up
-  for (let i = 0; i < bullets.length; i++) {
-    if (
-      bullets[i].x < powerUp.x + powerUp.width &&
-      bullets[i].x + bulletWidth > powerUp.x &&
-      bullets[i].y < powerUp.y + powerUp.height &&
-      bullets[i].y + bulletHeight > powerUp.y
-    ) {
-      // O tiro atingiu o power-up
-      // Aqui você pode adicionar lógica para o tiro não destruir o power-up
-      // Por exemplo, ignorar a colisão ou desativar o tiro
-      bullets.splice(i, 1); // Remover o tiro que atingiu o power-up
-    }
-  }
+// Função para atualizar o jogo
+function updateGame(ctx) {
+  updateAndDrawPowerUp(ctx);
+  // Adicione aqui outras funções de atualização, como para atualizar a nave e os inimigos
 }
 
-    function gameLoop() {
-  // Atualizações de jogo
-  updatePlayer();
-  updateEnemies();
-  updateAndDrawPowerUp();
-  
-  // Renderização de jogo
-  clearCanvas();
-  drawPlayer();
-  drawEnemies();
-  drawPowerUp();
-  
-  // Outras lógicas do jogo
-  
-  // Repetição do loop
-  requestAnimationFrame(gameLoop);
+// Função para renderizar o jogo
+function renderGame(ctx) {
+  clearCanvas(ctx);
+  drawPlayer(ctx);
+  drawEnemies(ctx);
+  // Adicione aqui outras funções de renderização, como para renderizar tiros, explosões, etc.
+}
+
+// Função para limpar o canvas
+function clearCanvas(ctx) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Função para inicializar o loop do jogo
+function gameLoop(ctx) {
+  updateGame(ctx);
+  renderGame(ctx);
+  requestAnimationFrame(() => gameLoop(ctx));
 }
 
 // Inicialização do loop do jogo
-gameLoop();
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+gameLoop(ctx);
 
 
     
