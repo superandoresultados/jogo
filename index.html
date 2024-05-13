@@ -186,6 +186,17 @@ function updatePowerUpTimer() {
   }
 }
 
+    // Função para atualizar a posição do power-up
+function updatePowerUp() {
+  if (!powerUp.isActive) {
+    powerUp.generateRandomPosition();
+    powerUp.isActive = true;
+  } else {
+    // Atualiza a posição Y para fazer o power-up descer
+    powerUp.y += 1; // Você pode ajustar a velocidade de descida conforme necessário
+  }
+}
+
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
