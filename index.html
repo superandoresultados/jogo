@@ -189,27 +189,7 @@ function updateAndDrawPowerUp(ctx) {
   checkPowerUpCollision();
 }
 
-// Função principal do loop do jogo
-function gameLoop() {
-  // Atualizações de jogo
-  updatePlayer();
-  updateEnemies();
-  updateAndDrawPowerUp(ctx);
-  
-  // Renderização de jogo
-  clearCanvas();
-  drawPlayer();
-  drawEnemies();
-  drawPowerUp(ctx);
-  
-  // Outras lógicas do jogo
-  
-  // Repetição do loop
-  requestAnimationFrame(gameLoop);
-}
 
-// Inicialização do loop do jogo
-gameLoop();
 
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
