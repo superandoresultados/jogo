@@ -95,9 +95,25 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
+  <button id="startButton">Iniciar Jogo</button>
   <audio id="backgroundMusic" src="mission.mp3" loop autoplay></audio>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
+     document.getElementById('startButton').addEventListener('click', function() {
+     const backgroundMusic = document.getElementById('backgroundMusic');
+    backgroundMusic.play(); // Tenta iniciar a música
+    startGame(); // Uma função hipotética para iniciar o jogo
+  });
+
+    function startGame() {
+     // Adicione aqui qualquer lógica necessária para iniciar o jogo,
+     // como inicialização de variáveis, início de animações, etc.
+     // Por exemplo:
+     drawBackground();
+     draw();
+   }
+
+    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
 
