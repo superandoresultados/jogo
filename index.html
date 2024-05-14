@@ -154,19 +154,19 @@ backgroundImage.onload = function() {
     let animationFrameId;
 
     function drawBackground() {
-    if (!animationRunning) return; // Previne múltiplas chamadas se a animação já estiver parada
-
     bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
     bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
     bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-    bgY += 1;
+    bgY += 1; // Ajuste esse valor se precisar alterar a velocidade do fundo
     if (bgY >= backgroundCanvas.height) {
         bgY = 0;
     }
     requestAnimationFrame(drawBackground);
 }
 
-    backgroundImage.onload = drawBackground;
+    backgroundImage.onload = function() {
+    drawBackground(); // Inicia a animação do background assim que a imagem é carregada
+};
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
