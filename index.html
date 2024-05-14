@@ -115,18 +115,17 @@
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
      document.getElementById('startButton').addEventListener('click', function() {
-     const backgroundMusic = document.getElementById('backgroundMusic');
-    backgroundMusic.play(); // Tenta iniciar a música
-    startGame(); // Uma função hipotética para iniciar o jogo
-  });
+      this.style.display = 'none'; // Oculta o botão imediatamente ao clicar
+      const backgroundMusic = document.getElementById('backgroundMusic');
+      backgroundMusic.play(); // Tenta iniciar a música
+      startGame(); // Uma função hipotética para iniciar o jogo
+    });
 
-    function startGame() {
-     // Adicione aqui qualquer lógica necessária para iniciar o jogo,
-     // como inicialização de variáveis, início de animações, etc.
-     // Por exemplo:
+      function startGame() {
+      // Lógica para iniciar o jogo
      drawBackground();
      draw();
-   }
+    }
 
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
