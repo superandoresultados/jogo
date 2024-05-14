@@ -115,19 +115,19 @@ back<!DOCTYPE html>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
      document.getElementById('startButton').addEventListener('click', function() {
-      this.style.display = 'none'; // Oculta o botão imediatamente ao clicar
-      const backgroundMusic = document.getElementById('backgroundMusic');
-      backgroundMusic.play(); // Tenta iniciar a música
-      startGame(); // Uma função hipotética para iniciar o jogo
-    });
+    this.style.display = 'none'; // Oculta o botão imediatamente ao clicar
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    backgroundMusic.play(); // Tenta iniciar a música
+    if (!animationRunning) {
+        startGame(); // Evita reiniciar tudo se já estiver rodando
+    }
+});
 
     let animationRunning = false;
 
       function startGame() {
-     if (!animationRunning) {
-        animationRunning = true;
-        draw(); // Inicia a animação dos elementos do jogo
-    }
+    animationRunning = true;
+    draw(); // Continua a animação do jogo sem reiniciar posições
 }
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -163,6 +163,8 @@ backgroundImage.onload = function() {
     }
     requestAnimationFrame(drawBackground);
 }
+
+    let shipY = canvas.height - shipSize - 30;
 
     backgroundImage.onload = function() {
     drawBackground(); // Inicia a animação do background assim que a imagem é carregada
@@ -224,8 +226,9 @@ backgroundImage.onload = function() {
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
+
+    if (!isPaused) { // Se o jogo não está pausado, desenha e atualiza os componentes do jogo
         drawShip();
         drawBullets();
         drawMeteors();
@@ -238,15 +241,15 @@ backgroundImage.onload = function() {
         checkCollisions();
         checkMeteorBottom();
         checkPhase();
-      } else {
+    } else {
+        // Se o jogo está pausado, exibe a mensagem de pausa
         ctx.fillStyle = 'white';
         ctx.font = '48px Arial';
         ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
     }
+
+    requestAnimationFrame(draw); // Solicita o próximo frame de animação
+}
 
     function togglePausePlay() {
     isPaused = !isPaused;
