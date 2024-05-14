@@ -667,6 +667,24 @@ function playCompleteSound() {
   }, 3000); // 3000 milissegundos = 3 segundos
 }
 
+    const trophyImage = document.getElementById('trophyImage');
+
+// Função para exibir a imagem do troféu
+function showTrophyImage() {
+  trophyImage.style.display = 'block';
+  // Define um temporizador para ocultar a imagem após 3 segundos
+  setTimeout(function() {
+    trophyImage.style.display = 'none';
+  }, 3000); // 3000 milissegundos = 3 segundos
+}
+
+// Dentro da função passarDeFase(), após exibir a mensagem de fase:
+
+passarDeFase() {
+  // Exibe a imagem do troféu
+  showTrophyImage();
+}
+
     function restartGame() {
   // Reinicia as variáveis do jogo e oculta o botão de reiniciar
   score = 0;
