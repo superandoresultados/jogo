@@ -124,13 +124,11 @@ back<!DOCTYPE html>
     let animationRunning = false;
 
       function startGame() {
-    if (!animationRunning) {
+     if (!animationRunning) {
         animationRunning = true;
-        draw();
-        drawBackground(); // Chame apenas uma vez, o loop contínuo será mantido internamente
+        draw(); // Inicia a animação dos elementos do jogo
     }
 }
-
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -139,14 +137,18 @@ back<!DOCTYPE html>
     backgroundCanvas.height = window.innerHeight;
 
     const backgroundImage = new Image();
-    backgroundImage.src = 'space.png';
+backgroundImage.src = 'space.png';
+backgroundImage.onload = function() {
+    drawBackground(); // Inicia a animação de fundo assim que a imagem é carregada
+};
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
 
     document.addEventListener('DOMContentLoaded', function() {
     const backgroundMusic = document.getElementById('backgroundMusic');
-      backgroundMusic.play();
+    backgroundMusic.play();
+    drawBackground(); // Inicia a animação de fundo imediatamente após a página ser carregada.
     });
 
     let animationFrameId;
