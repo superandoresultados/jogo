@@ -121,11 +121,15 @@ back<!DOCTYPE html>
       startGame(); // Uma função hipotética para iniciar o jogo
     });
 
+    let animationRunning = false;
+
       function startGame() {
-      // Lógica para iniciar o jogo
-     drawBackground();
-     draw();
+    if (!animationRunning) {
+        animationRunning = true;
+        draw();
+        drawBackground(); // Chame apenas uma vez, o loop contínuo será mantido internamente
     }
+}
 
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -148,6 +152,8 @@ back<!DOCTYPE html>
     let animationFrameId;
 
     function drawBackground() {
+    if (!animationRunning) return; // Previne múltiplas chamadas se a animação já estiver parada
+
     bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
     bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
     bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
@@ -155,7 +161,7 @@ back<!DOCTYPE html>
     if (bgY >= backgroundCanvas.height) {
         bgY = 0;
     }
-    requestAnimationFrame(drawBackground); // Sempre agenda a próxima atualização
+    requestAnimationFrame(drawBackground);
 }
 
     backgroundImage.onload = drawBackground;
@@ -245,9 +251,10 @@ back<!DOCTYPE html>
     const pausePlayButton = document.querySelector('.pause-play-button');
     pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
     if (isPaused) {
-        cancelAnimationFrame(animationFrameId); // Cancela o frame agendado quando pausado
-    } else {
-        draw(); // Reinicia as funções de desenho, incluindo o fundo
+        cancelAnimationFrame(animationFrameId); // Para toda a animação
+        animationRunning = false; // Seta que a animação foi interrompida
+    } else if (!animationRunning) {
+        startGame(); // Reinicia a animação de forma controlada
     }
 }
 
