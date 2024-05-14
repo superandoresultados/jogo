@@ -108,6 +108,16 @@ backgroundMusic.onerror = function() {
     console.error("Erro ao carregar o arquivo de áudio.");
 };
 
+    function startBackgroundMusic() {
+      const backgroundMusic = document.getElementById('backgroundMusic');
+      backgroundMusic.play();
+      backgroundMusic.onerror = function() {
+        console.error("Erro ao carregar o arquivo de áudio.");
+      };
+    }
+
+    // Evento para chamar a função de iniciar música de fundo após o carregamento completo da página
+    window.addEventListener('load', startBackgroundMusic);
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
