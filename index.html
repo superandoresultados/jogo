@@ -146,16 +146,16 @@ back<!DOCTYPE html>
     });
 
     function drawBackground() {
-  bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-  bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-  bgY += 1;
-  if (bgY >= backgroundCanvas.height) {
-    bgY = 0;
-  }
-  if (!isPaused) {
-    requestAnimationFrame(drawBackground);
-  }
+    bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+    bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
+    bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
+    bgY += 1;
+    if (bgY >= backgroundCanvas.height) {
+        bgY = 0;
+    }
+    if (!isPaused) {
+        requestAnimationFrame(drawBackground);
+    }
 }
 
     backgroundImage.onload = drawBackground;
