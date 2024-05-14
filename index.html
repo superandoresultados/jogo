@@ -104,9 +104,13 @@
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
+    const trophyCanvas = document.getElementById('trophyCanvas');
+    const trophyCtx = trophyCanvas.getContext('2d');
 
     backgroundCanvas.width = window.innerWidth;
     backgroundCanvas.height = window.innerHeight;
+    trophyCanvas.width = window.innerWidth;
+    trophyCanvas.height = window.innerHeight;
 
     const backgroundImage = new Image();
     backgroundImage.src = 'space.png';
@@ -183,8 +187,33 @@
     let shootSound = new Audio('shoot.wav');
     let explosionSound = new Audio('bum.wav');
     let completeSound = new Audio('complete.wav');
-    let trophyImg = new Image();
-    trophyImg.src = 'trofeu.png'; // Carregar a imagem do troféu
+    let trophyImage = new Image();
+    trophyImage.src = 'trofeu.png';
+    let showTrophy = false;
+
+    function playCompleteSound() {
+      completeSound.currentTime = 0;
+      completeSound.play();
+      showTrophy = true;
+      setTimeout(() => { showTrophy = false; }, 3000);
+    }
+
+    function checkPhase() {
+      if ((score >= 1000 && phase === 1) ||
+          (score >= 2000 && phase === 2) ||
+          (score >= 5000 && phase === 3) ||
+          (score >= 10000 && phase === 4)) {
+        phase++;
+        phaseMessage = 'Fase ' + phase;
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+      }
+    }
+
+    function increaseLife() {
+      lives++;
+    }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -206,17 +235,13 @@
         ctx.font = '48px Arial';
         ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
       }
+
+      if (showTrophy) {
+        trophyCtx.drawImage(trophyImage, canvas.width / 2 - 50, canvas.height / 2 - 50, 100, 100);
+      }
+
       if (!isPaused) {
         requestAnimationFrame(draw);
-      }
-    }
-
-    function togglePausePlay() {
-      isPaused = !isPaused;
-      const pausePlayButton = document.querySelector('.pause-play-button');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
-      if (!isPaused) {
-        draw();
       }
     }
 
@@ -303,115 +328,12 @@
       });
     }
 
-    function checkPhase() {
-      if (score >= 1000 && phase === 1) {
-        phase = 2;
-        phaseMessage = 'Fase 2';
-        phaseStartTime = Date.now();
-        increaseLife();
-        playCompleteSound();
-      }
-      if (score >= 2000 && phase === 2) {
-        phase = 3;
-        phaseMessage = 'Fase 3';
-        phaseStartTime = Date.now();
-        increaseLife();
-        playCompleteSound();
-      }
-      if (score >= 5000 && phase === 3) {
-        phase = 4;
-        phaseMessage = 'Fase 4';
-        phaseStartTime = Date.now();
-        increaseLife();
-        playCompleteSound();
-      }
-      if (score >= 10000 && phase === 4) {
-        phase = 5;
-        phaseMessage = 'Fase 5';
-        phaseStartTime = Date.now();
-        increaseLife();
-        playCompleteSound();
-      }
-    }
-
-    // Configuração do troféu
-const trophyImage = new Image();
-trophyImage.src = 'trofeu.png';
-let showTrophy = false;
-
-function playCompleteSound() {
-  completeSound.currentTime = 0;
-  completeSound.play();
-  showTrophy = true;
-  setTimeout(() => { showTrophy = false; }, 3000); // Exibe o troféu por 3 segundos
-}
-
-function checkPhase() {
-  if ((score >= 1000 && phase === 1) ||
-      (score >= 2000 && phase === 2) ||
-      (score >= 5000 && phase === 3) ||
-      (score >= 10000 && phase === 4)) {
-    phase++;
-    phaseMessage = 'Fase ' + phase;
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase e exibe o troféu
-  }
-  // Adicione condições adicionais para novas fases conforme necessário
-}
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (showTrophy) {
-    trophyCtx.drawImage(trophyImage, canvas.width / 2 - 50, canvas.height / 2 - 50, 100, 100); // Desenha o troféu
-  }
-  // Continuação do seu código de desenho...
-  if (!isPaused) {
-    requestAnimationFrame(draw);
-  }
-}
-
-// Certifique-se de que trophyCanvas está corretamente configurado
-const trophyCanvas = document.getElementById('trophyCanvas');
-const trophyCtx = trophyCanvas.getContext('2d');
-trophyCanvas.width = window.innerWidth;
-trophyCanvas.height = window.innerHeight;
-
-    function playCompleteSound() {
-      completeSound.currentTime = 0;
-      completeSound.play();
-    }
-
-    function increaseLife() {
-      lives++;
-    }
-
     function drawPhaseMessage() {
       ctx.fillStyle = 'white';
       ctx.font = '48px Arial';
       const messageWidth = ctx.measureText(phaseMessage).width;
       const messageX = (canvas.width - messageWidth) / 2;
       ctx.fillText(phaseMessage, messageX, canvas.height / 2);
-      
-      if (phaseMessage.startsWith('Fase')) {
-        drawTrophy(); // Desenhar troféu ao passar de fase
-      }
-
-      if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
-        const elapsedTime = Date.now() - phaseStartTime;
-        const countdown = 3 - Math.floor(elapsedTime / 1000);
-        if (countdown > 0) {
-          drawCountdown(countdown);
-        } else {
-          phaseMessage = '';
-        }
-      }
-    }
-
-    function drawCountdown(countdown) {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
     }
 
     function drawWinMessage() {
@@ -422,16 +344,13 @@ trophyCanvas.height = window.innerHeight;
     }
 
     function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      } else if (color === 'blue') {
-        return 50;
-      } else if (color === 'purple') {
-        return 100;
+      switch(color) {
+        case 'yellow': return 10;
+        case 'green': return 20;
+        case 'red': return 30;
+        case 'blue': return 50;
+        case 'purple': return 100;
+        default: return 0;
       }
     }
 
@@ -447,208 +366,11 @@ trophyCanvas.height = window.innerHeight;
       ctx.fill();
     }
 
-    function drawTrophy() {
-      const trophyWidth = 50;
-      const trophyHeight = 50;
-      const trophyX = canvas.width / 2 - trophyWidth / 2;
-      const trophyY = canvas.height / 2 - 100;
-      ctx.drawImage(trophyImg, trophyX, trophyY, trophyWidth, trophyHeight);
-    }
+    shipImg.onload = () => {
+      draw();  // Start drawing only after the ship image is fully loaded
+    };
 
-    function createMeteor() {
-      let x, y, color, width, height;
-      if (phase === 1) {
-        x = Math.random() * (canvas.width - yellowMeteorWidth);
-        y = -yellowMeteorHeight;
-        const colors = ['yellow', 'green', 'red'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        }
-      } else if (phase === 2) {
-        x = Math.random() * (canvas.width - blueMeteorWidth);
-        y = -blueMeteorHeight;
-        const colors = ['yellow', 'green', 'red', 'blue'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        }
-      } else if (phase === 3) {
-        x = Math.random() * (canvas.width - purpleMeteorWidth);
-        y = -purpleMeteorHeight;
-        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        } else if (color === 'purple') {
-          width = purpleMeteorWidth;
-          height = purpleMeteorHeight;
-        }
-      } else {
-        x = Math.random() * (canvas.width - yellowMeteorWidth);
-        y = -yellowMeteorHeight;
-        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-        color = colors[Math.floor(Math.random() * colors.length)];
-        if (color === 'yellow') {
-          width = yellowMeteorWidth;
-          height = yellowMeteorHeight;
-        } else if (color === 'green') {
-          width = greenMeteorWidth;
-          height = greenMeteorHeight;
-        } else if (color === 'red') {
-          width = redMeteorWidth;
-          height = redMeteorHeight;
-        } else if (color === 'blue') {
-          width = blueMeteorWidth;
-          height = blueMeteorHeight;
-        } else if (color === 'purple') {
-          width = purpleMeteorWidth;
-          height = purpleMeteorHeight;
-        }
-      }
-      meteors.push({ x, y, color, width, height });
-    }
-
-    setInterval(createMeteor, 1000);
-
-    draw();
-
-    function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
-
-      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        leftPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        rightPressed = true;
-      }
-
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0;
-      shootSound.play();
-    }
-
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
-
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
-
-    document.addEventListener('keyup', function(e) {
-      if (!isPaused) {
-        if (e.key === 'ArrowLeft' || e.key === 'Left') {
-          leftPressed = false;
-        }
-        if (e.key === 'ArrowRight' || e.key === 'Right') {
-          rightPressed = false;
-        }
-        if (e.key === 'ArrowUp' || e.key === 'Up') {
-          upPressed = false;
-        }
-        if (e.key === 'ArrowDown' || e.key === 'Down') {
-          downPressed = false;
-        }
-        if (e.key === ' ' || e.key === 'Spacebar') {
-          bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-          shootSound.currentTime = 0;
-          shootSound.play();
-        }
-      }
-    });
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0;
-      shootSound.play();
-    });
-
-    function restartGame() {
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
-  </script>
+    draw();  // Start the drawing loop
+</script>
 </body>
 </html>
