@@ -1,4 +1,4 @@
-back<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -87,21 +87,6 @@ back<!DOCTYPE html>
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
-
-    #startButton {
-     position: fixed;
-     top: 50%;
-     left: 50%;
-     transform: translate(-50%, -50%);
-     padding: 10px 20px;
-     font-size: 20px;
-     color: white;
-     background-color: #4CAF50;
-     border: none;
-     border-radius: 5px;
-     cursor: pointer;
-   }
-
   </style>
 </head>
 <body>
@@ -110,73 +95,34 @@ back<!DOCTYPE html>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
-  <button id="startButton">Iniciar Jogo</button>
-  <audio id="backgroundMusic" src="mission.mp3" loop autoplay></audio>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
-     document.getElementById('startButton').addEventListener('click', function() {
-      this.style.display = 'none';
-      animationRunning = true;
-      gameLoop(); // Start the game loop
-    });
-
-    let animationRunning = false;
-
-      function startGame() {
-    animationRunning = true;
-    draw(); // Continua a animação do jogo sem reiniciar posições
-}
-    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
-    const gameCanvas = document.getElementById('gameCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
-    const ctx = gameCanvas.getContext('2d');
 
-    backgroundCanvas.width = gameCanvas.width = window.innerWidth;
-    backgroundCanvas.height = gameCanvas.height = window.innerHeight;
+    backgroundCanvas.width = window.innerWidth;
+    backgroundCanvas.height = window.innerHeight;
 
     const backgroundImage = new Image();
-const shipImage = new Image();
-
-backgroundImage.src = 'space.png';
-shipImage.src = 'nave.png';
-
-backgroundImage.onload = function() {
-    bgCtx.drawImage(backgroundImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
-    // Aqui você pode adicionar outras funções que devem ser chamadas após a imagem de fundo ser carregada
-};
-
-// Você pode adicionar outro evento onload para shipImage se necessário
-shipImage.onload = function() {
-    // Executa as ações necessárias após o carregamento da imagem da nave, se necessário
-};
+    backgroundImage.src = 'space.png';
 
     let bgY = 0;
-    let shipX = gameCanvas.width / 2;
-    let shipY = gameCanvas.height - 100;
-    let animationRunning = false;
     let isPaused = false; // Variável para controlar o estado de pausa
 
-    document.addEventListener('DOMContentLoaded', function() {
-    const backgroundMusic = document.getElementById('backgroundMusic');
-    backgroundMusic.play();
-    drawBackground(); // Inicia a animação de fundo imediatamente após a página ser carregada.
-    });
-
-    let animationFrameId;
-
     function drawBackground() {
+      bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
       bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-      bgY += 1;
-      if (bgY >= backgroundCanvas.height) bgY = 0;
+      bgY += 1; // Ajuste a velocidade aqui
+      if (bgY >= backgroundCanvas.height) {
+        bgY = 0;
+      }
+      if (!isPaused) {
+        requestAnimationFrame(drawBackground);
+      }
     }
 
-    let shipY = canvas.height - shipSize - 30;
-
-    backgroundImage.onload = function() {
-    drawBackground(); // Inicia a animação do background assim que a imagem é carregada
-};
+    backgroundImage.onload = drawBackground;
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -188,9 +134,9 @@ shipImage.onload = function() {
     shipImg.src = 'nave.png';
 
     const shipSize = 75; // Aumento de 50% no tamanho da nave
-    const shipSpeed = 4;
+    const shipSpeed = 5;
     let shipX = (canvas.width - shipSize) / 2;
-    let shipY = canvas.height - shipSize - 10 - 20;
+    let shipY = canvas.height - shipSize - 10;
     let leftPressed = false;
     let rightPressed = false;
     let upPressed = false;
@@ -198,7 +144,7 @@ shipImage.onload = function() {
 
     const bulletWidth = 5;
     const bulletHeight = 15;
-    const bulletSpeed = 4;
+    const bulletSpeed = 5;
     let bullets = [];
 
     const meteorImages = {
@@ -234,9 +180,8 @@ shipImage.onload = function() {
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); // Limpa o canvas
-
-    if (!isPaused) { // Se o jogo não está pausado, desenha e atualiza os componentes do jogo
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
         drawShip();
         drawBullets();
         drawMeteors();
@@ -249,30 +194,27 @@ shipImage.onload = function() {
         checkCollisions();
         checkMeteorBottom();
         checkPhase();
-    } else {
-        // Se o jogo está pausado, exibe a mensagem de pausa
+      } else {
         ctx.fillStyle = 'white';
         ctx.font = '48px Arial';
         ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+      }
+      if (!isPaused) {
+        requestAnimationFrame(draw);
+      }
     }
-
-    requestAnimationFrame(draw); // Solicita o próximo frame de animação
-}
 
     function togglePausePlay() {
-    isPaused = !isPaused;
-    const pausePlayButton = document.querySelector('.pause-play-button');
-    pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
-    if (isPaused) {
-        cancelAnimationFrame(animationFrameId); // Para toda a animação
-        animationRunning = false; // Seta que a animação foi interrompida
-    } else if (!animationRunning) {
-        startGame(); // Reinicia a animação de forma controlada
+      isPaused = !isPaused; // Alternar entre pausado e não pausado
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+      if (!isPaused) {
+        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+      }
     }
-}
 
     function drawShip() {
-      ctx.drawImage(shipImage, shipX - 50, shipY - 50, 100, 100); // Center the ship based on its size
+      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
     }
 
     function drawBullets() {
@@ -308,14 +250,6 @@ shipImage.onload = function() {
       if (downPressed && shipY < canvas.height - shipSize) {
         shipY += shipSpeed;
       }
-    }
-
-    function gameLoop() {
-      if (!animationRunning) return;
-      ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-      drawBackground();
-      drawShip();
-      requestAnimationFrame(gameLoop);
     }
 
     function moveBullets() {
