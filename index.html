@@ -115,13 +115,10 @@ back<!DOCTYPE html>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
      document.getElementById('startButton').addEventListener('click', function() {
-    this.style.display = 'none'; // Oculta o botão imediatamente ao clicar
-    const backgroundMusic = document.getElementById('backgroundMusic');
-    backgroundMusic.play(); // Tenta iniciar a música
-    if (!animationRunning) {
-        startGame(); // Evita reiniciar tudo se já estiver rodando
-    }
-});
+      this.style.display = 'none';
+      animationRunning = true;
+      gameLoop(); // Start the game loop
+    });
 
     let animationRunning = false;
 
@@ -131,18 +128,33 @@ back<!DOCTYPE html>
 }
     
     const backgroundCanvas = document.getElementById('backgroundCanvas');
+    const gameCanvas = document.getElementById('gameCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
+    const ctx = gameCanvas.getContext('2d');
 
-    backgroundCanvas.width = window.innerWidth;
-    backgroundCanvas.height = window.innerHeight;
+    backgroundCanvas.width = gameCanvas.width = window.innerWidth;
+    backgroundCanvas.height = gameCanvas.height = window.innerHeight;
 
     const backgroundImage = new Image();
+const shipImage = new Image();
+
 backgroundImage.src = 'space.png';
+shipImage.src = 'nave.png';
+
 backgroundImage.onload = function() {
-    drawBackground(); // Inicia a animação de fundo assim que a imagem é carregada
+    bgCtx.drawImage(backgroundImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
+    // Aqui você pode adicionar outras funções que devem ser chamadas após a imagem de fundo ser carregada
+};
+
+// Você pode adicionar outro evento onload para shipImage se necessário
+shipImage.onload = function() {
+    // Executa as ações necessárias após o carregamento da imagem da nave, se necessário
 };
 
     let bgY = 0;
+    let shipX = gameCanvas.width / 2;
+    let shipY = gameCanvas.height - 100;
+    let animationRunning = false;
     let isPaused = false; // Variável para controlar o estado de pausa
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -154,15 +166,11 @@ backgroundImage.onload = function() {
     let animationFrameId;
 
     function drawBackground() {
-    bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-    bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-    bgY += 1; // Ajuste esse valor se precisar alterar a velocidade do fundo
-    if (bgY >= backgroundCanvas.height) {
-        bgY = 0;
+      bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
+      bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
+      bgY += 1;
+      if (bgY >= backgroundCanvas.height) bgY = 0;
     }
-    requestAnimationFrame(drawBackground);
-}
 
     let shipY = canvas.height - shipSize - 30;
 
@@ -264,7 +272,7 @@ backgroundImage.onload = function() {
 }
 
     function drawShip() {
-      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
+      ctx.drawImage(shipImage, shipX - 50, shipY - 50, 100, 100); // Center the ship based on its size
     }
 
     function drawBullets() {
@@ -300,6 +308,14 @@ backgroundImage.onload = function() {
       if (downPressed && shipY < canvas.height - shipSize) {
         shipY += shipSpeed;
       }
+    }
+
+    function gameLoop() {
+      if (!animationRunning) return;
+      ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+      drawBackground();
+      drawShip();
+      requestAnimationFrame(gameLoop);
     }
 
     function moveBullets() {
