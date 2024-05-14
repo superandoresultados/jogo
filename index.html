@@ -97,6 +97,7 @@
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
    <img id="powerUp" src="power1.png" class="power-up" style="display: none;">
+  <img id="trophyImage" src="trofeu.png" alt="Troféu" style="display: none;"> 
   <script>
 
     const powerUpWidth = 30;
@@ -423,6 +424,16 @@ function playCompleteSound() {
       phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
     }
   }
+}
+
+    function passarDeFase() {
+  // Exibe a imagem do troféu
+  document.getElementById('trophyImage').style.display = 'block';
+  
+  // Define um temporizador para ocultar a imagem após 3 segundos
+  setTimeout(function() {
+    document.getElementById('trophyImage').style.display = 'none';
+  }, 3000); // 3000 milissegundos = 3 segundos
 }
 
     function drawCountdown(countdown) {
