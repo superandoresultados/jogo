@@ -95,6 +95,7 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
+  <audio id="backgroundMusic" src="mission.mp3" loop autoplay></audio>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -108,6 +109,11 @@
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const backgroundMusic = document.getElementById('backgroundMusic');
+      backgroundMusic.play();
+    });
 
     function drawBackground() {
       bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
