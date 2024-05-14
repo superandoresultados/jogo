@@ -96,77 +96,12 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
-   <img id="powerUp" src="power1.png" class="power-up" style="display: none;">
-  <img id="trophyImage" src="trofeu.png" alt="Troféu" style="display: none;"> 
+<audio id="backgroundMusic" loop autoplay>
+    <source src="background_music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+  <audio id="completeSound" src="mission.mp3"></audio>
   <script>
-
-    const powerUpWidth = 30;
-const powerUpHeight = 30;
-const powerUpSpeed = 2;
-let powerUps = [];
-
-// Função para desenhar o power-up na tela
-function drawPowerUps() {
-  powerUps.forEach(powerUp => {
-    // Desenha o power-up na posição atual
-    ctx.fillStyle = 'yellow'; // Cor do power-up (pode ser ajustada)
-    ctx.fillRect(powerUp.x, powerUp.y, powerUpWidth, powerUpHeight);
-  });
-}
-
-// Função para mover o power-up para baixo na tela
-function movePowerUps() {
-  powerUps.forEach(powerUp => {
-    // Move o power-up para baixo com base na velocidade definida
-    powerUp.y += powerUpSpeed;
-  });
-  // Remove os power-ups que atingiram a parte inferior da tela
-  powerUps = powerUps.filter(powerUp => powerUp.y < canvas.height);
-}
-
-// Verifica se a nave colidiu com o power-up
-function checkPowerUpCollision() {
-  powerUps.forEach((powerUp, index) => {
-    if (
-      shipX < powerUp.x + powerUpWidth &&
-      shipX + shipSize > powerUp.x &&
-      shipY < powerUp.y + powerUpHeight &&
-      shipY + shipSize > powerUp.y
-    ) {
-      // Colisão detectada, você pode adicionar aqui o efeito do power-up
-      // Por exemplo, aumentar a velocidade da nave, adicionar vida extra, etc.
-      // Aqui você pode implementar a lógica para o efeito do power-up
-      // Após aplicar o efeito, remova o power-up do array
-      powerUps.splice(index, 1);
-    }
-  });
-}
-
-// Função para criar um novo power-up em intervalos regulares
-function createPowerUp() {
-  // Defina a posição x aleatória para o power-up
-  const x = Math.random() * (canvas.width - powerUpWidth);
-  // Defina a posição y inicial acima da tela
-  const y = -powerUpHeight;
-  // Adicione o novo power-up ao array
-  powerUps.push({ x, y });
-}
-
-// Chame a função createPowerUp a cada 5 segundos (5000 milissegundos)
-setInterval(createPowerUp, 5000);
-
-// Adicione a chamada para as funções drawPowerUps, movePowerUps e checkPowerUpCollision dentro da função draw, junto com as outras chamadas de desenho e movimento
-function draw() {
-  // ...
-  drawPowerUps();
-  movePowerUps();
-  checkPowerUpCollision();
-  // ...
-}
-
-// Certifique-se de chamar a função draw em seu loop principal de jogo para atualizar continuamente o estado do jogo e desenhar na tela
-
-    
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
 
@@ -657,50 +592,19 @@ function playCompleteSound() {
       shootSound.play(); // Toca o som do tiro
     });
 
-    function passarDeFase() {
-  // Exibe a imagem do troféu
-  document.getElementById('trophyImage').style.display = 'block';
-  
-  // Define um temporizador para ocultar a imagem após 3 segundos
-  setTimeout(function() {
-    document.getElementById('trophyImage').style.display = 'none';
-  }, 3000); // 3000 milissegundos = 3 segundos
-}
-
-    const trophyImage = document.getElementById('trophyImage');
-
-// Função para exibir a imagem do troféu
-function showTrophyImage() {
-  trophyImage.style.display = 'block';
-  // Define um temporizador para ocultar a imagem após 3 segundos
-  setTimeout(function() {
-    trophyImage.style.display = 'none';
-  }, 3000); // 3000 milissegundos = 3 segundos
-}
-
-// Dentro da função passarDeFase(), após exibir a mensagem de fase:
-
-passarDeFase() {
-  // Exibe a imagem do troféu
-  showTrophyImage();
-}
-
     function restartGame() {
-  // Reinicia as variáveis do jogo e oculta o botão de reiniciar
-  score = 0;
-  phase = 1;
-  phaseMessage = '';
-  phaseStartTime = 0;
-  gameEnded = false;
-  lives = 3;
-  bullets = [];
-  meteors = [];
-  const restartButton = document.querySelector('.restart-button');
-  restartButton.style.display = 'none';
-}
-
-// Chama a função draw para iniciar o jogo
-draw();
+      // Reinicia as variáveis do jogo
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      bullets = [];
+      meteors = [];
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+    }
   </script>
 </body>
 </html>
