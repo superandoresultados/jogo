@@ -145,6 +145,8 @@ back<!DOCTYPE html>
       backgroundMusic.play();
     });
 
+    let animationFrameId;
+
     function drawBackground() {
     bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
     bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
@@ -153,9 +155,7 @@ back<!DOCTYPE html>
     if (bgY >= backgroundCanvas.height) {
         bgY = 0;
     }
-    if (!isPaused) {
-        requestAnimationFrame(drawBackground);
-    }
+    requestAnimationFrame(drawBackground); // Sempre agenda a próxima atualização
 }
 
     backgroundImage.onload = drawBackground;
@@ -244,9 +244,11 @@ back<!DOCTYPE html>
     isPaused = !isPaused;
     const pausePlayButton = document.querySelector('.pause-play-button');
     pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
-    if (!isPaused) {
-    draw(); // Isso deve retomar a animação do fundo se drawBackground() é chamada dentro de draw()
-  }
+    if (isPaused) {
+        cancelAnimationFrame(animationFrameId); // Cancela o frame agendado quando pausado
+    } else {
+        draw(); // Reinicia as funções de desenho, incluindo o fundo
+    }
 }
 
     function drawShip() {
