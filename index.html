@@ -426,16 +426,6 @@ function playCompleteSound() {
   }
 }
 
-    function passarDeFase() {
-  // Exibe a imagem do troféu
-  document.getElementById('trophyImage').style.display = 'block';
-  
-  // Define um temporizador para ocultar a imagem após 3 segundos
-  setTimeout(function() {
-    document.getElementById('trophyImage').style.display = 'none';
-  }, 3000); // 3000 milissegundos = 3 segundos
-}
-
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
       ctx.font = '24px Arial';
@@ -667,19 +657,32 @@ function playCompleteSound() {
       shootSound.play(); // Toca o som do tiro
     });
 
+    function passarDeFase() {
+  // Exibe a imagem do troféu
+  document.getElementById('trophyImage').style.display = 'block';
+  
+  // Define um temporizador para ocultar a imagem após 3 segundos
+  setTimeout(function() {
+    document.getElementById('trophyImage').style.display = 'none';
+  }, 3000); // 3000 milissegundos = 3 segundos
+}
+
     function restartGame() {
-      // Reinicia as variáveis do jogo
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
+  // Reinicia as variáveis do jogo e oculta o botão de reiniciar
+  score = 0;
+  phase = 1;
+  phaseMessage = '';
+  phaseStartTime = 0;
+  gameEnded = false;
+  lives = 3;
+  bullets = [];
+  meteors = [];
+  const restartButton = document.querySelector('.restart-button');
+  restartButton.style.display = 'none';
+}
+
+// Chama a função draw para iniciar o jogo
+draw();
   </script>
 </body>
 </html>
