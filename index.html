@@ -706,25 +706,29 @@ function hideTrophy() {
     }
 
     let powerUp = null;
+    
 function spawnPowerUp() {
     if (!powerUp) {
         powerUp = {
-            x: Math.random() * (canvas.width - 50), // Ajustar largura do power.png
-            y: -50, // Começa fora da tela
+            x: Math.random() * (canvas.width - 50), // Posição aleatória na largura da tela
+            y: -50, // Começa fora da tela, na parte superior
             width: 50,
             height: 50,
-            collected: false
+            image: new Image()
         };
+        powerUp.image.src = 'power.png'; // Carrega a imagem
     }
 }
 setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
 
     function movePowerUp() {
-    if (powerUp) {
-        powerUp.y += 2; // Ajustar a velocidade conforme necessário
+    if (powerUp && !powerUp.collected) {
+        powerUp.y += 2; // Velocidade de descida do objeto
         if (powerUp.y > canvas.height) {
             powerUp = null; // Remove se passar da tela sem ser coletado
         }
+    }
+}
 
         // Verifica colisão com a nave
         if (!powerUp.collected && powerUp.x < shipX + shipSize && powerUp.x + powerUp.width > shipX &&
@@ -733,6 +737,11 @@ setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
             updateCoins(-3000);
             enableBlueShots();
         }
+    }
+}
+    function drawPowerUp() {
+    if (powerUp && !powerUp.collected) {
+        bgCtx.drawImage(powerUp.image, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
     }
 }
 
