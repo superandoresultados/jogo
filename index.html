@@ -90,15 +90,15 @@
 
     .trophy {
   position: fixed;
-  top: 50%;
+  top: calc(50% - 70px); /* Subtrai 70px do centro vertical */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 150px;
   height: 150px;
   background: url('trofeu.png') no-repeat center center;
   background-size: cover;
-  display: none; /* Inicia escondido */
-  z-index: 1000; /* Garante que fique visível acima de outros elementos */
+  display: none;
+  z-index: 1000;
 }
 
   </style>
