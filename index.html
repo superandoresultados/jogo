@@ -300,11 +300,12 @@
     }
 
     function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
-      });
-      meteors = meteors.filter(meteor => meteor.y < canvas.height);
-    }
+  meteors.forEach(meteor => {
+    meteor.y += meteorSpeed;
+  });
+  // Assegure que esta filtragem não está removendo todos os meteoros imediatamente após sua criação
+  meteors = meteors.filter(meteor => meteor.y < canvas.height);
+}
 
     function checkCollisions() {
       bullets.forEach(bullet => {
