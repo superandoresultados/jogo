@@ -371,7 +371,7 @@
     showTrophy(); // Mostra o troféu
     updateCoins(3000); // Adiciona 1000 moedas
   }
-  if (score >= 20000 && phase === 4) {
+  if (score >= 20000 && phase === 5) {
     phase = 6;
     phaseMessage = 'Fase 6';
     phaseStartTime = Date.now();
@@ -380,7 +380,7 @@
     showTrophy(); // Mostra o troféu
     updateCoins(4000); // Adiciona 1000 moedas
   }
-if (score >= 40000 && phase === 4) {
+if (score >= 40000 && phase === 6) {
     phase = 7;
     phaseMessage = 'Fase 7';
     phaseStartTime = Date.now();
@@ -389,7 +389,7 @@ if (score >= 40000 && phase === 4) {
     showTrophy(); // Mostra o troféu
     updateCoins(5000); // Adiciona 1000 moedas
   }
-if (score >= 80000 && phase === 4) {
+if (score >= 80000 && phase === 7) {
     phase = 8;
     phaseMessage = 'Fase 8';
     phaseStartTime = Date.now();
@@ -397,6 +397,15 @@ if (score >= 80000 && phase === 4) {
     playCompleteSound(); // Toca a música de passagem de fase
     showTrophy(); // Mostra o troféu
     updateCoins(6000); // Adiciona 1000 moedas
+  }
+  if (score >= 100000 && phase === 8) {
+    phase = 9;
+    phaseMessage = 'Fase 9';
+    phaseStartTime = Date.now();
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+    showTrophy(); // Mostra o troféu
+    updateCoins(7000); // Adiciona 1000 moedas
   }
   // Adicione outras condições para as próximas fases aqui
 }
