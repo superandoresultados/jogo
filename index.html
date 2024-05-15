@@ -263,12 +263,13 @@
     }
 
     function drawMeteors() {
-      meteors.forEach(meteor => {
+    meteors.forEach(meteor => {
         const meteorImg = new Image();
         meteorImg.src = meteorImages[meteor.color];
         ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-      });
-    }
+        console.log('Drawing meteor:', meteor); // Log each drawn meteor
+    });
+}
 
     function drawScore() {
       const scorePanel = document.getElementById('scorePanel');
