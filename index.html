@@ -727,8 +727,6 @@ setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
         if (powerUp.y > canvas.height) {
             powerUp = null; // Remove se passar da tela sem ser coletado
         }
-    }
-}
 
         // Verifica colisão com a nave
         if (!powerUp.collected && powerUp.x < shipX + shipSize && powerUp.x + powerUp.width > shipX &&
@@ -739,6 +737,7 @@ setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
         }
     }
 }
+    
     function drawPowerUp() {
     if (powerUp && !powerUp.collected) {
         bgCtx.drawImage(powerUp.image, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
