@@ -101,6 +101,27 @@
   z-index: 1000;
 }
 
+    .coin-panel {
+  position: fixed;
+  top: 50px; /* Posição logo abaixo do painel de score */
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: gold;
+  font-size: 18px;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.coin-icon {
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  margin-right: 5px;
+}
+
+
   </style>
 </head>
 <body>
@@ -108,6 +129,10 @@
   <canvas id="gameCanvas"></canvas>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
+  <div class="coin-panel" id="coinPanel">
+    <img src="coin.png" alt="Coin" class="coin-icon">
+    <span id="coinCount">0</span> Moedas de Ouro
+  </div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
   <div id="trophy" class="trophy"></div>
@@ -319,6 +344,7 @@
     increaseLife();
     playCompleteSound();
     showTrophy(); // Mostra o troféu
+    updateCoins(1000); // Adiciona 1000 moedas
   }
   if (score >= 2000 && phase === 2) {
     phase = 3;
@@ -327,6 +353,7 @@
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
     showTrophy(); // Mostra o troféu
+    updateCoins(1000); // Adiciona 1000 moedas
   }
   if (score >= 5000 && phase === 3) {
     phase = 4;
@@ -335,6 +362,7 @@
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
     showTrophy(); // Mostra o troféu
+    updateCoins(1000); // Adiciona 1000 moedas
   }
   if (score >= 10000 && phase === 4) {
     phase = 5;
@@ -343,8 +371,16 @@
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
     showTrophy(); // Mostra o troféu
+    updateCoins(1000); // Adiciona 1000 moedas
   }
   // Adicione outras condições para as próximas fases aqui
+}
+
+    function updateCoins(amount) {
+  const coinCount = document.getElementById('coinCount');
+  let currentCoins = parseInt(coinCount.textContent);
+  currentCoins += amount;
+  coinCount.textContent = currentCoins;
 }
 
 function playCompleteSound() {
