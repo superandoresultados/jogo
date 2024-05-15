@@ -1,3 +1,8 @@
+Erro código - Aumentar meteoros
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,7 +121,7 @@
 .coin-icon {
   width: 24px; /* Tamanho do ícone */
   height: 24px;
-  margin-right: 5px; /* Espaço entre o ícone e o texto */
+  margin-right: 10px; /* Espaço entre o ícone e o texto */
 }
 
 
@@ -193,6 +198,10 @@
       purple: 'rock5.png'
     };
 
+    Object.keys(meteorImages).forEach(color => {
+  meteorImages[color].src = `rock${color}.png`;
+});
+
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
     const greenMeteorWidth = 45;
@@ -218,41 +227,38 @@
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!isPaused) {
-    drawShip();
-    drawBullets();
-    drawMeteors();
-    drawScore();
-    drawPhaseMessage();
-    drawWinMessage();
-    moveShip();
-    moveBullets();
-    moveMeteors();
-    movePowerUp();  // Certifique-se de que o objeto está se movendo
-    drawPowerUp();  // Certifique-se de que o objeto está sendo desenhado
-    checkCollisions();
-    checkMeteorBottom();
-    checkPhase();
-  } else {
-    ctx.fillStyle = 'white';
-    ctx.font = '48px Arial';
-    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-  }
-  if (!isPaused) {
-    requestAnimationFrame(draw);
-  }
-}
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+        drawShip();
+        drawBullets();
+        drawMeteors();
+        drawScore();
+        drawPhaseMessage();
+        drawWinMessage();
+        moveShip();
+        moveBullets();
+        moveMeteors();
+        checkCollisions();
+        checkMeteorBottom();
+        checkPhase();
+      } else {
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+      }
+      if (!isPaused) {
+        requestAnimationFrame(draw);
+      }
+    }
 
     function togglePausePlay() {
-  isPaused = !isPaused; // Alternar entre pausado e não pausado
-  const pausePlayButton = document.querySelector('.pause-play-button');
-  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-  if (!isPaused) {
-    draw(); // Se o jogo for despausado, inicie o ciclo de desenho do jogo novamente
-    requestAnimationFrame(drawBackground); // Garante que o fundo também continue se movendo
-  }
-}
+      isPaused = !isPaused; // Alternar entre pausado e não pausado
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
+      if (!isPaused) {
+        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
+      }
+    }
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
@@ -266,12 +272,10 @@
     }
 
     function drawMeteors() {
-      meteors.forEach(meteor => {
-        const meteorImg = new Image();
-        meteorImg.src = meteorImages[meteor.color];
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-      });
-    }
+  meteors.forEach(meteor => {
+    ctx.drawImage(meteorImages[meteor.color], meteor.x, meteor.y, meteor.width, meteor.height);
+  });
+}
 
     function drawScore() {
       const scorePanel = document.getElementById('scorePanel');
@@ -308,24 +312,22 @@
     }
 
     function checkCollisions() {
-  bullets.forEach(bullet => {
-    meteors.forEach((meteor, meteorIndex) => {
-      if (bullet.x < meteor.x + meteor.width &&
-          bullet.x + bulletWidth > meteor.x &&
-          bullet.y < meteor.y + meteor.height &&
-          bullet.y + bulletHeight > meteor.y) {
-        bullets = bullets.filter(b => b !== bullet);
-        score += getMeteorScore(meteor.color); // Adiciona pontos ao score
-        drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-        explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        explosionSound.play(); // Toca o som da explosão
-        meteors.splice(meteorIndex, 1);
-
-        updateCoins(5); // Adiciona 5 moedas de ouro para cada meteoro acertado
-      }
-    });
-  });
-}
+      bullets.forEach(bullet => {
+        meteors.forEach((meteor, meteorIndex) => {
+          if (bullet.x < meteor.x + meteor.width &&
+              bullet.x + bulletWidth > meteor.x &&
+              bullet.y < meteor.y + meteor.height &&
+              bullet.y + bulletHeight > meteor.y) {
+            bullets = bullets.filter(b => b !== bullet);
+            score += getMeteorScore(meteor.color);
+            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+            explosionSound.play(); // Toca o som da explosão
+            meteors.splice(meteorIndex, 1);
+          }
+        });
+      });
+    }
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
@@ -339,81 +341,75 @@
       });
     }
 
+    let meteorInterval;  // Certifique-se de declarar esta variável globalmente
+
     function checkPhase() {
-  if (score >= 1000 && phase === 1) {
-    phase = 2;
-    phaseMessage = 'Fase 2';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy(); // Mostra o troféu
-    updateCoins(1000); // Adiciona 1000 moedas
-  }
-  if (score >= 2000 && phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(1500); // Adiciona 1000 moedas
-  }
-  if (score >= 5000 && phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(2000); // Adiciona 1000 moedas
-  }
-  if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(3000); // Adiciona 1000 moedas
-  }
-  if (score >= 20000 && phase === 5) {
+    if (score >= 1000 && phase === 1) {
+        phase = 2;
+        phaseMessage = 'Fase 2';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(1000); // Adiciona 1000 moedas
+        meteorMultiplier = 1.1; // Atualiza o multiplicador para 10% mais meteoros
+        updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
+    } else if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Fase 3';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(1500); // Adiciona 1500 moedas
+        meteorMultiplier = 1.2; // Atualiza o multiplicador para 20% mais meteoros
+        updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
+    } else if (score >= 5000 && phase === 3) {
+        phase = 4;
+        phaseMessage = 'Fase 4';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(2000); // Adiciona 2000 moedas
+        meteorMultiplier = 1.3; // Atualiza o multiplicador para 30% mais meteoros
+        updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
+    } else if (score >= 10000 && phase === 4) {
+        phase = 5;
+        phaseMessage = 'Fase 5';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(3000); // Adiciona 3000 moedas
+        meteorMultiplier = 1.4; // Atualiza o multiplicador para 40% mais meteoros
+        updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
+    }else if (score >= 20000 && phase === 5) {
+        phase = 6;
+        phaseMessage = 'Fase 6';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(4000); // Adiciona 4000 moedas
+        meteorMultiplier = 1.4; // Atualiza o multiplicador para 40% mais meteoros
+        updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
+    }else if (score >= 20000 && phase === 5) {
     phase = 6;
     phaseMessage = 'Fase 6';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(4000); // Adiciona 1000 moedas
-  }
-if (score >= 40000 && phase === 6) {
-    phase = 7;
-    phaseMessage = 'Fase 7';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(5000); // Adiciona 1000 moedas
-  }
-if (score >= 80000 && phase === 7) {
-    phase = 8;
-    phaseMessage = 'Fase 8';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(6000); // Adiciona 1000 moedas
-  }
-  if (score >= 100000 && phase === 8) {
-    phase = 9;
-    phaseMessage = 'Fase 9';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(7000); // Adiciona 1000 moedas
-  }
-  // Adicione outras condições para as próximas fases aqui
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(4000); // Corrige o comentário se necessário
+    meteorMultiplier = 1 + (0.1 * (phase - 1)); // Calcula dinamicamente
+    updateMeteorInterval(); // Atualiza o intervalo de criação de meteoros
 }
+    // Adicione outras condições para as fases subsequentes conforme necessário
+}
+
+    // Chamada para iniciar o jogo quando a página carrega
+window.onload = initGame;
 
     function updateCoins(amount) {
   const coinCount = document.getElementById('coinCount');
@@ -503,87 +499,59 @@ function hideTrophy() {
     }
 
     function createMeteor() {
-  let x, y, color, width, height;
-  if (phase === 1) {
+    let x, y, color, width, height;
+    const colors = {
+        1: ['yellow', 'green', 'red'],
+        2: ['yellow', 'green', 'red', 'blue'],
+        3: ['yellow', 'green', 'red', 'blue', 'purple']
+    };
+    const sizes = {
+        yellow: { width: yellowMeteorWidth, height: yellowMeteorHeight },
+        green: { width: greenMeteorWidth, height: greenMeteorHeight },
+        red: { width: redMeteorWidth, height: redMeteorHeight },
+        blue: { width: blueMeteorWidth, height: blueMeteorHeight },
+        purple: { width: purpleMeteorWidth, height: purpleMeteorHeight }
+    };
+
     x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    }
-  } else if (phase === 2) {
-    x = Math.random() * (canvas.width - blueMeteorWidth);
-    y = -blueMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    }
-  } else if (phase === 3) {
-    x = Math.random() * (canvas.width - purpleMeteorWidth);
-    y = -purpleMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  } else { // Para todas as fases posteriores
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  }
-  meteors.push({ x, y, color, width, height });
+    y = -yellowMeteorHeight; // Isso sempre cria meteoros amarelos no topo do canvas
+    color = colors[Math.min(phase, 3)][Math.floor(Math.random() * colors[Math.min(phase, 3)].length)];
+    width = sizes[color].width;
+    height = sizes[color].height;
+
+    meteors.push({ x, y, color, width, height });
+    console.log('Meteor created:', { x, y, color, width, height }); // Confirmação de criação
 }
 
-    setInterval(createMeteor, 1000);
+    // Ajustar o multiplicador baseado na fase
+let meteorMultiplier = 1 + (0.1 * (phase - 1)); // Aumenta 10% a mais por fase
+
+    function updateMeteorCreation() {
+    clearInterval(meteorInterval);
+    let meteorRate = 1000 / meteorMultiplier; // Reduz o intervalo conforme a fase
+    meteorInterval = setInterval(createMeteor, meteorRate);
+}
+
+function checkPhase() {
+    // Condições existentes...
+    updateMeteorCreation(); // Atualiza o intervalo de criação de meteoros
+}
+
+function updateMeteorInterval() {
+    clearInterval(meteorInterval); // Limpa o intervalo anterior
+    let newInterval = 1000 / meteorMultiplier; // Define o novo intervalo com base no multiplicador
+    meteorInterval = setInterval(createMeteor, newInterval);
+    console.log('Meteor interval updated to:', newInterval); // Log para confirmar a atualização
+}
+
+    function initGame() {
+    console.log('Game initialized');
+    updateMeteorInterval(); // Configura o intervalo inicial
+    draw(); // Inicia o ciclo de desenho
+}
+
+
+meteorInterval = setInterval(createMeteor, 1000); // Inicializa ou redefine o intervalo sem 'let' ou 'const'
 
     draw();
 
@@ -636,25 +604,20 @@ function hideTrophy() {
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
-  if (e.key === ' ' || e.key === 'Spacebar') {
-    // Simples criação de tiros, ignorando pausa
-    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY - bulletHeight });
-    console.log('Disparo: ', bullets);
-  }
-});
+      if (e.key === 'ArrowLeft' || e.key === 'Left') {
+        leftPressed = true;
+      }
+      if (e.key === 'ArrowRight' || e.key === 'Right') {
+        rightPressed = true;
+      }
+      if (e.key === 'ArrowUp' || e.key === 'Up') {
+        upPressed = true;
+      }
+      if (e.key === 'ArrowDown' || e.key === 'Down') {
+        downPressed = true;
+      }
+    });
 
-function createMeteor() {
-  let x = Math.random() * (canvas.width - yellowMeteorWidth);
-  let y = -yellowMeteorHeight;
-  let color = 'yellow'; // Simplifique para testar com apenas um tipo de meteoro
-  let width = yellowMeteorWidth;
-  let height = yellowMeteorHeight;
-  meteors.push({ x, y, color, width, height });
-  console.log('Meteoro criado: ', meteors);
-}
-
-setInterval(createMeteor, 1000); // Cria um meteoro a cada segundo para teste
-    
     document.addEventListener('keyup', function(e) {
   if (!isPaused) { // Verifica se o jogo não está pausado
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
@@ -711,54 +674,6 @@ setInterval(createMeteor, 1000); // Cria um meteoro a cada segundo para teste
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
-
-    let powerUp = null;
-    
-function spawnPowerUp() {
-  if (!powerUp || powerUp.collected) {
-    powerUp = {
-      x: Math.random() * (canvas.width - 50), // Posição aleatória na largura da tela
-      y: -50, // Começa fora da tela, na parte superior
-      width: 50,
-      height: 50,
-      collected: false, // Assegura que o objeto possa ser coletado novamente
-      image: new Image()
-    };
-    powerUp.image.src = 'power.png'; // Carrega a imagem
-    powerUp.image.onload = function() {
-      drawPowerUp(); // Desenha somente após a imagem ser carregada
-    }
-  }
-}
-setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
-    
-    function drawPowerUp() {
-    if (powerUp && !powerUp.collected) {
-        bgCtx.drawImage(powerUp.image, powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-    }
-}
-
-    let blueShotsEnabled = false;
-let blueShotTimer = null;
-
-function enableBlueShots() {
-    blueShotsEnabled = true;
-    blueShotTimer = 60; // 60 segundos
-    updateShotTimerDisplay(blueShotTimer);
-    const countdown = setInterval(() => {
-        if (--blueShotTimer <= 0) {
-            blueShotsEnabled = false;
-            clearInterval(countdown);
-            updateShotTimerDisplay(0);
-        } else {
-            updateShotTimerDisplay(blueShotTimer);
-        }
-    }, 1000);
-}
-
-    function updateShotTimerDisplay(time) {
-    // Implementar atualização do display da UI aqui
-}
   </script>
 </body>
 </html>
