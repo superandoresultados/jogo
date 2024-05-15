@@ -704,6 +704,59 @@ function hideTrophy() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    let powerUp = null;
+function spawnPowerUp() {
+    if (!powerUp) {
+        powerUp = {
+            x: Math.random() * (canvas.width - 50), // Ajustar largura do power.png
+            y: -50, // Começa fora da tela
+            width: 50,
+            height: 50,
+            collected: false
+        };
+    }
+}
+setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
+
+    function movePowerUp() {
+    if (powerUp) {
+        powerUp.y += 2; // Ajustar a velocidade conforme necessário
+        if (powerUp.y > canvas.height) {
+            powerUp = null; // Remove se passar da tela sem ser coletado
+        }
+
+        // Verifica colisão com a nave
+        if (!powerUp.collected && powerUp.x < shipX + shipSize && powerUp.x + powerUp.width > shipX &&
+            powerUp.y < shipY + shipSize && powerUp.y + powerUp.height > shipY) {
+            powerUp.collected = true;
+            updateCoins(-3000);
+            enableBlueShots();
+        }
+    }
+}
+
+    let blueShotsEnabled = false;
+let blueShotTimer = null;
+
+function enableBlueShots() {
+    blueShotsEnabled = true;
+    blueShotTimer = 60; // 60 segundos
+    updateShotTimerDisplay(blueShotTimer);
+    const countdown = setInterval(() => {
+        if (--blueShotTimer <= 0) {
+            blueShotsEnabled = false;
+            clearInterval(countdown);
+            updateShotTimerDisplay(0);
+        } else {
+            updateShotTimerDisplay(blueShotTimer);
+        }
+    }, 1000);
+}
+
+    function updateShotTimerDisplay(time) {
+    // Implementar atualização do display da UI aqui
+}
   </script>
 </body>
 </html>
