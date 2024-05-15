@@ -335,70 +335,45 @@
     }
 
     function checkPhase() {
-  if (score >= 1000 && phase === 1) {
-    phase = 2;
-    phaseMessage = 'Fase 2';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy(); // Mostra o troféu
-    updateCoins(1000); // Adiciona 1000 moedas
-  }
-  if (score >= 2000 && phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(1500); // Adiciona 1000 moedas
-  }
-  if (score >= 5000 && phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(2000); // Adiciona 1000 moedas
-  }
-  if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(3000); // Adiciona 1000 moedas
-  }
-  if (score >= 20000 && phase === 4) {
-    phase = 6;
-    phaseMessage = 'Fase 6';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(4000); // Adiciona 1000 moedas
-  }
-if (score >= 40000 && phase === 4) {
-    phase = 7;
-    phaseMessage = 'Fase 7';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(5000); // Adiciona 1000 moedas
-  }
-if (score >= 80000 && phase === 4) {
-    phase = 8;
-    phaseMessage = 'Fase 8';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(6000); // Adiciona 1000 moedas
-  }
-  // Adicione outras condições para as próximas fases aqui
+    if (score >= 1000 && phase === 1) {
+        phase = 2;
+        phaseMessage = 'Fase 2';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(1000);
+    } else if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Fase 3';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(1500);
+    } else if (score >= 5000 && phase === 3) {
+        phase = 4;
+        phaseMessage = 'Fase 4';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(2000);
+    } else if (score >= 10000 && phase === 4) {
+        phase = 5;
+        phaseMessage = 'Fase 5';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(3000);
+    }
+
+      // Continue com outras fases conforme necessário
+
+    // Atualiza o multiplicador de meteoros e o intervalo de criação de meteoros
+    meteorMultiplier = 1 + (0.1 * (phase - 1));  // Atualiza o multiplicador com base na fase
+    updateMeteorInterval();  // Atualiza o intervalo de criação de meteoros
 }
 
     function updateCoins(amount) {
@@ -489,85 +464,56 @@ function hideTrophy() {
     }
 
     function createMeteor() {
-  let x, y, color, width, height;
-  if (phase === 1) {
+    let x, y, color, width, height;
+    const colors = {
+        1: ['yellow', 'green', 'red'],
+        2: ['yellow', 'green', 'red', 'blue'],
+        3: ['yellow', 'green', 'red', 'blue', 'purple']
+    };
+    const sizes = {
+        yellow: { width: yellowMeteorWidth, height: yellowMeteorHeight },
+        green: { width: greenMeteorWidth, height: greenMeteorHeight },
+        red: { width: redMeteorWidth, height: redMeteorHeight },
+        blue: { width: blueMeteorWidth, height: blueMeteorHeight },
+        purple: { width: purpleMeteorWidth, height: purpleMeteorHeight }
+    };
+
     x = Math.random() * (canvas.width - yellowMeteorWidth);
     y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    }
-  } else if (phase === 2) {
-    x = Math.random() * (canvas.width - blueMeteorWidth);
-    y = -blueMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    }
-  } else if (phase === 3) {
-    x = Math.random() * (canvas.width - purpleMeteorWidth);
-    y = -purpleMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  } else { // Para todas as fases posteriores
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  }
-  meteors.push({ x, y, color, width, height });
+    color = colors[Math.min(phase, 3)][Math.floor(Math.random() * colors[Math.min(phase, 3)].length)];
+    width = sizes[color].width;
+    height = sizes[color].height;
+
+    meteors.push({ x, y, color, width, height });
 }
+
+    // Ajustar o multiplicador baseado na fase
+let meteorMultiplier = 1 + (0.1 * (phase - 1)); // Aumenta 10% a mais por fase
+
+    function updateMeteorCreation() {
+    clearInterval(meteorInterval);
+    let meteorRate = 1000 / meteorMultiplier; // Reduz o intervalo conforme a fase
+    meteorInterval = setInterval(createMeteor, meteorRate);
+}
+
+    let meteorInterval = setInterval(createMeteor, 1000); // Inicializa com intervalo padrão
+
+function checkPhase() {
+    // Condições existentes...
+    updateMeteorCreation(); // Atualiza o intervalo de criação de meteoros
+}
+
+    let meteorInterval;  // Certifique-se de declarar esta variável globalmente
+
+function updateMeteorInterval() {
+    clearInterval(meteorInterval); // Limpa o intervalo anterior
+    let newInterval = 1000 / meteorMultiplier; // Define o novo intervalo com base no multiplicador
+    meteorInterval = setInterval(createMeteor, newInterval); // Reinicia o setInterval com o novo intervalo
+}
+
+// Inicializa a criação de meteoros na carga inicial do jogo
+updateMeteorInterval();
+
 
     setInterval(createMeteor, 1000);
 
