@@ -116,15 +116,16 @@
   <script>
      document.getElementById('startButton').addEventListener('click', function() {
   this.style.display = 'none';
-  animationRunning = true;
-  gameLoop(); // Start the game loop
+  if (!animationRunning) {
+    startGame(); // Começa o jogo somente se não estiver já em execução
+  }
 });
 
 let animationRunning = false;
 
 function startGame() {
   animationRunning = true;
-  draw(); // Continua a animação do jogo sem reiniciar posições
+  gameLoop(); // Garante que o loop principal do jogo continue após iniciar
 }
 
 const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -214,8 +215,7 @@ let explosionSound = new Audio('bum.wav');
 let completeSound = new Audio('complete.wav');
 
 function draw() {
-  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); // Clear the canvas
-
+  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
   if (!isPaused) {
     drawShip();
     drawBullets();
@@ -230,23 +230,19 @@ function draw() {
     checkMeteorBottom();
     checkPhase();
   } else {
-    ctx.fillStyle = 'white';
-    ctx.font = '48px Arial';
-    ctx.fillText('Jogo Pausado', gameCanvas.width / 2 - 150, gameCanvas.height / 2);
+    displayPauseMessage();
   }
-
-  requestAnimationFrame(draw); // Request the next animation frame
+  animationFrameId = requestAnimationFrame(draw);
 }
-
+    
 function togglePausePlay() {
   isPaused = !isPaused;
   const pausePlayButton = document.querySelector('.pause-play-button');
   pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
   if (isPaused) {
-    cancelAnimationFrame(animationFrameId); // Stop all animation
-    animationRunning = false;
+    cancelAnimationFrame(animationFrameId); // Para a animação
   } else if (!animationRunning) {
-    startGame(); // Restart the animation in a controlled way
+    startGame(); // Reinicia a animação de forma controlada se não estiver rodando
   }
 }
 
@@ -291,9 +287,7 @@ function moveShip() {
 
 function gameLoop() {
   if (!animationRunning) return;
-  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-  drawBackground();
-  drawShip();
+  draw();
   requestAnimationFrame(gameLoop);
 }
 
