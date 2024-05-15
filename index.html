@@ -334,6 +334,8 @@
       });
     }
 
+    let meteorInterval;  // Certifique-se de declarar esta variável globalmente
+
     function checkPhase() {
     if (score >= 1000 && phase === 1) {
         phase = 2;
@@ -522,14 +524,10 @@ let meteorMultiplier = 1 + (0.1 * (phase - 1)); // Aumenta 10% a mais por fase
     meteorInterval = setInterval(createMeteor, meteorRate);
 }
 
-    let meteorInterval = setInterval(createMeteor, 1000); // Inicializa com intervalo padrão
-
 function checkPhase() {
     // Condições existentes...
     updateMeteorCreation(); // Atualiza o intervalo de criação de meteoros
 }
-
-    let meteorInterval;  // Certifique-se de declarar esta variável globalmente
 
 function updateMeteorInterval() {
     clearInterval(meteorInterval); // Limpa o intervalo anterior
