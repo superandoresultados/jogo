@@ -193,6 +193,10 @@
       purple: 'rock5.png'
     };
 
+    Object.keys(meteorImages).forEach(color => {
+  meteorImages[color].src = `rock${color}.png`;
+});
+
     const yellowMeteorWidth = 30;
     const yellowMeteorHeight = 30;
     const greenMeteorWidth = 45;
@@ -263,12 +267,9 @@
     }
 
     function drawMeteors() {
-    meteors.forEach(meteor => {
-        const meteorImg = new Image();
-        meteorImg.src = meteorImages[meteor.color];
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-        console.log('Drawing meteor:', meteor); // Log each drawn meteor
-    });
+  meteors.forEach(meteor => {
+    ctx.drawImage(meteorImages[meteor.color], meteor.x, meteor.y, meteor.width, meteor.height);
+  });
 }
 
     function drawScore() {
