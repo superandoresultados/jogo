@@ -87,6 +87,21 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
+
+    #startButton {
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     padding: 10px 20px;
+     font-size: 20px;
+     color: white;
+     background-color: #4CAF50;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+   }
+
   </style>
 </head>
 <body>
@@ -95,457 +110,402 @@
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
+  <button id="startButton">Iniciar Jogo</button>
+  <audio id="backgroundMusic" src="mission.mp3" loop autoplay></audio>
   <audio id="completeSound" src="complete.wav"></audio>
   <script>
-    const backgroundCanvas = document.getElementById('backgroundCanvas');
-    const bgCtx = backgroundCanvas.getContext('2d');
+     document.getElementById('startButton').addEventListener('click', function() {
+  this.style.display = 'none';
+  animationRunning = true;
+  gameLoop(); // Start the game loop
+});
 
-    backgroundCanvas.width = window.innerWidth;
-    backgroundCanvas.height = window.innerHeight;
+let animationRunning = false;
 
-    const backgroundImage = new Image();
-    backgroundImage.src = 'space.png';
+function startGame() {
+  animationRunning = true;
+  draw(); // Continua a animação do jogo sem reiniciar posições
+}
 
-    let bgY = 0;
-    let isPaused = false; // Variável para controlar o estado de pausa
+const backgroundCanvas = document.getElementById('backgroundCanvas');
+const gameCanvas = document.getElementById('gameCanvas');
+const bgCtx = backgroundCanvas.getContext('2d');
+const ctx = gameCanvas.getContext('2d');
 
-    function drawBackground() {
-      bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
-      bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
-      bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
-      bgY += 1; // Ajuste a velocidade aqui
-      if (bgY >= backgroundCanvas.height) {
-        bgY = 0;
-      }
-      if (!isPaused) {
-        requestAnimationFrame(drawBackground);
-      }
-    }
+backgroundCanvas.width = gameCanvas.width = window.innerWidth;
+backgroundCanvas.height = gameCanvas.height = window.innerHeight;
 
-    backgroundImage.onload = drawBackground;
+const backgroundImage = new Image();
+const shipImage = new Image();
 
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+backgroundImage.src = 'space.png';
+shipImage.src = 'nave.png';
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+backgroundImage.onload = function() {
+  bgCtx.drawImage(backgroundImage, 0, 0, backgroundCanvas.width, backgroundCanvas.height);
+};
 
-    let shipImg = new Image();
-    shipImg.src = 'nave.png';
+shipImage.onload = function() {
+  ctx.drawImage(shipImage, gameCanvas.width / 2 - 50, gameCanvas.height - 150, 100, 100); // Adjust position and size as needed
+};
 
-    const shipSize = 75; // Aumento de 50% no tamanho da nave
-    const shipSpeed = 5;
-    let shipX = (canvas.width - shipSize) / 2;
-    let shipY = canvas.height - shipSize - 10;
-    let leftPressed = false;
-    let rightPressed = false;
-    let upPressed = false;
-    let downPressed = false;
+let bgY = 0;
+let shipX = gameCanvas.width / 2;
+let shipY = gameCanvas.height - 100;
+let isPaused = false; // Variable to control pause state
 
-    const bulletWidth = 5;
-    const bulletHeight = 15;
-    const bulletSpeed = 5;
-    let bullets = [];
+document.addEventListener('DOMContentLoaded', function() {
+  const backgroundMusic = document.getElementById('backgroundMusic');
+  backgroundMusic.play();
+  drawBackground(); // Start background animation once the page is loaded
+});
+
+let animationFrameId;
+
+function drawBackground() {
+  bgCtx.drawImage(backgroundImage, 0, bgY, backgroundCanvas.width, backgroundCanvas.height);
+  bgCtx.drawImage(backgroundImage, 0, bgY - backgroundCanvas.height, backgroundCanvas.width, backgroundCanvas.height);
+  bgY += 1;
+  if (bgY >= backgroundCanvas.height) bgY = 0;
+}
+
+const shipSize = 75; // Increase ship size by 50%
+const shipSpeed = 4;
+let leftPressed = false;
+let rightPressed = false;
+let upPressed = false;
+let downPressed = false;
+
+const bulletWidth = 5;
+const bulletHeight = 15;
+const bulletSpeed = 4;
+let bullets = [];
 
     const meteorImages = {
-      yellow: 'rock1.png',
-      green: 'rock2.png',
-      red: 'rock3.png',
-      blue: 'rock4.png',
-      purple: 'rock5.png'
-    };
+  yellow: 'rock1.png',
+  green: 'rock2.png',
+  red: 'rock3.png',
+  blue: 'rock4.png',
+  purple: 'rock5.png'
+};
 
-    const yellowMeteorWidth = 30;
-    const yellowMeteorHeight = 30;
-    const greenMeteorWidth = 45;
-    const greenMeteorHeight = 45;
-    const redMeteorWidth = 60;
-    const redMeteorHeight = 60;
-    const blueMeteorWidth = 40;
-    const blueMeteorHeight = 40;
-    const purpleMeteorWidth = 50;
-    const purpleMeteorHeight = 50;
-    const meteorSpeed = 2;
-    let meteors = [];
+const yellowMeteorWidth = 30;
+const yellowMeteorHeight = 30;
+const greenMeteorWidth = 45;
+const greenMeteorHeight = 45;
+const redMeteorWidth = 60;
+const redMeteorHeight = 60;
+const blueMeteorWidth = 40;
+const blueMeteorHeight = 40;
+const purpleMeteorWidth = 50;
+const purpleMeteorHeight = 50;
+const meteorSpeed = 2;
+let meteors = [];
 
-    let score = 0;
-    let phase = 1;
-    let phaseMessage = '';
-    let phaseStartTime = 0;
-    let gameEnded = false;
-    let lives = 3; // Vidas iniciais
+let score = 0;
+let phase = 1;
+let phaseMessage = '';
+let phaseStartTime = 0;
+let gameEnded = false;
+let lives = 3; // Initial lives
 
-    let shootSound = new Audio('shoot.wav');
-    let explosionSound = new Audio('bum.wav');
-    let completeSound = new Audio('complete.wav');
+let shootSound = new Audio('shoot.wav');
+let explosionSound = new Audio('bum.wav');
+let completeSound = new Audio('complete.wav');
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+function draw() {
+  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height); // Clear the canvas
+
+  if (!isPaused) {
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawScore();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.fillText('Jogo Pausado', gameCanvas.width / 2 - 150, gameCanvas.height / 2);
+  }
+
+  requestAnimationFrame(draw); // Request the next animation frame
+}
+
+function togglePausePlay() {
+  isPaused = !isPaused;
+  const pausePlayButton = document.querySelector('.pause-play-button');
+  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
+  if (isPaused) {
+    cancelAnimationFrame(animationFrameId); // Stop all animation
+    animationRunning = false;
+  } else if (!animationRunning) {
+    startGame(); // Restart the animation in a controlled way
+  }
+}
+
+function drawShip() {
+  ctx.drawImage(shipImage, shipX - 50, shipY - 50, 100, 100); // Center the ship based on its size
+}
+
+function drawBullets() {
+  ctx.fillStyle = 'red';
+  bullets.forEach(bullet => {
+    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+  });
+}
+
+function drawMeteors() {
+  meteors.forEach(meteor => {
+    const meteorImg = new Image();
+    meteorImg.src = meteorImages[meteor.color];
+    ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
+  });
+}
+
+function drawScore() {
+  const scorePanel = document.getElementById('scorePanel');
+  scorePanel.textContent = `Score: ${score}`;
+}
+
+function moveShip() {
+  if (leftPressed && shipX > 0) {
+    shipX -= shipSpeed;
+  }
+  if (rightPressed && shipX < gameCanvas.width - 100) {
+    shipX += shipSpeed;
+  }
+  if (upPressed && shipY > 0) {
+    shipY -= shipSpeed;
+  }
+  if (downPressed && shipY < gameCanvas.height - 100) {
+    shipY += shipSpeed;
+  }
+}
+
+function gameLoop() {
+  if (!animationRunning) return;
+  ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+  drawBackground();
+  drawShip();
+  requestAnimationFrame(gameLoop);
+}
+
+function moveBullets() {
+  bullets.forEach(bullet => {
+    bullet.y -= bulletSpeed;
+  });
+  bullets = bullets.filter(bullet => bullet.y > 0);
+}
+
+function moveMeteors() {
+  meteors.forEach(meteor => {
+    meteor.y += meteorSpeed;
+  });
+  meteors = meteors.filter(meteor => meteor.y < gameCanvas.height);
+}
+
+function checkCollisions() {
+  bullets.forEach(bullet => {
+    meteors.forEach((meteor, meteorIndex) => {
+      if (bullet.x < meteor.x + meteor.width &&
+          bullet.x + bulletWidth > meteor.x &&
+          bullet.y < meteor.y + meteor.height &&
+          bullet.y + bulletHeight > meteor.y) {
+        bullets = bullets.filter(b => b !== bullet);
+        score += getMeteorScore(meteor.color);
+        drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+        explosionSound.currentTime = 0; // Restart the audio to avoid intervals
+        explosionSound.play(); // Play the explosion sound
+        meteors.splice(meteorIndex, 1);
       }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
-    }
+    });
+  });
+}
 
-    function togglePausePlay() {
-      isPaused = !isPaused; // Alternar entre pausado e não pausado
-      const pausePlayButton = document.querySelector('.pause-play-button');
-      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-      if (!isPaused) {
-        draw(); // Se o jogo for despausado, inicie o ciclo de desenho novamente
-      }
+function checkMeteorBottom() {
+  meteors.forEach((meteor, meteorIndex) => {
+    if (meteor.y + meteor.height >= gameCanvas.height) {
+      score -= 5; // Subtract 5 points when a meteor reaches the bottom
+      drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+      explosionSound.currentTime = 0;
+      explosionSound.play();
+      meteors.splice(meteorIndex, 1);
     }
+  });
+}
 
-    function drawShip() {
-      ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
-    }
-
-    function drawBullets() {
-      ctx.fillStyle = 'red';
-      bullets.forEach(bullet => {
-        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-      });
-    }
-
-    function drawMeteors() {
-      meteors.forEach(meteor => {
-        const meteorImg = new Image();
-        meteorImg.src = meteorImages[meteor.color];
-        ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.width, meteor.height);
-      });
-    }
-
-    function drawScore() {
-      const scorePanel = document.getElementById('scorePanel');
-      scorePanel.textContent = `Score: ${score}`;
-    }
-
-    function moveShip() {
-      if (leftPressed && shipX > 0) {
-        shipX -= shipSpeed;
-      }
-      if (rightPressed && shipX < canvas.width - shipSize) {
-        shipX += shipSpeed;
-      }
-      if (upPressed && shipY > 0) {
-        shipY -= shipSpeed;
-      }
-      if (downPressed && shipY < canvas.height - shipSize) {
-        shipY += shipSpeed;
-      }
-    }
-
-    function moveBullets() {
-      bullets.forEach(bullet => {
-        bullet.y -= bulletSpeed;
-      });
-      bullets = bullets.filter(bullet => bullet.y > 0);
-    }
-
-    function moveMeteors() {
-      meteors.forEach(meteor => {
-        meteor.y += meteorSpeed;
-      });
-      meteors = meteors.filter(meteor => meteor.y < canvas.height);
-    }
-
-    function checkCollisions() {
-      bullets.forEach(bullet => {
-        meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
-              bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
-              bullet.y + bulletHeight > meteor.y) {
-            bullets = bullets.filter(b => b !== bullet);
-            score += getMeteorScore(meteor.color);
-            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-            explosionSound.play(); // Toca o som da explosão
-            meteors.splice(meteorIndex, 1);
-          }
-        });
-      });
-    }
-
-    function checkMeteorBottom() {
-      meteors.forEach((meteor, meteorIndex) => {
-        if (meteor.y + meteor.height >= canvas.height) {
-          score -= 5; // Diminui 5 pontos quando o meteoro atinge a parte inferior
-          drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-          explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-          explosionSound.play(); // Toca o som da explosão
-          meteors.splice(meteorIndex, 1);
-        }
-      });
-    }
-
-    function checkPhase() {
+function checkPhase() {
   if (score >= 1000 && phase === 1) {
     phase = 2;
     phaseMessage = 'Fase 2';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
+    increaseLife(); // Increase life when advancing to the next phase
+    playCompleteSound(); // Play phase transition music
   }
-  if (score >= 2000 && phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-  }
-  if (score >= 5000 && phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-  }
-  if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-  }
-  // Adicione outras condições para as próximas fases aqui
+  // Add more conditions for other phases here
 }
 
 function playCompleteSound() {
-  completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
-  completeSound.play(); // Toca a música de passagem de fase
+  completeSound.currentTime = 0;
+  completeSound.play();
 }
 
-    function increaseLife() {
-      lives++; // Incrementa uma vida
-    }
+function increaseLife() {
+  lives++; // Increment life
+}
 
-    function drawPhaseMessage() {
+function drawPhaseMessage() {
   ctx.fillStyle = 'white';
   ctx.font = '48px Arial';
   const messageWidth = ctx.measureText(phaseMessage).width;
-  const messageX = (canvas.width - messageWidth) / 2;
-  ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+  const messageX = (gameCanvas.width - messageWidth) / 2;
+  ctx.fillText(phaseMessage, messageX, gameCanvas.height / 2);
+}
 
-  if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
-    // Contagem regressiva de 3 segundos para a próxima fase
-    const elapsedTime = Date.now() - phaseStartTime;
-    const countdown = 3 - Math.floor(elapsedTime / 1000);
-    if (countdown > 0) {
-      drawCountdown(countdown);
-    } else {
-      phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
-    }
+function drawCountdown(countdown) {
+  ctx.fillStyle = 'white';
+  ctx.font = '24px Arial';
+  ctx.fillText(`Next phase in ${countdown}...`, gameCanvas.width / 2 - 100, gameCanvas.height / 2 + 50);
+}
+
+function drawWinMessage() {
+  if (score >= 5000 && phase === 3 && gameEnded) {
+    // Draw a button to restart the game
+    const restartButton = document.querySelector('.restart-button');
+    restartButton.style.display = 'block';
   }
 }
 
-    function drawCountdown(countdown) {
-      ctx.fillStyle = 'white';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Próxima fase em ${countdown}...`, canvas.width / 2 - 100, canvas.height / 2 + 50);
-    }
+function getMeteorScore(color) {
+  switch(color) {
+    case 'yellow': return 10;
+    case 'green': return 20;
+    case 'red': return 30;
+    case 'blue': return 50;
+    case 'purple': return 100;
+    default: return 0;
+  }
+}
 
-    function drawWinMessage() {
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Desenha um botão para reiniciar o jogo
-        const restartButton = document.querySelector('.restart-button');
-        restartButton.style.display = 'block';
-      }
-    }
+function drawExplosion(x, y) {
+  const explosionRadius = 50;
+  const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+  explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+  explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+  ctx.fillStyle = explosionGradient;
+  ctx.beginPath();
+  ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+  ctx.fill();
+}
 
-    function getMeteorScore(color) {
-      if (color === 'yellow') {
-        return 10;
-      } else if (color === 'green') {
-        return 20;
-      } else if (color === 'red') {
-        return 30;
-      } else if (color === 'blue') {
-        return 50;
-      } else if (color === 'purple') {
-        return 100;
-      }
-    }
-
-    function drawExplosion(x, y) {
-      const explosionRadius = 50;
-      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
-      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
-      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-      ctx.fillStyle = explosionGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function createMeteor() {
+function createMeteor() {
   let x, y, color, width, height;
-  if (phase === 1) {
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
+  x = Math.random() * (gameCanvas.width - yellowMeteorWidth);
+  y = -yellowMeteorHeight;
+  const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+  color = colors[Math.floor(Math.random() * colors.length)];
+  switch(color) {
+    case 'yellow':
       width = yellowMeteorWidth;
       height = yellowMeteorHeight;
-    } else if (color === 'green') {
+      break;
+    case 'green':
       width = greenMeteorWidth;
       height = greenMeteorHeight;
-    } else if (color === 'red') {
+      break;
+    case 'red':
       width = redMeteorWidth;
       height = redMeteorHeight;
-    }
-  } else if (phase === 2) {
-    x = Math.random() * (canvas.width - blueMeteorWidth);
-    y = -blueMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
+      break;
+    case 'blue':
       width = blueMeteorWidth;
       height = blueMeteorHeight;
-    }
-  } else if (phase === 3) {
-    x = Math.random() * (canvas.width - purpleMeteorWidth);
-    y = -purpleMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
+      break;
+    case 'purple':
       width = purpleMeteorWidth;
       height = purpleMeteorHeight;
-    }
-  } else { // Para todas as fases posteriores
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
+      break;
   }
   meteors.push({ x, y, color, width, height });
 }
 
-    setInterval(createMeteor, 1000);
+setInterval(createMeteor, 1000);
 
-    draw();
+draw(); // Start drawing the game immediately
 
-    function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
+function handleTouch(event) {
+  event.preventDefault();
+  const touch = event.touches[0];
+  const touchX = touch.clientX;
+  const touchY = touch.clientY;
 
-      // Determina a direção do movimento baseada no toque
-      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        leftPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        rightPressed = true;
-      }
+  // Determine the direction of movement based on the touch
+  if (touchX < gameCanvas.width / 3 && touchY < gameCanvas.height / 3) {
+    upPressed = true;
+    leftPressed = true;
+  } else if (touchX > gameCanvas.width / 3 && touchX < (2 * gameCanvas.width) / 3 && touchY < gameCanvas.height / 3) {
+    upPressed = true;
+  } else if (touchX > (2 * gameCanvas.width) / 3 && touchY < gameCanvas.height / 3) {
+    upPressed = true;
+    rightPressed = true;
+  } else if (touchX < gameCanvas.width / 3 && touchY > gameCanvas.height / 3 && touchY < (2 * gameCanvas.height) / 3) {
+    leftPressed = true;
+  } else if (touchX > (2 * gameCanvas.width) / 3 && touchY > gameCanvas.height / 3 && touchY < (2 * gameCanvas.height) / 3) {
+    rightPressed = true;
+  } else if (touchX < gameCanvas.width / 3 && touchY > (2 * gameCanvas.height) / 3) {
+    downPressed = true;
+    leftPressed = true;
+  } else if (touchX > gameCanvas.width / 3 && touchX < (2 * gameCanvas.width) / 3 && touchY > (2 * gameCanvas.height) / 3) {
+    downPressed = true;
+  } else if (touchX > (2 * gameCanvas.width) / 3 && touchY > (2 * gameCanvas.height) / 3) {
+    downPressed = true;
+    rightPressed = true;
+  }
 
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0;
-      shootSound.play();
-    }
+  // Add a shot when touching the screen
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+  shootSound.currentTime = 0;
+  shootSound.play();
+}
 
-    // Função para lidar com o fim do toque na tela
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
+// Function to handle the end of a touch on the screen
+function handleTouchEnd(event) {
+  event.preventDefault();
+  leftPressed = false;
+  rightPressed = false;
+  upPressed = false;
+  downPressed = false;
+}
 
-    // Adiciona event listeners para toque na tela
-    canvas.addEventListener('touchstart', handleTouch);
-    canvas.addEventListener('touchend', handleTouchEnd);
+// Add event listeners for touch on the screen
+gameCanvas.addEventListener('touchstart', handleTouch);
+gameCanvas.addEventListener('touchend', handleTouchEnd);
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    leftPressed = true;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'Right') {
+    rightPressed = true;
+  }
+  if (e.key === 'ArrowUp' || e.key === 'Up') {
+    upPressed = true;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'Down') {
+    downPressed = true;
+  }
+});
 
-    document.addEventListener('keyup', function(e) {
-  if (!isPaused) { // Verifica se o jogo não está pausado
+document.addEventListener('keyup', function(e) {
+  if (!isPaused) { // Check if the game is not paused
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
       leftPressed = false;
     }
@@ -559,47 +519,46 @@ function playCompleteSound() {
       downPressed = false;
     }
     if (e.key === ' ' || e.key === 'Spacebar') {
-      // Adiciona um novo tiro à lista de balas
+      // Add a new shot to the list of bullets
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      // Reinicia o áudio para evitar intervalos
+      // Restart the audio to avoid intervals
       shootSound.currentTime = 0;
-      // Toca o som do tiro
+      // Play the shooting sound
       shootSound.play();
     }
   }
 });
 
-
-    canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
-    });
-
-    function restartGame() {
-      // Reinicia as variáveis do jogo
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
+gameCanvas.addEventListener('click', function(event) {
+  const clickX = event.clientX;
+  const clickY = event.clientY;
+  if (score >= 5000 && phase === 3 && gameEnded) {
+    // Check if the click was on the restart game button
+    const buttonX = gameCanvas.width / 2 - 100;
+    const buttonY = gameCanvas.height / 2 + 100;
+    if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
+      restartGame();
+      return;
     }
+  }
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+  shootSound.currentTime = 0; // Restart the audio to avoid intervals
+  shootSound.play(); // Play the shooting sound
+});
+
+function restartGame() {
+  // Reset game variables
+  score = 0;
+  phase = 1;
+  phaseMessage = '';
+  phaseStartTime = 0;
+  gameEnded = false;
+  lives = 3;
+  bullets = [];
+  meteors = [];
+  const restartButton = document.querySelector('.restart-button');
+  restartButton.style.display = 'none';
+}
   </script>
 </body>
 </html>
