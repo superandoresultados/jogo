@@ -509,13 +509,13 @@ function hideTrophy() {
     };
 
     x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
+    y = -yellowMeteorHeight; // Isso sempre cria meteoros amarelos no topo do canvas
     color = colors[Math.min(phase, 3)][Math.floor(Math.random() * colors[Math.min(phase, 3)].length)];
     width = sizes[color].width;
     height = sizes[color].height;
 
     meteors.push({ x, y, color, width, height });
-    console.log('Meteor created:', { x, y, color, width, height }); // Log the meteor properties
+    console.log('Meteor created:', { x, y, color, width, height }); // Confirmação de criação
 }
 
     // Ajustar o multiplicador baseado na fase
@@ -535,11 +535,12 @@ function checkPhase() {
 function updateMeteorInterval() {
     clearInterval(meteorInterval); // Limpa o intervalo anterior
     let newInterval = 1000 / meteorMultiplier; // Define o novo intervalo com base no multiplicador
-    meteorInterval = setInterval(createMeteor, newInterval); // Reinicia o setInterval com o novo intervalo
+    meteorInterval = setInterval(createMeteor, newInterval);
+    console.log('Meteor interval updated to:', newInterval); // Log para confirmar a atualização
 }
 
     function initGame() {
-    meteorMultiplier = 1; // Define o multiplicador inicial
+    console.log('Game initialized');
     updateMeteorInterval(); // Configura o intervalo inicial
     draw(); // Inicia o ciclo de desenho
 }
