@@ -636,19 +636,28 @@ function hideTrophy() {
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
+  if (!isPaused) {
+    if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      leftPressed = true;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'Right') {
+      rightPressed = true;
+    }
+    if (e.key === 'ArrowUp' || e.key === 'Up') {
+      upPressed = true;
+    }
+    if (e.key === 'ArrowDown' || e.key === 'Down') {
+      downPressed = true;
+    }
+    // Verifica se a barra de espaço foi pressionada para disparar
+    if (e.key === ' ' || e.key === 'Spacebar') {
+      // Adiciona um novo tiro à lista de balas
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      shootSound.currentTime = 0; // Reinicia o áudio para evitar atrasos
+      shootSound.play();
+    }
+  }
+});
 
     document.addEventListener('keyup', function(e) {
   if (!isPaused) { // Verifica se o jogo não está pausado
