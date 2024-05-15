@@ -218,29 +218,31 @@
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-      } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
-    }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isPaused) {
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawScore();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    movePowerUp();  // Certifique-se de que o objeto está se movendo
+    drawPowerUp();  // Certifique-se de que o objeto está sendo desenhado
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+  }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
+}
 
     function togglePausePlay() {
   isPaused = !isPaused; // Alternar entre pausado e não pausado
@@ -708,35 +710,22 @@ function hideTrophy() {
     let powerUp = null;
     
 function spawnPowerUp() {
-    if (!powerUp) {
-        powerUp = {
-            x: Math.random() * (canvas.width - 50), // Posição aleatória na largura da tela
-            y: -50, // Começa fora da tela, na parte superior
-            width: 50,
-            height: 50,
-            image: new Image()
-        };
-        powerUp.image.src = 'power.png'; // Carrega a imagem
+  if (!powerUp || powerUp.collected) {
+    powerUp = {
+      x: Math.random() * (canvas.width - 50), // Posição aleatória na largura da tela
+      y: -50, // Começa fora da tela, na parte superior
+      width: 50,
+      height: 50,
+      collected: false, // Assegura que o objeto possa ser coletado novamente
+      image: new Image()
+    };
+    powerUp.image.src = 'power.png'; // Carrega a imagem
+    powerUp.image.onload = function() {
+      drawPowerUp(); // Desenha somente após a imagem ser carregada
     }
+  }
 }
 setInterval(spawnPowerUp, 120000); // 120000 ms = 2 minutos
-
-    function movePowerUp() {
-    if (powerUp && !powerUp.collected) {
-        powerUp.y += 2; // Velocidade de descida do objeto
-        if (powerUp.y > canvas.height) {
-            powerUp = null; // Remove se passar da tela sem ser coletado
-        }
-
-        // Verifica colisão com a nave
-        if (!powerUp.collected && powerUp.x < shipX + shipSize && powerUp.x + powerUp.width > shipX &&
-            powerUp.y < shipY + shipSize && powerUp.y + powerUp.height > shipY) {
-            powerUp.collected = true;
-            updateCoins(-3000);
-            enableBlueShots();
-        }
-    }
-}
     
     function drawPowerUp() {
     if (powerUp && !powerUp.collected) {
