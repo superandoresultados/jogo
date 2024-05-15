@@ -542,9 +542,7 @@ function updateMeteorInterval() {
 }
 
 
-
-
-    setInterval(createMeteor, 1000);
+meteorInterval = setInterval(createMeteor, 1000); // Inicializa ou redefine o intervalo sem 'let' ou 'const'
 
     draw();
 
