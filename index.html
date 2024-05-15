@@ -637,17 +637,24 @@ function hideTrophy() {
 
     document.addEventListener('keydown', function(e) {
   if (e.key === ' ' || e.key === 'Spacebar') {
-    // Força o disparo sem verificar se o jogo está pausado
-    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-    if (!shootSound.paused) {
-      shootSound.pause();
-      shootSound.currentTime = 0;
-    }
-    shootSound.play();
-    console.log('Disparo efetuado:', bullets);
+    // Simples criação de tiros, ignorando pausa
+    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY - bulletHeight });
+    console.log('Disparo: ', bullets);
   }
 });
 
+function createMeteor() {
+  let x = Math.random() * (canvas.width - yellowMeteorWidth);
+  let y = -yellowMeteorHeight;
+  let color = 'yellow'; // Simplifique para testar com apenas um tipo de meteoro
+  let width = yellowMeteorWidth;
+  let height = yellowMeteorHeight;
+  meteors.push({ x, y, color, width, height });
+  console.log('Meteoro criado: ', meteors);
+}
+
+setInterval(createMeteor, 1000); // Cria um meteoro a cada segundo para teste
+    
     document.addEventListener('keyup', function(e) {
   if (!isPaused) { // Verifica se o jogo não está pausado
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
