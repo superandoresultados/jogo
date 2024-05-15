@@ -306,22 +306,24 @@
     }
 
     function checkCollisions() {
-      bullets.forEach(bullet => {
-        meteors.forEach((meteor, meteorIndex) => {
-          if (bullet.x < meteor.x + meteor.width &&
-              bullet.x + bulletWidth > meteor.x &&
-              bullet.y < meteor.y + meteor.height &&
-              bullet.y + bulletHeight > meteor.y) {
-            bullets = bullets.filter(b => b !== bullet);
-            score += getMeteorScore(meteor.color);
-            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-            explosionSound.play(); // Toca o som da explosão
-            meteors.splice(meteorIndex, 1);
-          }
-        });
-      });
-    }
+  bullets.forEach(bullet => {
+    meteors.forEach((meteor, meteorIndex) => {
+      if (bullet.x < meteor.x + meteor.width &&
+          bullet.x + bulletWidth > meteor.x &&
+          bullet.y < meteor.y + meteor.height &&
+          bullet.y + bulletHeight > meteor.y) {
+        bullets = bullets.filter(b => b !== bullet);
+        score += getMeteorScore(meteor.color); // Adiciona pontos ao score
+        drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+        explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+        explosionSound.play(); // Toca o som da explosão
+        meteors.splice(meteorIndex, 1);
+
+        updateCoins(5); // Adiciona 5 moedas de ouro para cada meteoro acertado
+      }
+    });
+  });
+}
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
