@@ -87,6 +87,20 @@
     .pause-play-button:hover {
       background-color: #0fae4b;
     }
+
+    .trophy {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      background: url('trophy.png') no-repeat center center;
+      background-size: cover;
+      display: none; /* Inicia escondido */
+      z-index: 10;
+    }
+
   </style>
 </head>
 <body>
@@ -96,6 +110,7 @@
   <div class="score-panel" id="scorePanel"></div>
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
+  <div id="trophy" class="trophy"></div>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -104,7 +119,7 @@
     backgroundCanvas.height = window.innerHeight;
 
     const backgroundImage = new Image();
-    backgroundImage.src = 'space.png';
+    backgroundImage.src = 'space.png';     a a
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
@@ -301,8 +316,9 @@
     phase = 2;
     phaseMessage = 'Fase 2';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
+    increaseLife();
+    playCompleteSound();
+    showTrophy(); // Mostra o troféu
   }
   if (score >= 2000 && phase === 2) {
     phase = 3;
@@ -310,6 +326,7 @@
     phaseStartTime = Date.now();
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
+    showTrophy(); // Mostra o troféu
   }
   if (score >= 5000 && phase === 3) {
     phase = 4;
@@ -317,6 +334,7 @@
     phaseStartTime = Date.now();
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
+    showTrophy(); // Mostra o troféu
   }
   if (score >= 10000 && phase === 4) {
     phase = 5;
@@ -324,6 +342,7 @@
     phaseStartTime = Date.now();
     increaseLife(); // Aumenta uma vida ao passar de fase
     playCompleteSound(); // Toca a música de passagem de fase
+    showTrophy(); // Mostra o troféu
   }
   // Adicione outras condições para as próximas fases aqui
 }
@@ -355,6 +374,18 @@ function playCompleteSound() {
     }
   }
 }
+
+    function showTrophy() {
+  const trophy = document.getElementById('trophy');
+  trophy.style.display = 'block';
+  setTimeout(hideTrophy, 3000); // Esconde o troféu após 3 segundos
+}
+
+function hideTrophy() {
+  const trophy = document.getElementById('trophy');
+  trophy.style.display = 'none';
+}
+
 
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
