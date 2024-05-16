@@ -766,12 +766,12 @@ function hideTrophy() {
     if (laserActive) {
         // Tiros das asas (azuis)
         // As coordenadas precisam ser ajustadas para sair das "asas"
-        // Ajuste conforme a posição e tamanho da nave
         let wingOffset = 8; // Pode precisar ajustar este valor
-        let wingYPosition = shipY; // Ajuste se os tiros precisam sair de uma posição Y diferente na nave
+        let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2; // Ajuste para que saia do meio vertical da nave
 
         bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' }); // Tiro da asa esquerda
-        bullets.push({ x: shipX + shipSize - wingOffset, y: wingYPosition, color: 'blue' }); // Tiro da asa direita
+        bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' }); // Tiro da asa direita
+        console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset}`);
     }
 }
 
