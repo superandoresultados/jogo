@@ -301,12 +301,11 @@
     }
 
     function drawBullets() {
-      bullets.forEach(bullet => {
-        ctx.fillStyle = bullet.color; // Usar a cor do tiro
-        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-      });
-    }
-
+  bullets.forEach(bullet => {
+    ctx.fillStyle = bullet.color; // Usar a cor do tiro
+    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+  });
+}
     function drawMeteors() {
       meteors.forEach(meteor => {
         const meteorImg = new Image();
@@ -659,31 +658,36 @@
       shootSound.play();
     }
 
-    function handleTouchEnd(event) {
-      event.preventDefault();
-      leftPressed = false;
-      rightPressed = false;
-      upPressed = false;
-      downPressed = false;
-    }
+    function handleTouch(event) {
+  event.preventDefault();
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+  shootSound.currentTime = 0;
+  shootSound.play();
+  fireWeapons(); // Dispara os tiros das asas
+}
 
     canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft' || e.key === 'Left') {
-        leftPressed = true;
-      }
-      if (e.key === 'ArrowRight' || e.key === 'Right') {
-        rightPressed = true;
-      }
-      if (e.key === 'ArrowUp' || e.key === 'Up') {
-        upPressed = true;
-      }
-      if (e.key === 'ArrowDown' || e.key === 'Down') {
-        downPressed = true;
-      }
-    });
+  if (e.key === 'ArrowLeft' || e.key === 'Left') {
+    leftPressed = true;
+  }
+  if (e.key === 'ArrowRight' || e.key === 'Right') {
+    rightPressed = true;
+  }
+  if (e.key === 'ArrowUp' || e.key === 'Up') {
+    upPressed = true;
+  }
+  if (e.key === 'ArrowDown' || e.key === 'Down') {
+    downPressed = true;
+  }
+  if (e.key === ' ' || e.key === 'Spacebar') {
+    fireWeapons(); // Dispara os tiros
+    shootSound.currentTime = 0;
+    shootSound.play();
+  }
+});
 
     document.addEventListener('keyup', function(e) {
       if (!isPaused) {
@@ -708,20 +712,15 @@
     });
 
     canvas.addEventListener('click', function(event) {
-      const clickX = event.clientX;
-      const clickY = event.clientY;
-      if (score >= 5000 && phase === 3 && gameEnded) {
-        const buttonX = canvas.width / 2 - 100;
-        const buttonY = canvas.height / 2 + 100;
-        if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
-          restartGame();
-          return;
-        }
-      }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
-    });
+  const clickX = event.clientX;
+  const clickY = event.clientY;
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+  shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+  shootSound.play(); // Toca o som do tiro
+  fireWeapons(); // Dispara os tiros das asas
+});
+
+canvas.addEventListener('touchstart', handleTouch);
 
     function restartGame() {
       score = 0;
@@ -738,15 +737,21 @@
 
     function fireWeapons() {
   console.log("Disparando armas, Laser active:", laserActive);
+
+  // Tiro central vermelho
   bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
   if (laserActive) {
-    let wingOffset = 15; // Ajuste conforme necessário
+    let wingOffset = 8; // Ajuste de 8px para as asas
     let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2;
 
+    // Tiro da asa esquerda
     bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' });
+
+    // Tiro da asa direita
     bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' });
-    console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset}`);
+
+    console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset - bulletWidth}`);
   }
 }
 
