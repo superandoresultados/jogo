@@ -737,18 +737,18 @@
     }
 
     function fireWeapons() {
-      console.log("Disparando armas, Laser active:", laserActive);
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+  console.log("Disparando armas, Laser active:", laserActive);
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
-      if (laserActive) {
-        let wingOffset = 15; // Ajuste conforme necessário
-        let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2;
+  if (laserActive) {
+    let wingOffset = 15; // Ajuste conforme necessário
+    let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2;
 
-        bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' });
-        bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' });
-        console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset}`);
-      }
-    }
+    bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' });
+    bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' });
+    console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset}`);
+  }
+}
 
     function toggleLaserPower() {
       laserActive = !laserActive; // Alterna entre ativar e desativar os lasers
