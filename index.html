@@ -306,11 +306,16 @@ shipImg.onload = function() {
     }
 
     function drawBullets() {
-  bullets.forEach(bullet => {
-    console.log(bullet); // Log para verificar os valores dos tiros
-    ctx.fillStyle = bullet.color; // Deve colorir de acordo com a cor do tiro
-    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-  });
+    // Testar desenhando um tiro estático
+    ctx.fillStyle = 'red'; // Cor estática para teste
+    ctx.fillRect(100, 100, bulletWidth, bulletHeight); // Posição estática para teste
+
+    // Desenhar os tiros reais
+    bullets.forEach(bullet => {
+        console.log("Tiro:", bullet.x, bullet.y, bullet.color); // Verificar os valores no console
+        ctx.fillStyle = bullet.color; // Usar a cor do tiro
+        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+    });
 }
 
     function drawMeteors() {
