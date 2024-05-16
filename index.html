@@ -307,7 +307,8 @@ shipImg.onload = function() {
 
     function drawBullets() {
   bullets.forEach(bullet => {
-    ctx.fillStyle = bullet.color; // Usa a cor especificada no bullet
+    console.log(bullet); // Log para verificar os valores dos tiros
+    ctx.fillStyle = bullet.color; // Deve colorir de acordo com a cor do tiro
     ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
   });
 }
@@ -752,11 +753,12 @@ function hideTrophy() {
     }
 
     function fireWeapons() {
-  console.log("Laser active:", laserActive); // Adicione isso para depuração
+  console.log("Disparando armas, Laser active:", laserActive);
   // Tiro central padrão
   bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
-  if (laserActive) {
+  // Simular sempre ativo para testar
+  if (true) { // Mudar para if (laserActive) após testar
     // Tiros das asas (azuis)
     bullets.push({ x: shipX + 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa esquerda
     bullets.push({ x: shipX + shipSize - 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa direita
