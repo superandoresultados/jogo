@@ -219,6 +219,8 @@
     const bulletSpeed = 5;
     let bullets = [];
 
+    let laserActive = true; // Controle para ativar tiros de laser
+
     const meteorImages = {
       yellow: 'rock1.png',
       green: 'rock2.png',
@@ -693,7 +695,7 @@ function hideTrophy() {
     });
 
     document.addEventListener('keyup', function(e) {
-  if (!isPaused) { // Verifica se o jogo não está pausado
+  if (!isPaused) {
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
       leftPressed = false;
     }
@@ -707,11 +709,8 @@ function hideTrophy() {
       downPressed = false;
     }
     if (e.key === ' ' || e.key === 'Spacebar') {
-      // Adiciona um novo tiro à lista de balas
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      // Reinicia o áudio para evitar intervalos
+      fireWeapons(); // Dispara os tiros
       shootSound.currentTime = 0;
-      // Toca o som do tiro
       shootSound.play();
     }
   }
@@ -748,6 +747,23 @@ function hideTrophy() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    function fireWeapons() {
+  // Tiro central padrão
+  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+
+  if (laserActive) {
+    // Tiros das asas (azuis)
+    bullets.push({ x: shipX + 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa esquerda
+    bullets.push({ x: shipX + shipSize - 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa direita
+  }
+}
+
+    function toggleLaserPower() {
+  laserActive = !laserActive; // Alterna entre ativar e desativar os lasers
+}
+
+    
   </script>
 </body>
 </html>
