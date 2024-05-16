@@ -203,7 +203,10 @@
     canvas.height = window.innerHeight;
 
     let shipImg = new Image();
-    shipImg.src = 'nave.png';
+shipImg.src = 'nave.png';
+shipImg.onload = function() {
+  console.log("Nave carregada com sucesso.");
+};
 
     const shipSize = 75; // Aumento de 50% no tamanho da nave
     const shipSpeed = 5;
@@ -303,11 +306,11 @@
     }
 
     function drawBullets() {
-      ctx.fillStyle = 'red';
-      bullets.forEach(bullet => {
-        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-      });
-    }
+  bullets.forEach(bullet => {
+    ctx.fillStyle = bullet.color; // Usa a cor especificada no bullet
+    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
+  });
+}
 
     function drawMeteors() {
       meteors.forEach(meteor => {
@@ -749,6 +752,7 @@ function hideTrophy() {
     }
 
     function fireWeapons() {
+  console.log("Laser active:", laserActive); // Adicione isso para depuração
   // Tiro central padrão
   bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
