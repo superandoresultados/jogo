@@ -35,6 +35,25 @@
       }
     }
 
+.play-button {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 2100;
+}
+
+.play-button:hover {
+  background-color: #45a049;
+}
+
     /* Estilo para o botão de reiniciar jogo */
     .restart-button {
       position: fixed;
@@ -119,6 +138,19 @@
   margin-right: 5px; /* Espaço entre o ícone e o texto */
 }
 
+    .pause-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('poster.png');
+      background-size: cover;
+      background-position: center;
+      display: none;
+      z-index: 2000;
+    }
+
 
   </style>
 </head>
@@ -134,6 +166,8 @@
   <button class="pause-play-button" onclick="togglePausePlay()">Pause</button>
   <audio id="completeSound" src="complete.wav"></audio>
   <div id="trophy" class="trophy"></div>
+  <div class="pause-overlay" id="pauseOverlay"></div>
+<button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -243,12 +277,22 @@
     }
 
     function togglePausePlay() {
-  isPaused = !isPaused; // Alternar entre pausado e não pausado
+  isPaused = !isPaused;
   const pausePlayButton = document.querySelector('.pause-play-button');
-  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause'; // Alterna entre os textos "Pause" e "Play"
-  if (!isPaused) {
-    draw(); // Se o jogo for despausado, inicie o ciclo de desenho do jogo novamente
-    requestAnimationFrame(drawBackground); // Garante que o fundo também continue se movendo
+  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
+  const pauseOverlay = document.getElementById('pauseOverlay');
+  const playButton = document.getElementById('playButton');
+
+  if (isPaused) {
+    pauseOverlay.style.display = 'block';
+    playButton.style.display = 'block';
+    cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
+    cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
+  } else {
+    pauseOverlay.style.display = 'none';
+    playButton.style.display = 'none';
+    requestAnimationFrame(draw);
+    requestAnimationFrame(drawBackground);
   }
 }
 
