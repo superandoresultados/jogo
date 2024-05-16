@@ -758,20 +758,31 @@ function hideTrophy() {
     }
 
     function fireWeapons() {
-  console.log("Disparando armas, Laser active:", laserActive);
-  // Tiro central padrão
-  bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+    console.log("Disparando armas, Laser active:", laserActive);
+    // Tiro central padrão
+    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
-  // Simular sempre ativo para testar
-  if (true) { // Mudar para if (laserActive) após testar
-    // Tiros das asas (azuis)
-    bullets.push({ x: shipX + 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa esquerda
-    bullets.push({ x: shipX + shipSize - 8, y: shipY + shipSize / 2, color: 'blue' }); // Tiro da asa direita
-  }
+    // Verifica se os tiros laser das asas estão ativos
+    if (laserActive) {
+        // Tiros das asas (azuis)
+        // As coordenadas precisam ser ajustadas para sair das "asas"
+        // Ajuste conforme a posição e tamanho da nave
+        let wingOffset = 8; // Pode precisar ajustar este valor
+        let wingYPosition = shipY; // Ajuste se os tiros precisam sair de uma posição Y diferente na nave
+
+        bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' }); // Tiro da asa esquerda
+        bullets.push({ x: shipX + shipSize - wingOffset, y: wingYPosition, color: 'blue' }); // Tiro da asa direita
+    }
 }
 
     function toggleLaserPower() {
   laserActive = !laserActive; // Alterna entre ativar e desativar os lasers
+}
+
+    if (laserActive) {
+    console.log("Tiros das asas ativados");
+    console.log(`Posição da asa esquerda: X=${shipX + wingOffset}, Y=${wingYPosition}`);
+    console.log(`Posição da asa direita: X=${shipX + shipSize - wingOffset}, Y=${wingYPosition}`);
 }
 
     
