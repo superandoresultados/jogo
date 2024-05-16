@@ -25,7 +25,7 @@
       display: block;
       margin: auto;
     }
-    /* Adiciona regras de mídia para ajustar o tamanho do texto em dispositivos móveis */
+
     @media screen and (max-width: 600px) {
       canvas {
         font-size: 12px;
@@ -35,7 +35,6 @@
       }
     }
 
-    /* Estilo para o botão de reiniciar jogo */
     .restart-button {
       position: fixed;
       bottom: 20px;
@@ -55,7 +54,6 @@
       background-color: #45a049;
     }
 
-    /* Estilo para o painel de score */
     .score-panel {
       position: fixed;
       top: 0;
@@ -70,7 +68,6 @@
       opacity: 1.0;
     }
 
-    /* Estilo para o botão de pause e play */
     .pause-play-button {
       position: fixed;
       top: 5px;
@@ -89,35 +86,35 @@
     }
 
     .trophy {
-  position: fixed;
-  top: calc(50% - 120px); /* Subtrai 120px do centro vertical */
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px;
-  height: 150px;
-  background: url('trofeu.png') no-repeat center center;
-  background-size: cover;
-  display: none;
-  z-index: 1000;
-}
+      position: fixed;
+      top: calc(50% - 120px); /* Subtrai 120px do centro vertical */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      background: url('trofeu.png') no-repeat center center;
+      background-size: cover;
+      display: none;
+      z-index: 1000;
+    }
 
     .coin-panel {
-  position: fixed;
-  top: 40px; /* Ajuste conforme necessário para ficar abaixo do painel de score */
-  left: 10px; /* Espaço da esquerda da tela */
-  padding: 5px 10px; /* Padding mais pequeno para envolver o conteúdo */
-  background-color: rgba(0, 0, 0, 0.7);
-  color: gold;
-  font-size: 18px;
-  display: flex;
-  align-items: center; /* Alinha verticalmente o ícone e o texto */
-}
+      position: fixed;
+      top: 40px; /* Ajuste conforme necessário para ficar abaixo do painel de score */
+      left: 10px; /* Espaço da esquerda da tela */
+      padding: 5px 10px; /* Padding mais pequeno para envolver o conteúdo */
+      background-color: rgba(0, 0, 0, 0.7);
+      color: gold;
+      font-size: 18px;
+      display: flex;
+      align-items: center; /* Alinha verticalmente o ícone e o texto */
+    }
 
-.coin-icon {
-  width: 24px; /* Tamanho do ícone */
-  height: 24px;
-  margin-right: 5px; /* Espaço entre o ícone e o texto */
-}
+    .coin-icon {
+      width: 24px; /* Tamanho do ícone */
+      height: 24px;
+      margin-right: 5px; /* Espaço entre o ícone e o texto */
+    }
 
     .pause-overlay {
       position: fixed;
@@ -133,25 +130,23 @@
     }
 
     .play-button {
-  position: fixed;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 30px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  z-index: 2100;
-}
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 30px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 2100;
+    }
 
-.play-button:hover {
-  background-color: #45a049;
-}
-
-
+    .play-button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -167,7 +162,7 @@
   <audio id="completeSound" src="complete.wav"></audio>
   <div id="trophy" class="trophy"></div>
   <div class="pause-overlay" id="pauseOverlay"></div>
-<button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
+  <button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -203,10 +198,10 @@
     canvas.height = window.innerHeight;
 
     let shipImg = new Image();
-shipImg.src = 'nave.png';
-shipImg.onload = function() {
-  console.log("Nave carregada com sucesso.");
-};
+    shipImg.src = 'nave.png';
+    shipImg.onload = function() {
+      console.log("Nave carregada com sucesso.");
+    };
 
     const shipSize = 75; // Aumento de 50% no tamanho da nave
     const shipSpeed = 5;
@@ -282,41 +277,35 @@ shipImg.onload = function() {
     }
 
     function togglePausePlay() {
-  isPaused = !isPaused;
-  const pausePlayButton = document.querySelector('.pause-play-button');
-  pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
-  const pauseOverlay = document.getElementById('pauseOverlay');
-  const playButton = document.getElementById('playButton');
+      isPaused = !isPaused;
+      const pausePlayButton = document.querySelector('.pause-play-button');
+      pausePlayButton.textContent = isPaused ? 'Play' : 'Pause';
+      const pauseOverlay = document.getElementById('pauseOverlay');
+      const playButton = document.getElementById('playButton');
 
-  if (isPaused) {
-    pauseOverlay.style.display = 'block';
-    playButton.style.display = 'block';
-    cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
-    cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
-  } else {
-    pauseOverlay.style.display = 'none';
-    playButton.style.display = 'none';
-    requestAnimationFrame(draw);
-    requestAnimationFrame(drawBackground);
-  }
-}
+      if (isPaused) {
+        pauseOverlay.style.display = 'block';
+        playButton.style.display = 'block';
+        cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
+        cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
+      } else {
+        pauseOverlay.style.display = 'none';
+        playButton.style.display = 'none';
+        requestAnimationFrame(draw);
+        requestAnimationFrame(drawBackground);
+      }
+    }
 
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
     }
 
     function drawBullets() {
-    // Testar desenhando um tiro estático
-    ctx.fillStyle = 'red'; // Cor estática para teste
-    ctx.fillRect(100, 100, bulletWidth, bulletHeight); // Posição estática para teste
-
-    // Desenhar os tiros reais
-    bullets.forEach(bullet => {
-        console.log("Tiro:", bullet.x, bullet.y, bullet.color); // Verificar os valores no console
+      bullets.forEach(bullet => {
         ctx.fillStyle = bullet.color; // Usar a cor do tiro
         ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-    });
-}
+      });
+    }
 
     function drawMeteors() {
       meteors.forEach(meteor => {
@@ -361,24 +350,24 @@ shipImg.onload = function() {
     }
 
     function checkCollisions() {
-  bullets.forEach(bullet => {
-    meteors.forEach((meteor, meteorIndex) => {
-      if (bullet.x < meteor.x + meteor.width &&
-          bullet.x + bulletWidth > meteor.x &&
-          bullet.y < meteor.y + meteor.height &&
-          bullet.y + bulletHeight > meteor.y) {
-        bullets = bullets.filter(b => b !== bullet);
-        score += getMeteorScore(meteor.color); // Adiciona pontos ao score
-        drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-        explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        explosionSound.play(); // Toca o som da explosão
-        meteors.splice(meteorIndex, 1);
+      bullets.forEach(bullet => {
+        meteors.forEach((meteor, meteorIndex) => {
+          if (bullet.x < meteor.x + meteor.width &&
+              bullet.x + bulletWidth > meteor.x &&
+              bullet.y < meteor.y + meteor.height &&
+              bullet.y + bulletHeight > meteor.y) {
+            bullets = bullets.filter(b => b !== bullet);
+            score += getMeteorScore(meteor.color); // Adiciona pontos ao score
+            drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
+            explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
+            explosionSound.play(); // Toca o som da explosão
+            meteors.splice(meteorIndex, 1);
 
-        updateCoins(5); // Adiciona 5 moedas de ouro para cada meteoro acertado
-      }
-    });
-  });
-}
+            updateCoins(5); // Adiciona 5 moedas de ouro para cada meteoro acertado
+          }
+        });
+      });
+    }
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
@@ -393,127 +382,125 @@ shipImg.onload = function() {
     }
 
     function checkPhase() {
-  if (score >= 1000 && phase === 1) {
-    phase = 2;
-    phaseMessage = 'Fase 2';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy(); // Mostra o troféu
-    updateCoins(1000); // Adiciona 1000 moedas
-  }
-  if (score >= 2000 && phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(1500); // Adiciona 1000 moedas
-  }
-  if (score >= 5000 && phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(2000); // Adiciona 1000 moedas
-  }
-  if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(3000); // Adiciona 1000 moedas
-  }
-  if (score >= 20000 && phase === 5) {
-    phase = 6;
-    phaseMessage = 'Fase 6';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(4000); // Adiciona 1000 moedas
-  }
-if (score >= 40000 && phase === 6) {
-    phase = 7;
-    phaseMessage = 'Fase 7';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(5000); // Adiciona 1000 moedas
-  }
-if (score >= 80000 && phase === 7) {
-    phase = 8;
-    phaseMessage = 'Fase 8';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(6000); // Adiciona 1000 moedas
-  }
-  if (score >= 100000 && phase === 8) {
-    phase = 9;
-    phaseMessage = 'Fase 9';
-    phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(7000); // Adiciona 1000 moedas
-  }
-  // Adicione outras condições para as próximas fases aqui
-}
+      if (score >= 1000 && phase === 1) {
+        phase = 2;
+        phaseMessage = 'Fase 2';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy(); // Mostra o troféu
+        updateCoins(1000); // Adiciona 1000 moedas
+      }
+      if (score >= 2000 && phase === 2) {
+        phase = 3;
+        phaseMessage = 'Fase 3';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(1500); // Adiciona 1000 moedas
+      }
+      if (score >= 5000 && phase === 3) {
+        phase = 4;
+        phaseMessage = 'Fase 4';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(2000); // Adiciona 1000 moedas
+      }
+      if (score >= 10000 && phase === 4) {
+        phase = 5;
+        phaseMessage = 'Fase 5';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(3000); // Adiciona 1000 moedas
+      }
+      if (score >= 20000 && phase === 5) {
+        phase = 6;
+        phaseMessage = 'Fase 6';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(4000); // Adiciona 1000 moedas
+      }
+      if (score >= 40000 && phase === 6) {
+        phase = 7;
+        phaseMessage = 'Fase 7';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(5000); // Adiciona 1000 moedas
+      }
+      if (score >= 80000 && phase === 7) {
+        phase = 8;
+        phaseMessage = 'Fase 8';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(6000); // Adiciona 1000 moedas
+      }
+      if (score >= 100000 && phase === 8) {
+        phase = 9;
+        phaseMessage = 'Fase 9';
+        phaseStartTime = Date.now();
+        increaseLife(); // Aumenta uma vida ao passar de fase
+        playCompleteSound(); // Toca a música de passagem de fase
+        showTrophy(); // Mostra o troféu
+        updateCoins(7000); // Adiciona 1000 moedas
+      }
+      // Adicione outras condições para as próximas fases aqui
+    }
 
     function updateCoins(amount) {
-  const coinCount = document.getElementById('coinCount');
-  let currentCoins = parseInt(coinCount.textContent);
-  currentCoins += amount;
-  coinCount.textContent = currentCoins;
-}
+      const coinCount = document.getElementById('coinCount');
+      let currentCoins = parseInt(coinCount.textContent);
+      currentCoins += amount;
+      coinCount.textContent = currentCoins;
+    }
 
-function playCompleteSound() {
-  completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
-  completeSound.play(); // Toca a música de passagem de fase
-}
+    function playCompleteSound() {
+      completeSound.currentTime = 0; // Reinicia a música para evitar intervalos
+      completeSound.play(); // Toca a música de passagem de fase
+    }
 
     function increaseLife() {
       lives++; // Incrementa uma vida
     }
 
     function drawPhaseMessage() {
-  ctx.fillStyle = 'white';
-  ctx.font = '48px Arial';
-  const messageWidth = ctx.measureText(phaseMessage).width;
-  const messageX = (canvas.width - messageWidth) / 2;
-  ctx.fillText(phaseMessage, messageX, canvas.height / 2);
+      ctx.fillStyle = 'white';
+      ctx.font = '48px Arial';
+      const messageWidth = ctx.measureText(phaseMessage).width;
+      const messageX = (canvas.width - messageWidth) / 2;
+      ctx.fillText(phaseMessage, messageX, canvas.height / 2);
 
-  if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
-    // Contagem regressiva de 3 segundos para a próxima fase
-    const elapsedTime = Date.now() - phaseStartTime;
-    const countdown = 3 - Math.floor(elapsedTime / 1000);
-    if (countdown > 0) {
-      drawCountdown(countdown);
-    } else {
-      phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+      if (phase > 1 && !gameEnded && phaseMessage.startsWith("Fase")) {
+        const elapsedTime = Date.now() - phaseStartTime;
+        const countdown = 3 - Math.floor(elapsedTime / 1000);
+        if (countdown > 0) {
+          drawCountdown(countdown);
+        } else {
+          phaseMessage = ''; // Limpa a mensagem após a contagem regressiva
+        }
+      }
     }
-  }
-}
 
     function showTrophy() {
-  const trophy = document.getElementById('trophy');
-  trophy.style.display = 'block';
-  setTimeout(hideTrophy, 3000); // Esconde o troféu após 3 segundos
-}
+      const trophy = document.getElementById('trophy');
+      trophy.style.display = 'block';
+      setTimeout(hideTrophy, 3000); // Esconde o troféu após 3 segundos
+    }
 
-function hideTrophy() {
-  const trophy = document.getElementById('trophy');
-  trophy.style.display = 'none';
-}
-
+    function hideTrophy() {
+      const trophy = document.getElementById('trophy');
+      trophy.style.display = 'none';
+    }
 
     function drawCountdown(countdown) {
       ctx.fillStyle = 'white';
@@ -523,7 +510,6 @@ function hideTrophy() {
 
     function drawWinMessage() {
       if (score >= 5000 && phase === 3 && gameEnded) {
-        // Desenha um botão para reiniciar o jogo
         const restartButton = document.querySelector('.restart-button');
         restartButton.style.display = 'block';
       }
@@ -556,85 +542,85 @@ function hideTrophy() {
     }
 
     function createMeteor() {
-  let x, y, color, width, height;
-  if (phase === 1) {
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
+      let x, y, color, width, height;
+      if (phase === 1) {
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        }
+      } else if (phase === 2) {
+        x = Math.random() * (canvas.width - blueMeteorWidth);
+        y = -blueMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        }
+      } else if (phase === 3) {
+        x = Math.random() * (canvas.width - purpleMeteorWidth);
+        y = -purpleMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
+      } else {
+        x = Math.random() * (canvas.width - yellowMeteorWidth);
+        y = -yellowMeteorHeight;
+        const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+        color = colors[Math.floor(Math.random() * colors.length)];
+        if (color === 'yellow') {
+          width = yellowMeteorWidth;
+          height = yellowMeteorHeight;
+        } else if (color === 'green') {
+          width = greenMeteorWidth;
+          height = greenMeteorHeight;
+        } else if (color === 'red') {
+          width = redMeteorWidth;
+          height = redMeteorHeight;
+        } else if (color === 'blue') {
+          width = blueMeteorWidth;
+          height = blueMeteorHeight;
+        } else if (color === 'purple') {
+          width = purpleMeteorWidth;
+          height = purpleMeteorHeight;
+        }
+      }
+      meteors.push({ x, y, color, width, height });
     }
-  } else if (phase === 2) {
-    x = Math.random() * (canvas.width - blueMeteorWidth);
-    y = -blueMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    }
-  } else if (phase === 3) {
-    x = Math.random() * (canvas.width - purpleMeteorWidth);
-    y = -purpleMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  } else { // Para todas as fases posteriores
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  }
-  meteors.push({ x, y, color, width, height });
-}
 
     setInterval(createMeteor, 1000);
 
@@ -646,7 +632,6 @@ function hideTrophy() {
       const touchX = touch.clientX;
       const touchY = touch.clientY;
 
-      // Determina a direção do movimento baseada no toque
       if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
         upPressed = true;
         leftPressed = true;
@@ -669,13 +654,11 @@ function hideTrophy() {
         rightPressed = true;
       }
 
-      // Adiciona um tiro quando tocar na tela
       bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
       shootSound.currentTime = 0;
       shootSound.play();
     }
 
-    // Função para lidar com o fim do toque na tela
     function handleTouchEnd(event) {
       event.preventDefault();
       leftPressed = false;
@@ -684,7 +667,6 @@ function hideTrophy() {
       downPressed = false;
     }
 
-    // Adiciona event listeners para toque na tela
     canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
@@ -704,33 +686,31 @@ function hideTrophy() {
     });
 
     document.addEventListener('keyup', function(e) {
-  if (!isPaused) {
-    if (e.key === 'ArrowLeft' || e.key === 'Left') {
-      leftPressed = false;
-    }
-    if (e.key === 'ArrowRight' || e.key === 'Right') {
-      rightPressed = false;
-    }
-    if (e.key === 'ArrowUp' || e.key === 'Up') {
-      upPressed = false;
-    }
-    if (e.key === 'ArrowDown' || e.key === 'Down') {
-      downPressed = false;
-    }
-    if (e.key === ' ' || e.key === 'Spacebar') {
-      fireWeapons(); // Dispara os tiros
-      shootSound.currentTime = 0;
-      shootSound.play();
-    }
-  }
-});
-
+      if (!isPaused) {
+        if (e.key === 'ArrowLeft' || e.key === 'Left') {
+          leftPressed = false;
+        }
+        if (e.key === 'ArrowRight' || e.key === 'Right') {
+          rightPressed = false;
+        }
+        if (e.key === 'ArrowUp' || e.key === 'Up') {
+          upPressed = false;
+        }
+        if (e.key === 'ArrowDown' || e.key === 'Down') {
+          downPressed = false;
+        }
+        if (e.key === ' ' || e.key === 'Spacebar') {
+          fireWeapons(); // Dispara os tiros
+          shootSound.currentTime = 0;
+          shootSound.play();
+        }
+      }
+    });
 
     canvas.addEventListener('click', function(event) {
       const clickX = event.clientX;
       const clickY = event.clientY;
       if (score >= 5000 && phase === 3 && gameEnded) {
-        // Verifica se o clique foi no botão de reiniciar o jogo
         const buttonX = canvas.width / 2 - 100;
         const buttonY = canvas.height / 2 + 100;
         if (clickX >= buttonX && clickX <= buttonX + 200 && clickY >= buttonY && clickY <= buttonY + 50) {
@@ -744,7 +724,6 @@ function hideTrophy() {
     });
 
     function restartGame() {
-      // Reinicia as variáveis do jogo
       score = 0;
       phase = 1;
       phaseMessage = '';
@@ -758,34 +737,22 @@ function hideTrophy() {
     }
 
     function fireWeapons() {
-    console.log("Disparando armas, Laser active:", laserActive);
-    // Tiro central padrão
-    bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
+      console.log("Disparando armas, Laser active:", laserActive);
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
 
-    // Verifica se os tiros laser das asas estão ativos
-    if (laserActive) {
-        // Tiros das asas (azuis)
-        // As coordenadas precisam ser ajustadas para sair das "asas"
-        let wingOffset = 8; // Pode precisar ajustar este valor
-        let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2; // Ajuste para que saia do meio vertical da nave
+      if (laserActive) {
+        let wingOffset = 15; // Ajuste conforme necessário
+        let wingYPosition = shipY + shipSize / 2 - bulletHeight / 2;
 
-        bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' }); // Tiro da asa esquerda
-        bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' }); // Tiro da asa direita
+        bullets.push({ x: shipX + wingOffset, y: wingYPosition, color: 'blue' });
+        bullets.push({ x: shipX + shipSize - wingOffset - bulletWidth, y: wingYPosition, color: 'blue' });
         console.log(`Tiros das asas ativados: Esquerda X=${shipX + wingOffset}, Direita X=${shipX + shipSize - wingOffset}`);
+      }
     }
-}
 
     function toggleLaserPower() {
-  laserActive = !laserActive; // Alterna entre ativar e desativar os lasers
-}
-
-    if (laserActive) {
-    console.log("Tiros das asas ativados");
-    console.log(`Posição da asa esquerda: X=${shipX + wingOffset}, Y=${wingYPosition}`);
-    console.log(`Posição da asa direita: X=${shipX + shipSize - wingOffset}, Y=${wingYPosition}`);
-}
-
-    
+      laserActive = !laserActive; // Alterna entre ativar e desativar os lasers
+    }
   </script>
 </body>
 </html>
