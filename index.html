@@ -855,21 +855,18 @@ function hideTrophy() {
     // Função para abrir a área pop-up
 function openPopup() {
   document.getElementById('popup').style.display = 'block';
-  document.getElementById('currentCoins').textContent = document.getElementById('coinCount').textContent;
+  document.getElementById('currentCoins').textContent = document.getElementById(
+    'coinCount'
+  ).textContent;
 }
-
 function closePopup() {
   document.getElementById('popup').style.display = 'none';
 }
-
 function buyUpgrade() {
   const coinCount = parseInt(document.getElementById('coinCount').textContent);
-  if (coinCount &gt;= 3000) {
+  if (coinCount >= 3000) {
     document.getElementById('coinCount').textContent = coinCount - 3000;
-    closePopup();
-    // Adicione aqui a lógica para ativar o upgrade da nave
-  } else {
-    alert('Saldo insuficiente para comprar.');
+    closePopup(); // Adicione aqui a lógica para ativar o upgrade da nave } else { alert('Saldo insuficiente para comprar.');
   }
 }
   </script>
