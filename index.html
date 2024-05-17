@@ -151,6 +151,42 @@
   background-color: #45a049;
 }
 
+    /* Estilos para a nova área pop-up */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      z-index: 3000;
+    }
+
+    .popup-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 400px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 18px;
+      color: black;
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 24px;
+      color: red;
+    }
+
 
   </style>
 </head>
@@ -168,6 +204,13 @@
   <div id="trophy" class="trophy"></div>
   <div class="pause-overlay" id="pauseOverlay"></div>
 <button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
+  <!-- Nova área pop-up --> 
+  <div class="popup-overlay" id="popupOverlay"> 
+    <div class="popup-content"> 
+      <span class="popup-close" onclick="closePopup()">&times;</span> 
+      <p>Essa é uma nova área pop-up!</p> 
+    </div> 
+  </div>
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -382,79 +425,79 @@
     }
 
     function checkPhase() {
-  if (score >= 1000 && phase === 1) {
+  if (score &gt;= 1000 &amp;&amp; phase === 1) {
     phase = 2;
     phaseMessage = 'Fase 2';
     phaseStartTime = Date.now();
     increaseLife();
     playCompleteSound();
-    showTrophy(); // Mostra o troféu
-    updateCoins(1000); // Adiciona 1000 moedas
+    showTrophy();
+    updateCoins(1000);
   }
-  if (score >= 2000 && phase === 2) {
+  if (score &gt;= 2000 &amp;&amp; phase === 2) {
     phase = 3;
     phaseMessage = 'Fase 3';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(1500); // Adiciona 1000 moedas
+    increaseLife(); 
+    playCompleteSound(); 
+    showTrophy(); 
+    updateCoins(1500); 
+    openPopup(); // Abre o pop-up quando a fase 3 é alcançada
   }
-  if (score >= 5000 && phase === 3) {
+  if (score &gt;= 5000 &amp;&amp; phase === 3) {
     phase = 4;
     phaseMessage = 'Fase 4';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(2000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(2000);
   }
-  if (score >= 10000 && phase === 4) {
+  if (score &gt;= 10000 &amp;&amp; phase === 4) {
     phase = 5;
     phaseMessage = 'Fase 5';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(3000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(3000);
   }
-  if (score >= 20000 && phase === 5) {
+  if (score &gt;= 20000 &amp;&amp; phase === 5) {
     phase = 6;
     phaseMessage = 'Fase 6';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(4000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(4000);
   }
-if (score >= 40000 && phase === 6) {
+  if (score &gt;= 40000 &amp;&amp; phase === 6) {
     phase = 7;
     phaseMessage = 'Fase 7';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(5000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(5000);
   }
-if (score >= 80000 && phase === 7) {
+  if (score &gt;= 80000 &amp;&amp; phase === 7) {
     phase = 8;
     phaseMessage = 'Fase 8';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(6000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(6000);
   }
-  if (score >= 100000 && phase === 8) {
+  if (score &gt;= 100000 &amp;&amp; phase === 8) {
     phase = 9;
     phaseMessage = 'Fase 9';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(7000); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(7000);
   }
-  // Adicione outras condições para as próximas fases aqui
 }
 
     function updateCoins(amount) {
@@ -748,6 +791,18 @@ function hideTrophy() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    // Função para abrir a área pop-up
+function openPopup() {
+  const popupOverlay = document.getElementById('popupOverlay');
+  popupOverlay.style.display = 'block';
+}
+
+// Função para fechar a área pop-up
+function closePopup() {
+  const popupOverlay = document.getElementById('popupOverlay');
+  popupOverlay.style.display = 'none';
+}
   </script>
 </body>
 </html>
