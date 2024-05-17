@@ -783,6 +783,8 @@ function hideTrophy() {
     canvas.addEventListener('touchstart', handleTouch);
     canvas.addEventListener('touchend', handleTouchEnd);
 
+    let hasUpgrade = false; // Variável para verificar se o upgrade foi comprado
+
     document.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowLeft' || e.key === 'Left') {
         leftPressed = true;
@@ -798,8 +800,9 @@ function hideTrophy() {
       }
     });
 
-    document.addEventListener('keyup', function(e) {
-  if (!isPaused) { // Verifica se o jogo não está pausado
+    document.addEventListener('keyup', function (e) {
+  if (!isPaused) {
+    // Verifica se o jogo não está pausado
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
       leftPressed = false;
     }
@@ -814,7 +817,17 @@ function hideTrophy() {
     }
     if (e.key === ' ' || e.key === 'Spacebar') {
       // Adiciona um novo tiro à lista de balas
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
+
+      // Adiciona tiros das asas se o upgrade foi comprado
+      if (hasUpgrade) {
+        const wingOffset = 10; // Distância de 10px do centro para cada asa
+        bullets.push({ x: shipX + wingOffset, y: shipY + shipSize / 2 });
+        bullets.push({
+          x: shipX + shipSize - bulletWidth - wingOffset,
+          y: shipY + shipSize / 2,
+        });
+      }
       // Reinicia o áudio para evitar intervalos
       shootSound.currentTime = 0;
       // Toca o som do tiro
@@ -822,6 +835,8 @@ function hideTrophy() {
     }
   }
 });
+
+    
 
 
     canvas.addEventListener('click', function(event) {
@@ -875,6 +890,7 @@ function buyUpgrade() {
   if (coinCount >= 3000) {
     document.getElementById('coinCount').textContent = coinCount - 3000;
     document.getElementById('coinSound').play(); // Toca o som de moeda
+    hasUpgrade = true; // Ativa o upgrade
     closePopup(); // Adicione aqui a lógica para ativar o upgrade da nave
   } else {
     alert('Saldo insuficiente para comprar.');
