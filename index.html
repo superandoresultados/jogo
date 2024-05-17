@@ -870,13 +870,14 @@ function closePopup() {
 }
 function buyUpgrade() {
   const coinCount = parseInt(document.getElementById('coinCount').textContent);
-  if (coinCount >= 3000) { // Correção do operador 
-    document.getElementById('coinCount').textContent = coinCount - 3000; 
-    closePopup(); 
-    // Adicione aqui a lógica para ativar o upgrade da nave 
-    } else { alert('Saldo insuficiente para comprar.');
+  if (coinCount >= 3000) {
+    document.getElementById('coinCount').textContent = coinCount - 3000;
+    document.getElementById('coinSound').play(); // Toca o som de moeda
+    closePopup(); // Adicione aqui a lógica para ativar o upgrade da nave
+  } else {
+    alert('Saldo insuficiente para comprar.');
   }
-}  
+}
   </script>
 </body>
 </html>
