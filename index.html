@@ -424,81 +424,80 @@
       });
     }
 
-    function checkPhase() {
-  if (score &gt;= 1000 &amp;&amp; phase === 1) {
-    phase = 2;
-    phaseMessage = 'Fase 2';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(1000);
-  }
-  if (score &gt;= 2000 &amp;&amp; phase === 2) {
-    phase = 3;
-    phaseMessage = 'Fase 3';
-    phaseStartTime = Date.now();
-    increaseLife(); 
-    playCompleteSound(); 
-    showTrophy(); 
-    updateCoins(1500); 
-    openPopup(); // Abre o pop-up quando a fase 3 é alcançada
-  }
-  if (score &gt;= 5000 &amp;&amp; phase === 3) {
-    phase = 4;
-    phaseMessage = 'Fase 4';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(2000);
-  }
-  if (score &gt;= 10000 &amp;&amp; phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(3000);
-  }
-  if (score &gt;= 20000 &amp;&amp; phase === 5) {
-    phase = 6;
-    phaseMessage = 'Fase 6';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(4000);
-  }
-  if (score &gt;= 40000 &amp;&amp; phase === 6) {
-    phase = 7;
-    phaseMessage = 'Fase 7';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(5000);
-  }
-  if (score &gt;= 80000 &amp;&amp; phase === 7) {
-    phase = 8;
-    phaseMessage = 'Fase 8';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(6000);
-  }
-  if (score &gt;= 100000 &amp;&amp; phase === 8) {
-    phase = 9;
-    phaseMessage = 'Fase 9';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(7000);
-  }
+    function checkPhase() { 
+if (score >= 1000 && phase === 1) { 
+phase = 2; 
+phaseMessage = 'Fase 2'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(1000); 
+} 
+if (score >= 2000 && phase === 2) { 
+phase = 3; 
+phaseMessage = 'Fase 3'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(1500); 
+openPopup(); 
 }
+// Abre o pop-up quando a fase 3 é alcançada } i
+f (score >= 5000 && phase === 3) { 
+phase = 4; 
+phaseMessage = 'Fase 4'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(2000); 
+} 
+if (score >= 10000 && phase === 4) { 
+phase = 5; 
+phaseMessage = 'Fase 5'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); s
+howTrophy(); 
+updateCoins(3000); 
+} 
+if (score >= 20000 && phase === 5) { 
+phase = 6; phaseMessage = 'Fase 6'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(4000); 
+ 
+if (score >= 40000 && phase === 6) { 
+phase = 7; phaseMessage = 'Fase 7'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); s
+howTrophy(); 
+updateCoins(5000); 
+} 
+if (score >= 80000 && phase === 7) { 
+phase = 8; phaseMessage = 'Fase 8'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(6000); 
+} 
+if (score >= 100000 && phase === 8) { 
+phase = 9; 
+phaseMessage = 'Fase 9'; 
+phaseStartTime = Date.now(); 
+increaseLife(); 
+playCompleteSound(); 
+showTrophy(); 
+updateCoins(7000); 
+} 
+}
+
 
     function updateCoins(amount) {
   const coinCount = document.getElementById('coinCount');
