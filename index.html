@@ -407,11 +407,11 @@
     }
 
     function drawBullets() {
-      ctx.fillStyle = 'red';
-      bullets.forEach(bullet => {
-        ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight);
-      });
-    }
+      bullets.forEach((bullet) => {
+    ctx.fillStyle = bullet.color; // Define a cor do tiro
+    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight); // Desenha o tiro
+  });
+}
 
     function drawMeteors() {
       meteors.forEach(meteor => {
@@ -442,12 +442,11 @@
     }
 
     function moveBullets() {
-      bullets.forEach(bullet => {
-        bullet.y -= bulletSpeed;
-      });
-      bullets = bullets.filter(bullet => bullet.y > 0);
-    }
-
+      bullets.forEach((bullet) => {
+      bullet.y -= bulletSpeed;
+    });
+    bullets = bullets.filter((bullet) => bullet.y > 0);
+  }
     function moveMeteors() {
       meteors.forEach(meteor => {
         meteor.y += meteorSpeed;
