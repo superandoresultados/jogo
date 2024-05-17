@@ -743,6 +743,15 @@ function hideTrophy() {
       shootSound.play(); // Toca o som do tiro
     });
 
+    document.addEventListener('click', enableAudio);
+
+function enableAudio() {
+  shootSound.play().catch(error =&gt; console.log(error));
+  explosionSound.play().catch(error =&gt; console.log(error));
+  completeSound.play().catch(error =&gt; console.log(error));
+  document.removeEventListener('click', enableAudio); // Remova o listener após a primeira interação
+}
+
     function restartGame() {
       // Reinicia as variáveis do jogo
       score = 0;
