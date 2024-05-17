@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
   <title>Space Game Beta 12</title>
   <style>
     body, html {
@@ -864,11 +866,11 @@ function closePopup() {
 }
 function buyUpgrade() {
   const coinCount = parseInt(document.getElementById('coinCount').textContent);
-  if (coinCount >= 3000) {
-    document.getElementById('coinCount').textContent = coinCount - 3000;
-    closePopup(); // Adicione aqui a lógica para ativar o upgrade da nave } else { alert('Saldo insuficiente para comprar.');
+  if (coinCount >= 3000) { // Correção do operador 
+    document.getElementById('coinCount').textContent = coinCount - 3000; closePopup(); // Adicione aqui a lógica para ativar o upgrade da nave 
+    } else { alert('Saldo insuficiente para comprar.');
   }
-}
+  
   </script>
 </body>
 </html>
