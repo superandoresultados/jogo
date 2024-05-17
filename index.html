@@ -408,7 +408,7 @@
     }
 
     function drawBullets() {
-    bullets.forEach((bullet) => {
+  bullets.forEach((bullet) => {
     ctx.fillStyle = bullet.color; // Define a cor do tiro
     ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight); // Desenha o tiro
   });
@@ -825,25 +825,19 @@ function hideTrophy() {
       // Adiciona tiros azuis das asas se o upgrade foi comprado
       if (hasUpgrade) {
         const wingOffset = 10; // Distância de 10px do centro para cada asa
-        bullets.push({
-          x: shipX + wingOffset,
-          y: shipY + shipSize / 2,
-          color: 'blue',
-        });
+        bullets.push({ x: shipX + wingOffset, y: shipY, color: 'blue' });
         bullets.push({
           x: shipX + shipSize - bulletWidth - wingOffset,
-          y: shipY + shipSize / 2,
+          y: shipY,
           color: 'blue',
         });
-      }
-      // Reinicia o áudio para evitar intervalos
+      } // Reinicia o áudio para evitar intervalos
       shootSound.currentTime = 0;
       // Toca o som do tiro
       shootSound.play();
     }
   }
 });
-
     
 
 
