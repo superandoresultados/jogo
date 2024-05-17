@@ -856,6 +856,7 @@ function hideTrophy() {
 
     // Função para abrir a área pop-up
 function openPopup() {
+  isPaused = true; // Pausa o jogo
   document.getElementById('popup').style.display = 'block';
   document.getElementById('currentCoins').textContent = document.getElementById(
     'coinCount'
@@ -863,6 +864,9 @@ function openPopup() {
 }
 function closePopup() {
   document.getElementById('popup').style.display = 'none';
+  isPaused = false; // Retoma o jogo
+  requestAnimationFrame(draw); // Recomeça a animação do jogo
+  requestAnimationFrame(drawBackground); // Recomeça a animação do fundo
 }
 function buyUpgrade() {
   const coinCount = parseInt(document.getElementById('coinCount').textContent);
