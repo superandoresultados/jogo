@@ -802,7 +802,6 @@ function hideTrophy() {
 
     document.addEventListener('keyup', function (e) {
   if (!isPaused) {
-    // Verifica se o jogo não está pausado
     if (e.key === 'ArrowLeft' || e.key === 'Left') {
       leftPressed = false;
     }
@@ -821,15 +820,25 @@ function hideTrophy() {
         x: shipX + shipSize / 2 - bulletWidth / 2,
         y: shipY,
         color: 'red',
+        width: bulletWidth, // Mudança
+        height: bulletHeight, // Mudança
       });
       // Adiciona tiros azuis das asas se o upgrade foi comprado
       if (hasUpgrade) {
         const wingOffset = 10; // Distância de 10px do centro para cada asa
-        bullets.push({ x: shipX + wingOffset, y: shipY, color: 'blue' });
+        bullets.push({
+          x: shipX + wingOffset,
+          y: shipY,
+          color: 'blue',
+          width: bulletWidth, // Mudança
+          height: bulletHeight, // Mudança
+        });
         bullets.push({
           x: shipX + shipSize - bulletWidth - wingOffset,
           y: shipY,
           color: 'blue',
+          width: bulletWidth, // Mudança
+          height: bulletHeight, // Mudança
         });
       } // Reinicia o áudio para evitar intervalos
       shootSound.currentTime = 0;
