@@ -152,39 +152,85 @@
 }
 
     /* Estilos para a nova área pop-up */
-    .popup-overlay {
+    .popup-upgrade {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: none;
-      z-index: 3000;
-    }
-
-    .popup-content {
-      position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 80%;
-      max-width: 400px;
+      width: 300px;
       padding: 20px;
-      background-color: #181818; /* Cor de fundo do pop-up */
+      background-color: rgba(24, 24, 24, 0.9);
       border-radius: 10px;
-      text-align: center;
-      font-size: 18px;
-      color: white; /* Cor do texto */
+      z-index: 3000;
+      display: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .popup-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+    .popup-content-upgrade {
+      text-align: center;
+    }
+
+    .popup-upgrade h2 {
+      color: white;
+      margin-bottom: 25px;
+      font-weight: bold;
+    }
+
+    .popup-image-upgrade {
+      width: 150px;
+      height: 150px;
+      margin-bottom: 20px;
+    }
+
+    .price-upgrade {
+      color: gold;
+      font-size: 20px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .description-upgrade {
+      color: white;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .popup-buttons-upgrade {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+
+    .buy-button-upgrade, .close-button-upgrade {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 24px;
-      color: red;
+      font-size: 16px;
+    }
+
+    .buy-button-upgrade {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .buy-button-upgrade:hover {
+      background-color: #45a049;
+    }
+
+    .close-button-upgrade {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .close-button-upgrade:hover {
+      background-color: #e53935;
+    }
+
+    .current-balance-upgrade {
+      color: white;
+      margin-top: 10px;
+      font-weight: bold;
     }
 
   </style>
@@ -203,10 +249,25 @@
   <div id="trophy" class="trophy"></div>
   <div class="pause-overlay" id="pauseOverlay"></div>
 <button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
-  <div class="popup-overlay" id="popupOverlay">
-      <div class="popup-content">
-        <span class="popup-close" onclick="closePopup()">&times;</span>
-        <p>Faça o Upgrade da nave</p>
+      <div id="popup" class="popup-upgrade">
+      <div class="popup-content-upgrade">
+        <h2>Faça o upgrade da sua nave</h2>
+        <img src="power.png" alt="Power Upgrade" class="popup-image-upgrade" />
+        <p class="price-upgrade">3000 coins</p>
+        <p class="description-upgrade">
+          Este upgrade desbloqueia os tiros a laser da asa da nave
+        </p>
+        <div class="popup-buttons-upgrade">
+          <button class="buy-button-upgrade" onclick="buyUpgrade()">
+            Comprar
+          </button>
+          <button class="close-button-upgrade" onclick="closePopup()">
+            Voltar para o Jogo
+          </button>
+        </div>
+        <p class="current-balance-upgrade">
+          Saldo atual: <span id="currentCoins">0</span>
+        </p>
       </div>
     </div>
   
@@ -793,14 +854,24 @@ function hideTrophy() {
 
     // Função para abrir a área pop-up
 function openPopup() {
-  const popupOverlay = document.getElementById('popupOverlay');
-  popupOverlay.style.display = 'block';
-} // Função para fechar a área pop-up
+  document.getElementById('popup').style.display = 'block';
+  document.getElementById('currentCoins').textContent = document.getElementById('coinCount').textContent;
+}
 
 function closePopup() {
-  const popupOverlay = document.getElementById('popupOverlay');
-  popupOverlay.style.display = 'none';
-} // Add your code here
+  document.getElementById('popup').style.display = 'none';
+}
+
+function buyUpgrade() {
+  const coinCount = parseInt(document.getElementById('coinCount').textContent);
+  if (coinCount &gt;= 3000) {
+    document.getElementById('coinCount').textContent = coinCount - 3000;
+    closePopup();
+    // Adicione aqui a lógica para ativar o upgrade da nave
+  } else {
+    alert('Saldo insuficiente para comprar.');
+  }
+}
   </script>
 </body>
 </html>
