@@ -168,6 +168,13 @@
   <div id="trophy" class="trophy"></div>
   <div class="pause-overlay" id="pauseOverlay"></div>
 <button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
+  <!-- Nova área pop-up --> 
+<div class="popup-overlay" id="popupOverlay"> 
+ <div class="popup-content"> 
+   <span class="popup-close" onclick="closePopup()">&times;</span> <p>Essa é uma nova área pop-up!</p> 
+</div> 
+</div>
+
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -399,6 +406,7 @@
     playCompleteSound(); // Toca a música de passagem de fase
     showTrophy(); // Mostra o troféu
     updateCoins(1500); // Adiciona 1000 moedas
+    openPopup(); // Abre o pop-up quando a fase 3 é alcançada
   }
   if (score >= 5000 && phase === 3) {
     phase = 4;
@@ -748,6 +756,18 @@ function hideTrophy() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
+
+    // Função para abrir a área pop-up
+function openPopup() {
+  const popupOverlay = document.getElementById('popupOverlay');
+  popupOverlay.style.display = 'block';
+}
+
+// Função para fechar a área pop-up
+function closePopup() {
+  const popupOverlay = document.getElementById('popupOverlay');
+  popupOverlay.style.display = 'none';
+}
   </script>
 </body>
 </html>
