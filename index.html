@@ -151,41 +151,6 @@
   background-color: #45a049;
 }
 
-    .popup-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: none;
-      z-index: 3000;
-    }
-
-    .popup-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80%;
-      max-width: 400px;
-      padding: 20px;
-      background-color: white;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 18px;
-      color: black;
-    }
-
-    .popup-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      font-size: 24px;
-      color: red;
-    }
-
 
   </style>
 </head>
@@ -203,13 +168,6 @@
   <div id="trophy" class="trophy"></div>
   <div class="pause-overlay" id="pauseOverlay"></div>
 <button class="play-button" onclick="togglePausePlay()" id="playButton" style="display: none;">Jogar</button>
-  <!-- Nova área pop-up --> 
-<div class="popup-overlay" id="popupOverlay"> 
- <div class="popup-content"> 
-   <span class="popup-close" onclick="closePopup()">&times;</span> <p>Essa é uma nova área pop-up!</p> 
-</div> 
-</div>
-
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
     const bgCtx = backgroundCanvas.getContext('2d');
@@ -433,16 +391,14 @@
     showTrophy(); // Mostra o troféu
     updateCoins(1000); // Adiciona 1000 moedas
   }
-  if (score &gt;= 2000 &amp;&amp; phase === 2) {
+  if (score >= 2000 && phase === 2) {
     phase = 3;
     phaseMessage = 'Fase 3';
     phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(1500);
-    console.log("Fase 3 alcançada"); // Log para verificação
-    openPopup(); // Abre o pop-up quando a fase 3 é alcançada
+    increaseLife(); // Aumenta uma vida ao passar de fase
+    playCompleteSound(); // Toca a música de passagem de fase
+    showTrophy(); // Mostra o troféu
+    updateCoins(1500); // Adiciona 1000 moedas
   }
   if (score >= 5000 && phase === 3) {
     phase = 4;
@@ -779,15 +735,6 @@ function hideTrophy() {
       shootSound.play(); // Toca o som do tiro
     });
 
-    document.addEventListener('click', enableAudio);
-
-function enableAudio() {
-  shootSound.play().catch(error =&gt; console.log(error));
-  explosionSound.play().catch(error =&gt; console.log(error));
-  completeSound.play().catch(error =&gt; console.log(error));
-  document.removeEventListener('click', enableAudio); // Remova o listener após a primeira interação
-}
-
     function restartGame() {
       // Reinicia as variáveis do jogo
       score = 0;
@@ -801,20 +748,6 @@ function enableAudio() {
       const restartButton = document.querySelector('.restart-button');
       restartButton.style.display = 'none';
     }
-
-    // Função para abrir a área pop-up
-function openPopup() {
-  console.log("Abrindo popup"); // Log para verificação
-  const popupOverlay = document.getElementById('popupOverlay');
-  popupOverlay.style.display = 'block';
-}
-
-// Função para fechar a área pop-up
-function closePopup() {
-  const popupOverlay = document.getElementById('popupOverlay');
-  popupOverlay.style.display = 'none';
-}
-    openPopup();
   </script>
 </body>
 </html>
