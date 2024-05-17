@@ -241,6 +241,7 @@
   <canvas id="backgroundCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
   <audio id="coinSound" src="coin.mp3"></audio>
+  <audio id="shootSound" src="shoot.wav"></audio>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
   <div class="score-panel" id="scorePanel"></div>
   <div class="coin-panel" id="coinPanel">
@@ -407,7 +408,7 @@
     }
 
     function drawBullets() {
-      bullets.forEach((bullet) => {
+    bullets.forEach((bullet) => {
     ctx.fillStyle = bullet.color; // Define a cor do tiro
     ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight); // Desenha o tiro
   });
@@ -815,16 +816,24 @@ function hideTrophy() {
       downPressed = false;
     }
     if (e.key === ' ' || e.key === 'Spacebar') {
-      // Adiciona um novo tiro à lista de balas
-      bullets.push({ x: shipX + shipSize / 2 - bulletWidth / 2, y: shipY });
-
-      // Adiciona tiros das asas se o upgrade foi comprado
+      // Adiciona um novo tiro vermelho ao centro
+      bullets.push({
+        x: shipX + shipSize / 2 - bulletWidth / 2,
+        y: shipY,
+        color: 'red',
+      });
+      // Adiciona tiros azuis das asas se o upgrade foi comprado
       if (hasUpgrade) {
         const wingOffset = 10; // Distância de 10px do centro para cada asa
-        bullets.push({ x: shipX + wingOffset, y: shipY + shipSize / 2 });
+        bullets.push({
+          x: shipX + wingOffset,
+          y: shipY + shipSize / 2,
+          color: 'blue',
+        });
         bullets.push({
           x: shipX + shipSize - bulletWidth - wingOffset,
           y: shipY + shipSize / 2,
+          color: 'blue',
         });
       }
       // Reinicia o áudio para evitar intervalos
