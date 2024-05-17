@@ -433,14 +433,15 @@
     showTrophy(); // Mostra o troféu
     updateCoins(1000); // Adiciona 1000 moedas
   }
-  if (score >= 2000 && phase === 2) {
+  if (score &gt;= 2000 &amp;&amp; phase === 2) {
     phase = 3;
     phaseMessage = 'Fase 3';
     phaseStartTime = Date.now();
-    increaseLife(); // Aumenta uma vida ao passar de fase
-    playCompleteSound(); // Toca a música de passagem de fase
-    showTrophy(); // Mostra o troféu
-    updateCoins(1500); // Adiciona 1000 moedas
+    increaseLife();
+    playCompleteSound();
+    showTrophy();
+    updateCoins(1500);
+    console.log("Fase 3 alcançada"); // Log para verificação
     openPopup(); // Abre o pop-up quando a fase 3 é alcançada
   }
   if (score >= 5000 && phase === 3) {
@@ -803,6 +804,7 @@ function enableAudio() {
 
     // Função para abrir a área pop-up
 function openPopup() {
+  console.log("Abrindo popup"); // Log para verificação
   const popupOverlay = document.getElementById('popupOverlay');
   popupOverlay.style.display = 'block';
 }
