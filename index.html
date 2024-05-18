@@ -327,6 +327,20 @@
         </p>
       </div>
     </div>
+   <div id="popupGameOver" class="popup-game-over">
+      <h2>Sua nave foi destruída</h2>
+      <p>
+        Para continuar, compre a nave reserva. O valor da nave é de 3000 Coins.
+      </p>
+      <div class="popup-buttons-game-over">
+        <button class="buy-button-game-over" onclick="buyNewShip()">
+          Comprar
+        </button>
+        <button class="restart-button-game-over" onclick="restartGame()">
+          Reiniciar
+        </button>
+      </div>
+    </div>
   
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -387,6 +401,7 @@
     let enemyBulletHeight = 15;
     let enemyBulletSpeed = 5;
     let enemyBulletInterval;
+    let enemyHits = 0; // Contador de acertos na nave inimiga
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -530,24 +545,38 @@
     }
 
     function checkCollisions() {
-  bullets.forEach(bullet => {
+  bullets.forEach((bullet, bulletIndex) => {
     meteors.forEach((meteor, meteorIndex) => {
-      if (bullet.x < meteor.x + meteor.width &&
-          bullet.x + bulletWidth > meteor.x &&
-          bullet.y < meteor.y + meteor.height &&
+      if (bullet.x < meteor.x + meteor.width &amp;&amp;
+          bullet.x + bulletWidth > meteor.x &amp;&amp;
+          bullet.y < meteor.y + meteor.height &amp;&amp;
           bullet.y + bulletHeight > meteor.y) {
-        bullets = bullets.filter(b => b !== bullet);
-        score += getMeteorScore(meteor.color); // Adiciona pontos ao score
+        bullets.splice(bulletIndex, 1);
+        score += getMeteorScore(meteor.color);
         drawExplosion(meteor.x + meteor.width / 2, meteor.y + meteor.height / 2);
-        explosionSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-        explosionSound.play(); // Toca o som da explosão
+        explosionSound.currentTime = 0;
+        explosionSound.play();
         meteors.splice(meteorIndex, 1);
-
-        updateCoins(10); // Adiciona 10 moedas de ouro para cada meteoro acertado
+        updateCoins(10);
       }
     });
+    if (bullet.y < enemyShipY + enemyShipHeight &amp;&amp;
+        bullet.y + bulletHeight > enemyShipY &amp;&amp;
+        bullet.x < enemyShipX + enemyShipWidth &amp;&amp;
+        bullet.x + bulletWidth > enemyShipX) {
+      bullets.splice(bulletIndex, 1);
+      enemyHits++;
+      drawSmallExplosion(bullet.x, bullet.y);
+      if (enemyHits >= 50) {
+        drawExplosion(enemyShipX + enemyShipWidth / 2, enemyShipY + enemyShipHeight / 2);
+        updateCoins(3000);
+        clearInterval(enemyBulletInterval);
+        enemyShip = null;
+      }
+    }
   });
 }
+
 
     function checkMeteorBottom() {
       meteors.forEach((meteor, meteorIndex) => {
@@ -1103,22 +1132,33 @@ function moveEnemyBullets() {
 
     // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
 function checkEnemyBulletCollisions() {
-    enemyBullets.forEach((bullet, bulletIndex) => {
-        if (bullet.x < shipX + shipSize &&
-            bullet.x + enemyBulletWidth > shipX &&
-            bullet.y < shipY + shipSize &&
-            bullet.y + enemyBulletHeight > shipY) {
-            // Colisão detectada - diminuir a vida do jogador
-            lives--;
-            enemyBullets.splice(bulletIndex, 1);
-            if (lives <= 0) {
-                gameEnded = true;
-                // Mostrar mensagem de fim de jogo ou reiniciar o jogo
-                alert('Game Over!');
-                restartGame();
-            }
-        }
-    });
+  enemyBullets.forEach((bullet, bulletIndex) => {
+    if (bullet.x < shipX + shipSize &amp;&amp;
+        bullet.x + enemyBulletWidth > shipX &amp;&amp;
+        bullet.y < shipY + shipSize &amp;&amp;
+        bullet.y + enemyBulletHeight > shipY) {
+      drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
+      lives--;
+      enemyBullets.splice(bulletIndex, 1);
+      if (lives <= 0) {
+        showGameOverPopup();
+      }
+    }
+  });
+}
+  function drawSmallExplosion(x, y) {
+  const explosionRadius = 20;
+  const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+  explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+  explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+  explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+  ctx.fillStyle = explosionGradient;
+  ctx.beginPath();
+  ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+  
 }  </script>
 </body>
 </html>
