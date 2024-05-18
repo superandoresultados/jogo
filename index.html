@@ -202,7 +202,7 @@
 
     .popup-buttons-upgrade {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       margin-bottom: 20px;
     }
 
@@ -238,6 +238,52 @@
       font-weight: bold;
       font-family: 'Roboto', sans-serif;
     }
+
+    .popup-game-over {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  padding: 20px;
+  background-color: rgba(24, 24, 24, 0.9);
+  border-radius: 10px;
+  z-index: 3000;
+  display: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+.popup-game-over h2 {
+  color: white;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+.popup-buttons-game-over {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+.buy-button-game-over, .restart-button-game-over {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.buy-button-game-over {
+  background-color: #4CAF50;
+  color: white;
+}
+.buy-button-game-over:hover {
+  background-color: #45a049;
+}
+.restart-button-game-over {
+  background-color: #f44336;
+  color: white;
+}
+.restart-button-game-over:hover {
+  background-color: #e53935;
+}
 
   </style>
 </head>
