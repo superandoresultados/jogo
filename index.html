@@ -337,6 +337,7 @@
     let enemyBulletWidth = 5;
     let enemyBulletHeight = 15;
     let enemyBulletSpeed = 5;
+    let enemyBulletInterval;
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -541,52 +542,53 @@
     updateCoins(2000);
   }
   if (score >= 10000 && phase === 4) {
-    phase = 5;
-    phaseMessage = 'Fase 5';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(3000);
-  }
-  if (score >= 20000 && phase === 5) {
-    phase = 6;
-    phaseMessage = 'Fase 6';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(4000);
-  }
-  if (score >= 40000 && phase === 6) {
-    phase = 7;
-    phaseMessage = 'Fase 7';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(5000);
-  }
-  if (score >= 80000 && phase === 7) {
-    phase = 8;
-    phaseMessage = 'Fase 8';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(6000);
-  }
-  if (score >= 100000 && phase === 8) {
-    phase = 9;
-    phaseMessage = 'Fase 9';
-    phaseStartTime = Date.now();
-    increaseLife();
-    playCompleteSound();
-    showTrophy();
-    updateCoins(7000);
-  } // Adicione outras condições para as próximas fases aqui
+        phase = 5;
+        phaseMessage = 'Fase 5';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(3000);
+        startPhase5(); // Chama a função para iniciar a fase 5
+    }
+    if (score >= 20000 && phase === 5) {
+        phase = 6;
+        phaseMessage = 'Fase 6';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(4000);
+    }
+    if (score >= 40000 && phase === 6) {
+        phase = 7;
+        phaseMessage = 'Fase 7';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(5000);
+    }
+    if (score >= 80000 && phase === 7) {
+        phase = 8;
+        phaseMessage = 'Fase 8';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(6000);
+    }
+    if (score >= 100000 && phase === 8) {
+        phase = 9;
+        phaseMessage = 'Fase 9';
+        phaseStartTime = Date.now();
+        increaseLife();
+        playCompleteSound();
+        showTrophy();
+        updateCoins(7000);
+    } // Adicione outras condições para as próximas fases aqui
 }
-
+    
     function updateCoins(amount) {
   const coinCount = document.getElementById('coinCount');
   let currentCoins = parseInt(coinCount.textContent);
@@ -952,18 +954,19 @@ function handleTouchEnd(event) {
       });
 
     function restartGame() {
-      // Reinicia as variáveis do jogo
-      score = 0;
-      phase = 1;
-      phaseMessage = '';
-      phaseStartTime = 0;
-      gameEnded = false;
-      lives = 3;
-      bullets = [];
-      meteors = [];
-      const restartButton = document.querySelector('.restart-button');
-      restartButton.style.display = 'none';
-    }
+    // Reinicia as variáveis do jogo
+    score = 0;
+    phase = 1;
+    phaseMessage = '';
+    phaseStartTime = 0;
+    gameEnded = false;
+    lives = 3;
+    bullets = [];
+    meteors = [];
+    const restartButton = document.querySelector('.restart-button');
+    restartButton.style.display = 'none';
+    clearInterval(enemyBulletInterval); // Para o intervalo de tiros da nave inimiga
+}
 
     // Função para abrir a área pop-up
 function openPopup() {
@@ -995,7 +998,7 @@ function buyUpgrade() {
     // Função para iniciar a fase 5
 function startPhase5() {
     createEnemyShip();
-    setInterval(createEnemyBullet, 2000); // Nave inimiga atira a cada 2 segundos
+    enemyBulletInterval = setInterval(createEnemyBullet, 2000); // Nave inimiga atira a cada 2 segundos
 }
 
 // Chamar essa função ao iniciar a fase 5
@@ -1008,6 +1011,9 @@ function createEnemyShip() {
     enemyShip = new Image();
     enemyShip.src = 'enemy_ship.png';
     enemyShipX = (canvas.width - enemyShipWidth) / 2;
+    enemyShip.onload = () => {
+        requestAnimationFrame(draw); // Recomeça a animação do jogo quando a nave inimiga estiver carregada
+    };
 }
 
     // Função para desenhar a nave inimiga
@@ -1018,7 +1024,7 @@ function drawEnemyShip() {
     // Função para mover a nave inimiga
 function moveEnemyShip() {
     enemyShipX += enemyShipSpeed * enemyShipDirection;
-    if (enemyShipX <= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
+    if (enemyShipX <;= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
         enemyShipDirection *= -1; // Inverter a direção
     }
 }
@@ -1059,10 +1065,11 @@ function checkEnemyBulletCollisions() {
             if (lives <= 0) {
                 gameEnded = true;
                 // Mostrar mensagem de fim de jogo ou reiniciar o jogo
+                alert('Game Over!');
+                restartGame();
             }
         }
     });
-}
-  </script>
+}  </script>
 </body>
 </html>
