@@ -1137,7 +1137,7 @@ function moveEnemyBullets() {
   enemyBullets.forEach((bullet) => {
     bullet.y += enemyBulletSpeed;
   });
-  enemyBullets = enemyBullets.filter((bullet) => bullet.y &lt; canvas.height);
+  enemyBullets = enemyBullets.filter((bullet) => bullet.y < canvas.height);
 }
 
     // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
