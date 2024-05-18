@@ -91,35 +91,35 @@
     }
 
     .trophy {
-  position: fixed;
-  top: calc(50% - 120px); /* Subtrai 120px do centro vertical */
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px;
-  height: 150px;
-  background: url('trofeu.png') no-repeat center center;
-  background-size: cover;
-  display: none;
-  z-index: 1000;
-}
+      position: fixed;
+      top: calc(50% - 120px); /* Subtrai 120px do centro vertical */
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150px;
+      height: 150px;
+      background: url('trofeu.png') no-repeat center center;
+      background-size: cover;
+      display: none;
+      z-index: 1000;
+    }
 
     .coin-panel {
-  position: fixed;
-  top: 40px; /* Ajuste conforme necessário para ficar abaixo do painel de score */
-  left: 10px; /* Espaço da esquerda da tela */
-  padding: 5px 10px; /* Padding mais pequeno para envolver o conteúdo */
-  background-color: rgba(0, 0, 0, 0.7);
-  color: gold;
-  font-size: 18px;
-  display: flex;
-  align-items: center; /* Alinha verticalmente o ícone e o texto */
-}
+      position: fixed;
+      top: 40px; /* Ajuste conforme necessário para ficar abaixo do painel de score */
+      left: 10px; /* Espaço da esquerda da tela */
+      padding: 5px 10px; /* Padding mais pequeno para envolver o conteúdo */
+      background-color: rgba(0, 0, 0, 0.7);
+      color: gold;
+      font-size: 18px;
+      display: flex;
+      align-items: center; /* Alinha verticalmente o ícone e o texto */
+    }
 
-.coin-icon {
-  width: 24px; /* Tamanho do ícone */
-  height: 24px;
-  margin-right: 5px; /* Espaço entre o ícone e o texto */
-}
+      .coin-icon {
+        width: 24px; /* Tamanho do ícone */
+        height: 24px;
+        margin-right: 5px; /* Espaço entre o ícone e o texto */
+      }
 
     .pause-overlay {
       position: fixed;
@@ -135,19 +135,19 @@
     }
 
     .play-button {
-  position: fixed;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 30px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  z-index: 2100;
-}
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 30px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 2100;
+    }
 
 .play-button:hover {
   background-color: #45a049;
@@ -412,11 +412,11 @@
     }
 
     function drawBullets() {
-  bullets.forEach((bullet) => {
-    ctx.fillStyle = bullet.color; // Define a cor do tiro
-    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height); // Desenha o tiro
-  });
-}
+      bullets.forEach((bullet) => {
+        ctx.fillStyle = bullet.color; // Define a cor do tiro
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height); // Desenha o tiro
+      });
+    }
 
     function drawMeteors() {
       meteors.forEach(meteor => {
@@ -769,10 +769,13 @@ function hideTrophy() {
       }
 
       // Adiciona um tiro quando tocar na tela
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
-      shootSound.currentTime = 0;
-      shootSound.play();
-    }
+      bullets.push({
+        x: shipX + shipSize / 2 - bulletWidth / 2,
+        y: shipY,
+        color: 'red', // Define a cor do tiro principal como vermelho
+        width: bulletWidth,
+        height: bulletHeight,
+      });
 
     // Função para lidar com o fim do toque na tela
     function handleTouchEnd(event) {
@@ -806,26 +809,14 @@ function hideTrophy() {
 
     document.addEventListener('keyup', function (e) {
   if (!isPaused) {
-    if (e.key === 'ArrowLeft' || e.key === 'Left') {
-      leftPressed = false;
-    }
-    if (e.key === 'ArrowRight' || e.key === 'Right') {
-      rightPressed = false;
-    }
-    if (e.key === 'ArrowUp' || e.key === 'Up') {
-      upPressed = false;
-    }
-    if (e.key === 'ArrowDown' || e.key === 'Down') {
-      downPressed = false;
-    }
     if (e.key === ' ' || e.key === 'Spacebar') {
       // Adiciona um novo tiro vermelho ao centro
       bullets.push({
         x: shipX + shipSize / 2 - bulletWidth / 2,
         y: shipY,
-        color: 'red',
-        width: bulletWidth, // Mudança
-        height: bulletHeight, // Mudança
+        color: 'red', // Define a cor do tiro principal como vermelho
+        width: bulletWidth,
+        height: bulletHeight,
       });
       // Adiciona tiros azuis das asas se o upgrade foi comprado
       if (hasUpgrade) {
@@ -834,19 +825,18 @@ function hideTrophy() {
           x: shipX + wingOffset,
           y: shipY,
           color: 'blue',
-          width: bulletWidth, // Mudança
-          height: bulletHeight, // Mudança
+          width: bulletWidth,
+          height: bulletHeight,
         });
         bullets.push({
           x: shipX + shipSize - bulletWidth - wingOffset,
           y: shipY,
           color: 'blue',
-          width: bulletWidth, // Mudança
-          height: bulletHeight, // Mudança
+          width: bulletWidth,
+          height: bulletHeight,
         });
-      } // Reinicia o áudio para evitar intervalos
+      }
       shootSound.currentTime = 0;
-      // Toca o som do tiro
       shootSound.play();
     }
   }
@@ -866,7 +856,7 @@ function hideTrophy() {
           return;
         }
       }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY });
+      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
       shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
       shootSound.play(); // Toca o som do tiro
     });
