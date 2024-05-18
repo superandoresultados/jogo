@@ -1049,9 +1049,9 @@ function moveEnemyBullets() {
     // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
 function checkEnemyBulletCollisions() {
     enemyBullets.forEach((bullet, bulletIndex) => {
-        if (bullet.x &lt; shipX + shipSize &&
+        if (bullet.x < shipX + shipSize &&
             bullet.x + enemyBulletWidth > shipX &&
-            bullet.y &lt; shipY + shipSize &&
+            bullet.y < shipY + shipSize &&
             bullet.y + enemyBulletHeight > shipY) {
             // Colisão detectada - diminuir a vida do jogador
             lives--;
