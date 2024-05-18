@@ -325,6 +325,19 @@
     let upPressed = false;
     let downPressed = false;
 
+        // Variáveis globais para a nave inimiga
+    let enemyShip;
+    let enemyShipWidth = 75;
+    let enemyShipHeight = 75;
+    let enemyShipX;
+    let enemyShipY = 50;
+    let enemyShipSpeed = 3;
+    let enemyShipDirection = 1; // 1 para direita, -1 para esquerda
+    let enemyBullets = [];
+    let enemyBulletWidth = 5;
+    let enemyBulletHeight = 15;
+    let enemyBulletSpeed = 5;
+
     const bulletWidth = 5;
     const bulletHeight = 15;
     const bulletSpeed = 5;
@@ -363,8 +376,8 @@
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      if (!isPaused) { // Desenhar apenas se o jogo não estiver pausado
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!isPaused) {
         drawShip();
         drawBullets();
         drawMeteors();
@@ -377,15 +390,22 @@
         checkCollisions();
         checkMeteorBottom();
         checkPhase();
-      } else {
+        if (phase >= 5) {
+            drawEnemyShip();
+            drawEnemyBullets();
+            moveEnemyShip();
+            moveEnemyBullets();
+            checkEnemyBulletCollisions();
+        }
+    } else {
         ctx.fillStyle = 'white';
         ctx.font = '48px Arial';
         ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
-      }
-      if (!isPaused) {
-        requestAnimationFrame(draw);
-      }
     }
+    if (!isPaused) {
+        requestAnimationFrame(draw);
+    }
+}
 
     function togglePausePlay() {
   isPaused = !isPaused;
@@ -970,6 +990,78 @@ function buyUpgrade() {
   } else {
     alert('Saldo insuficiente para comprar.');
   }
+}
+
+    // Função para iniciar a fase 5
+function startPhase5() {
+    createEnemyShip();
+    setInterval(createEnemyBullet, 2000); // Nave inimiga atira a cada 2 segundos
+}
+
+// Chamar essa função ao iniciar a fase 5
+if (phase === 5) {
+    startPhase5();
+}
+
+    // Função para criar a nave inimiga
+function createEnemyShip() {
+    enemyShip = new Image();
+    enemyShip.src = 'enemy_ship.png';
+    enemyShipX = (canvas.width - enemyShipWidth) / 2;
+}
+
+    // Função para desenhar a nave inimiga
+function drawEnemyShip() {
+    ctx.drawImage(enemyShip, enemyShipX, enemyShipY, enemyShipWidth, enemyShipHeight);
+}
+
+    // Função para mover a nave inimiga
+function moveEnemyShip() {
+    enemyShipX += enemyShipSpeed * enemyShipDirection;
+    if (enemyShipX &lt;= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
+        enemyShipDirection *= -1; // Inverter a direção
+    }
+}
+
+    // Função para criar um tiro da nave inimiga
+function createEnemyBullet() {
+    let bulletX = enemyShipX + enemyShipWidth / 2 - enemyBulletWidth / 2;
+    let bulletY = enemyShipY + enemyShipHeight;
+    enemyBullets.push({ x: bulletX, y: bulletY });
+}
+
+    // Função para desenhar os tiros da nave inimiga
+function drawEnemyBullets() {
+    ctx.fillStyle = 'yellow';
+    enemyBullets.forEach((bullet) => {
+        ctx.fillRect(bullet.x, bullet.y, enemyBulletWidth, enemyBulletHeight);
+    });
+}
+
+    // Função para mover os tiros da nave inimiga
+function moveEnemyBullets() {
+    enemyBullets.forEach((bullet) => {
+        bullet.y += enemyBulletSpeed;
+    });
+    enemyBullets = enemyBullets.filter((bullet) => bullet.y < canvas.height);
+}
+
+    // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
+function checkEnemyBulletCollisions() {
+    enemyBullets.forEach((bullet, bulletIndex) => {
+        if (bullet.x &lt; shipX + shipSize &&
+            bullet.x + enemyBulletWidth > shipX &&
+            bullet.y &lt; shipY + shipSize &&
+            bullet.y + enemyBulletHeight > shipY) {
+            // Colisão detectada - diminuir a vida do jogador
+            lives--;
+            enemyBullets.splice(bulletIndex, 1);
+            if (lives <= 0) {
+                gameEnded = true;
+                // Mostrar mensagem de fim de jogo ou reiniciar o jogo
+            }
+        }
+    });
 }
   </script>
 </body>
