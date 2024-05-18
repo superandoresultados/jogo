@@ -441,35 +441,35 @@
     let completeSound = new Audio('complete.wav');
 
     function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!isPaused) {
-        drawShip();
-        drawBullets();
-        drawMeteors();
-        drawScore();
-        drawPhaseMessage();
-        drawWinMessage();
-        moveShip();
-        moveBullets();
-        moveMeteors();
-        checkCollisions();
-        checkMeteorBottom();
-        checkPhase();
-        if (phase >= 5) {
-            drawEnemyShip();
-            drawEnemyBullets();
-            moveEnemyShip();
-            moveEnemyBullets();
-            checkEnemyBulletCollisions();
-          }
-    } else {
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!isPaused) {
+    drawShip();
+    drawBullets();
+    drawMeteors();
+    drawScore();
+    drawPhaseMessage();
+    drawWinMessage();
+    moveShip();
+    moveBullets();
+    moveMeteors();
+    checkCollisions();
+    checkMeteorBottom();
+    checkPhase();
+    if (phase >;= 5 && enemyShip) {
+      drawEnemyShip();
+      drawEnemyBullets();
+      moveEnemyShip();
+      moveEnemyBullets();
+      checkEnemyBulletCollisions();
     }
-    if (!isPaused) {
-        requestAnimationFrame(draw);
-    }
+  } else {
+    ctx.fillStyle = 'white';
+    ctx.font = '48px Arial';
+    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
+  }
+  if (!isPaused) {
+    requestAnimationFrame(draw);
+  }
 }
 
     function togglePausePlay() {
@@ -573,6 +573,10 @@
         clearInterval(enemyBulletInterval);
         enemyShip = null; // Remove a nave inimiga
         enemyHits = 0; // Reseta o contador de acertos
+        isPaused = true; // Pausa o jogo momentaneamente
+        setTimeout(() => {
+          isPaused = false; // Retoma o jogo após breve pausa
+        }, 100); // Ajuste o tempo conforme necessário
       }
     }
   });
