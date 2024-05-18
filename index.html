@@ -414,7 +414,7 @@
     function drawBullets() {
   bullets.forEach((bullet) => {
     ctx.fillStyle = bullet.color; // Define a cor do tiro
-    ctx.fillRect(bullet.x, bullet.y, bulletWidth, bulletHeight); // Desenha o tiro
+    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height); // Desenha o tiro
   });
 }
 
