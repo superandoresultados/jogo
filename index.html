@@ -740,42 +740,54 @@ function hideTrophy() {
     draw();
 
     function handleTouch(event) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const touchX = touch.clientX;
-      const touchY = touch.clientY;
+  event.preventDefault();
+  const touch = event.touches[0];
+  const touchX = touch.clientX;
+  const touchY = touch.clientY;
 
-      // Determina a direção do movimento baseada no toque
-      if (touchX < canvas.width / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
-        upPressed = true;
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        leftPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
-        rightPressed = true;
-      } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        leftPressed = true;
-      } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-      } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
-        downPressed = true;
-        rightPressed = true;
-      }
+  // Determina a direção do movimento baseada no toque
+  if (touchX > canvas.width / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+    upPressed = true;
+    leftPressed = true;
+  } else if (touchX > canvas.width / 3 &amp;&amp; touchX &lt; (2 * canvas.width) / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+    upPressed = true;
+  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+    upPressed = true;
+    rightPressed = true;
+  } else if (touchX < canvas.width / 3 &amp;&amp; touchY > canvas.height / 3 &amp;&amp; touchY < (2 * canvas.height) / 3) {
+    leftPressed = true;
+  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY > canvas.height / 3 &amp;&amp; touchY &lt; (2 * canvas.height) / 3) {
+    rightPressed = true;
+  } else if (touchX < canvas.width / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+    downPressed = true;
+    leftPressed = true;
+  } else if (touchX > canvas.width / 3 &amp;&amp; touchX < (2 * canvas.width) / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+    downPressed = true;
+  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+    downPressed = true;
+    rightPressed = true;
+  }
 
-      // Adiciona um tiro quando tocar na tela
-      bullets.push({
-        x: shipX + shipSize / 2 - bulletWidth / 2,
-        y: shipY,
-        color: 'red', // Define a cor do tiro principal como vermelho
-        width: bulletWidth,
-        height: bulletHeight,
-      });
+  // Adiciona um tiro quando tocar na tela
+  bullets.push({
+    x: shipX + shipSize / 2 - bulletWidth / 2,
+    y: shipY,
+    color: 'red', // Define a cor do tiro principal como vermelho
+    width: bulletWidth,
+    height: bulletHeight,
+  });
+  shootSound.currentTime = 0;
+  shootSound.play();
+}
+
+// Função para lidar com o fim do toque na tela
+function handleTouchEnd(event) {
+  event.preventDefault();
+  leftPressed = false;
+  rightPressed = false;
+  upPressed = false;
+  downPressed = false;
+}
 
     // Função para lidar com o fim do toque na tela
     function handleTouchEnd(event) {
