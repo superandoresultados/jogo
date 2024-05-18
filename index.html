@@ -746,24 +746,24 @@ function hideTrophy() {
   const touchY = touch.clientY;
 
   // Determina a direção do movimento baseada no toque
-  if (touchX > canvas.width / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+  if (touchX > canvas.width / 3 && touchY < canvas.height / 3) {
     upPressed = true;
     leftPressed = true;
-  } else if (touchX > canvas.width / 3 &amp;&amp; touchX &lt; (2 * canvas.width) / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+  } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
     upPressed = true;
-  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY &lt; canvas.height / 3) {
+  } else if (touchX > (2 * canvas.width) / 3 && touchY < canvas.height / 3) {
     upPressed = true;
     rightPressed = true;
-  } else if (touchX < canvas.width / 3 &amp;&amp; touchY > canvas.height / 3 &amp;&amp; touchY < (2 * canvas.height) / 3) {
+  } else if (touchX < canvas.width / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
     leftPressed = true;
-  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY > canvas.height / 3 &amp;&amp; touchY &lt; (2 * canvas.height) / 3) {
+  } else if (touchX > (2 * canvas.width) / 3 && touchY > canvas.height / 3 && touchY < (2 * canvas.height) / 3) {
     rightPressed = true;
-  } else if (touchX < canvas.width / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+  } else if (touchX < canvas.width / 3 && touchY > (2 * canvas.height) / 3) {
     downPressed = true;
     leftPressed = true;
-  } else if (touchX > canvas.width / 3 &amp;&amp; touchX < (2 * canvas.width) / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+  } else if (touchX > canvas.width / 3 && touchX < (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
     downPressed = true;
-  } else if (touchX > (2 * canvas.width) / 3 &amp;&amp; touchY > (2 * canvas.height) / 3) {
+  } else if (touchX > (2 * canvas.width) / 3 && touchY > (2 * canvas.height) / 3) {
     downPressed = true;
     rightPressed = true;
   }
