@@ -547,9 +547,9 @@
     function checkCollisions() {
   bullets.forEach((bullet, bulletIndex) => {
     meteors.forEach((meteor, meteorIndex) => {
-      if (bullet.x < meteor.x + meteor.width &amp;&amp;
-          bullet.x + bulletWidth > meteor.x &amp;&amp;
-          bullet.y < meteor.y + meteor.height &amp;&amp;
+      if (bullet.x < meteor.x + meteor.width &&
+          bullet.x + bulletWidth > meteor.x &&
+          bullet.y < meteor.y + meteor.height &&
           bullet.y + bulletHeight > meteor.y) {
         bullets.splice(bulletIndex, 1);
         score += getMeteorScore(meteor.color);
@@ -560,9 +560,9 @@
         updateCoins(10);
       }
     });
-    if (bullet.y < enemyShipY + enemyShipHeight &amp;&amp;
-        bullet.y + bulletHeight > enemyShipY &amp;&amp;
-        bullet.x < enemyShipX + enemyShipWidth &amp;&amp;
+    if (bullet.y < enemyShipY + enemyShipHeight &&
+        bullet.y + bulletHeight > enemyShipY &&
+        bullet.x < enemyShipX + enemyShipWidth &&
         bullet.x + bulletWidth > enemyShipX) {
       bullets.splice(bulletIndex, 1);
       enemyHits++;
@@ -1133,9 +1133,9 @@ function moveEnemyBullets() {
     // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
 function checkEnemyBulletCollisions() {
   enemyBullets.forEach((bullet, bulletIndex) => {
-    if (bullet.x < shipX + shipSize &amp;&amp;
-        bullet.x + enemyBulletWidth > shipX &amp;&amp;
-        bullet.y < shipY + shipSize &amp;&amp;
+    if (bullet.x < shipX + shipSize &&
+        bullet.x + enemyBulletWidth > shipX &&
+        bullet.y < shipY + shipSize &&
         bullet.y + enemyBulletHeight > shipY) {
       drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
       lives--;
