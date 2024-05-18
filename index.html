@@ -1024,7 +1024,7 @@ function drawEnemyShip() {
     // Função para mover a nave inimiga
 function moveEnemyShip() {
     enemyShipX += enemyShipSpeed * enemyShipDirection;
-    if (enemyShipX <;= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
+    if (enemyShipX <= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
         enemyShipDirection *= -1; // Inverter a direção
     }
 }
