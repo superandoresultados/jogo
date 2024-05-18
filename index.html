@@ -768,14 +768,32 @@ function hideTrophy() {
     rightPressed = true;
   }
 
-  // Adiciona um tiro quando tocar na tela
+  /// Adiciona um tiro quando tocar na tela
   bullets.push({
     x: shipX + shipSize / 2 - bulletWidth / 2,
     y: shipY,
-    color: 'red', // Define a cor do tiro principal como vermelho
+    color: 'red', // Mantém a cor do tiro principal como vermelho
     width: bulletWidth,
     height: bulletHeight,
   });
+  // Adiciona tiros azuis das asas se o upgrade foi comprado
+  if (hasUpgrade) {
+    const wingOffset = 10; // Distância de 10px do centro para cada asa
+    bullets.push({
+      x: shipX + wingOffset,
+      y: shipY,
+      color: 'blue', // Cor azul para os tiros das asas
+      width: bulletWidth,
+      height: bulletHeight,
+    });
+    bullets.push({
+      x: shipX + shipSize - bulletWidth - wingOffset,
+      y: shipY,
+      color: 'blue', // Cor azul para os tiros das asas
+      width: bulletWidth,
+      height: bulletHeight,
+    });
+  }
   shootSound.currentTime = 0;
   shootSound.play();
 }
@@ -826,7 +844,7 @@ function handleTouchEnd(event) {
       bullets.push({
         x: shipX + shipSize / 2 - bulletWidth / 2,
         y: shipY,
-        color: 'red', // Define a cor do tiro principal como vermelho
+        color: 'red', // Mantém a cor do tiro principal como vermelho
         width: bulletWidth,
         height: bulletHeight,
       });
@@ -836,14 +854,14 @@ function handleTouchEnd(event) {
         bullets.push({
           x: shipX + wingOffset,
           y: shipY,
-          color: 'blue',
+          color: 'blue', // Cor azul para os tiros das asas
           width: bulletWidth,
           height: bulletHeight,
         });
         bullets.push({
           x: shipX + shipSize - bulletWidth - wingOffset,
           y: shipY,
-          color: 'blue',
+          color: 'blue', // Cor azul para os tiros das asas
           width: bulletWidth,
           height: bulletHeight,
         });
@@ -868,10 +886,35 @@ function handleTouchEnd(event) {
           return;
         }
       }
-      bullets.push({ x: shipX + (shipSize / 2) - (bulletWidth / 2), y: shipY, color: 'red' });
-      shootSound.currentTime = 0; // Reinicia o áudio para evitar intervalos
-      shootSound.play(); // Toca o som do tiro
-    });
+      // Adiciona um novo tiro vermelho ao centro
+        bullets.push({
+          x: shipX + shipSize / 2 - bulletWidth / 2,
+          y: shipY,
+          color: 'red', // Mantém a cor do tiro principal como vermelho
+          width: bulletWidth,
+          height: bulletHeight,
+        });
+        // Adiciona tiros azuis das asas se o upgrade foi comprado
+        if (hasUpgrade) {
+          const wingOffset = 10; // Distância de 10px do centro para cada asa
+          bullets.push({
+            x: shipX + wingOffset,
+            y: shipY,
+            color: 'blue', // Cor azul para os tiros das asas
+            width: bulletWidth,
+            height: bulletHeight,
+          });
+          bullets.push({
+            x: shipX + shipSize - bulletWidth - wingOffset,
+            y: shipY,
+            color: 'blue', // Cor azul para os tiros das asas
+            width: bulletWidth,
+            height: bulletHeight,
+          });
+        }
+        shootSound.currentTime = 0;
+        shootSound.play();
+      });
 
     function restartGame() {
       // Reinicia as variáveis do jogo
