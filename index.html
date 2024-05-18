@@ -1032,19 +1032,24 @@ function handleTouchEnd(event) {
       });
 
     function restartGame() {
-    // Reinicia as variáveis do jogo
-    score = 0;
-    phase = 1;
-    phaseMessage = '';
-    phaseStartTime = 0;
-    gameEnded = false;
-    lives = 3;
-    bullets = [];
-    meteors = [];
-    const restartButton = document.querySelector('.restart-button');
-    restartButton.style.display = 'none';
-    clearInterval(enemyBulletInterval); // Para o intervalo de tiros da nave inimiga
-}
+      // Reinicia as variáveis do jogo
+      score = 0;
+      phase = 1;
+      phaseMessage = '';
+      phaseStartTime = 0;
+      gameEnded = false;
+      lives = 3;
+      bullets = [];
+      meteors = [];
+      enemyHits = 0; // Reseta o contador de acertos na nave inimiga
+      const restartButton = document.querySelector('.restart-button');
+      restartButton.style.display = 'none';
+      clearInterval(enemyBulletInterval); // Para o intervalo de tiros da nave inimiga
+      document.getElementById('popupGameOver').style.display = 'none'; // Esconde o pop-up de "Game Over"
+      isPaused = false; // Retoma o jogo
+      draw(); // Recomeça a animação do jogo
+      drawBackground(); // Recomeça a animação do fundo
+    }
 
     // Função para abrir a área pop-up
 function openPopup() {
@@ -1142,10 +1147,12 @@ function checkEnemyBulletCollisions() {
       enemyBullets.splice(bulletIndex, 1);
       if (lives <= 0) {
         showGameOverPopup();
+        isPaused = true; // Pausa o jogo ao mostrar o pop-up de "Game Over"
       }
     }
   });
 }
+    
   function drawSmallExplosion(x, y) {
   const explosionRadius = 20;
   const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
@@ -1158,6 +1165,27 @@ function checkEnemyBulletCollisions() {
   ctx.fill();
 }
 
+    function buyNewShip() {
+  const coinCount = parseInt(document.getElementById('coinCount').textContent);
+  if (coinCount >= 3000) {
+    document.getElementById('coinCount').textContent = coinCount - 3000;
+    document.getElementById('coinSound').play();
+    lives = 3;
+    const popupGameOver = document.getElementById('popupGameOver');
+    popupGameOver.style.display = 'none';
+    isPaused = false; // Retoma o jogo
+    draw(); // Recomeça a animação do jogo
+    drawBackground(); // Recomeça a animação do fundo
+  } else {
+    alert('Saldo insuficiente para comprar.');
+  }
+}
+
+    function showGameOverPopup() {
+  const popupGameOver = document.getElementById('popupGameOver');
+  popupGameOver.style.display = 'block';
+  isPaused = true; // Pausa o jogo quando o pop-up de Game Over é mostrado
+}
   
 </script>
 </body>
