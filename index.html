@@ -244,57 +244,75 @@
     }
 
     .popup-game-over {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  padding: 20px;
-  background-color: rgba(24, 24, 24, 0.9);
-  border-radius: 10px;
-  z-index: 3000;
-  display: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-.popup-game-over h2 {
-  color: white;
-  margin-bottom: 25px;
-  font-weight: bold;
-  font-family: 'Roboto', sans-serif;
-}
-    .popup-game-over p {
-  color: white;
-  margin-bottom: 25px;
-  font-weight: 300;
-  font-family: 'Roboto', sans-serif;
-}
-.popup-buttons-game-over {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-.buy-button-game-over, .restart-button-game-over {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-.buy-button-game-over {
-  background-color: #4CAF50;
-  color: white;
-}
-.buy-button-game-over:hover {
-  background-color: #45a049;
-}
-.restart-button-game-over {
-  background-color: #f44336;
-  color: white;
-}
-.restart-button-game-over:hover {
-  background-color: #e53935;
-}
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      padding: 20px;
+      background-color: rgba(24, 24, 24, 0.9);
+      border-radius: 10px;
+      z-index: 3000;
+      display: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    
+    .popup-game-over h2 {
+      color: white;
+      margin-bottom: 25px;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+    }
+    
+        .popup-game-over p {
+      color: white;
+      margin-bottom: 25px;
+      font-weight: 300;
+      font-family: 'Roboto', sans-serif;
+    }
+    
+    .popup-buttons-game-over {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    
+    .buy-button-game-over, .restart-button-game-over {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    .buy-button-game-over {
+      background-color: #4CAF50;
+      color: white;
+    }
+    
+    .buy-button-game-over:hover {
+      background-color: #45a049;
+    }
+    .restart-button-game-over {
+      background-color: #f44336;
+      color: white;
+    }
+    .restart-button-game-over:hover {
+      background-color: #e53935;
+    }
+
+    #popupMissionComplete {
+      display: none; /* Escondido por padrão */
+    }
+    
+    #popupMission2 {
+      display: none; /* Escondido por padrão */
+    }
+
+    #popupBonusShip {
+      display: none; /* Escondido por padrão */
+    }
 
   </style>
 </head>
@@ -349,6 +367,29 @@
         </button>
       </div>
     </div>
+  <div id="popupMissionComplete" class="popup-upgrade">
+  <div class="popup-content-upgrade">
+    <h2>Missão cumprida!</h2>
+    <p>Você abateu o inimigo e ganhou uma nave extra como recompensa e um bônus de 5000 Coins.</p>
+    <button class="close-button-upgrade" onclick="showNextMissionPopup()">Próxima missão</button>
+  </div>
+</div>
+ <div id="popupMission2" class="popup-upgrade">
+  <div class="popup-content-upgrade">
+    <h2>Chuva de meteoros</h2>
+    <img src="rainMeteor.png" alt="Chuva de Meteoros" class="popup-image-upgrade" style="width: 150px; height: 150px; margin: auto; display: block;">
+    <p>Sua missão é destruir os meteoros para defender a base de controle. Se você for atingido, será destruído! Se você cumprir a missão ganhará uma nave mais poderosa. Boa sorte!</p>
+    <button class="close-button-upgrade" onclick="startMeteorMission()">Começar a missão</button>
+  </div>
+</div>
+</div>
+  <div id="popupBonusShip" class="popup-upgrade">
+  <div class="popup-content-upgrade">
+    <h2>Sua nave foi destruída</h2>
+    <p>Retorne para a missão com a nave que você ganhou da missão anterior!</p>
+    <button class="close-button-upgrade" onclick="resumeMeteorMission()">Voltar para a missão</button>
+  </div>
+</div>
   
   <script>
     const backgroundCanvas = document.getElementById('backgroundCanvas');
@@ -470,6 +511,9 @@
       moveEnemyBullets();
       checkEnemyBulletCollisions();
     }
+    if (phase === 6) {
+      checkMeteorCollisions(); // Verifica colisões de meteoros com a nave do jogador na fase 6
+    }
   } else {
     ctx.fillStyle = 'white';
     ctx.font = '48px Arial';
@@ -568,6 +612,7 @@
         updateCoins(10);
       }
     });
+
     if (phase >= 5 && enemyShip && bullet.y < enemyShipY + enemyShipHeight &&
         bullet.y + bulletHeight > enemyShipY &&
         bullet.x < enemyShipX + enemyShipWidth &&
@@ -581,10 +626,7 @@
         clearInterval(enemyBulletInterval);
         enemyShip = null; // Remove a nave inimiga
         enemyHits = 0; // Reseta o contador de acertos
-        isPaused = true; // Pausa o jogo momentaneamente
-        setTimeout(() => {
-          isPaused = false; // Retoma o jogo após breve pausa
-        }, 100); // Ajuste o tempo conforme necessário
+        showMissionCompletePopup(); // Mostra o pop-up de "Missão cumprida!"
       }
     }
   });
@@ -866,7 +908,6 @@ function hideTrophy() {
 }, 1000);
 
     
-
     function handleTouch(event) {
   event.preventDefault();
   const touch = event.touches[0];
@@ -1202,6 +1243,71 @@ function checkEnemyBulletCollisions() {
   const popupGameOver = document.getElementById('popupGameOver');
   popupGameOver.style.display = 'block';
   isPaused = true; // Pausa o jogo quando o pop-up de Game Over é mostrado
+}
+
+    // Função para mostrar o pop-up de "Missão cumprida"
+function showMissionCompletePopup() {
+  isPaused = true;
+  document.getElementById('popupMissionComplete').style.display = 'block';
+  updateCoins(5000); // Adiciona 5000 coins
+  increaseLife(); // Adiciona uma nave extra
+}
+    
+// Função para mostrar o pop-up da próxima missão
+function showNextMissionPopup() {
+  document.getElementById('popupMissionComplete').style.display = 'none';
+  document.getElementById('popupMission2').style.display = 'block';
+}
+
+    // Função para iniciar a missão de chuva de meteoros
+function startMeteorMission() {
+  document.getElementById('popupMission2').style.display = 'none';
+  isPaused = false;
+  draw();
+  drawBackground();
+}
+
+// Função para abrir o pop-up da fase 5
+function startPhase5() {
+  createEnemyShip();
+  enemyBulletInterval = setInterval(createEnemyBullet, 2000); // Nave inimiga atira a cada 2 segundos
+}
+
+// Chamar essa função ao iniciar a fase 5
+if (phase === 5) {
+  startPhase5();
+}
+
+    // Função para mostrar o pop-up da nave bônus
+function showBonusShipPopup() {
+  isPaused = true;
+  document.getElementById('popupBonusShip').style.display = 'block';
+}
+
+// Função para retomar a missão de chuva de meteoros
+function resumeMeteorMission() {
+  document.getElementById('popupBonusShip').style.display = 'none';
+  lives = 3; // Restaura as vidas do jogador
+  isPaused = false;
+  draw();
+  drawBackground();
+}
+
+    function checkMeteorCollisions() {
+  meteors.forEach((meteor, meteorIndex) => {
+    if (meteor.x < shipX + shipSize &&
+        meteor.x + meteor.width > shipX &&
+        meteor.y < shipY + shipSize &&
+        meteor.y + meteor.height > shipY) {
+      drawExplosion(shipX + shipSize / 2, shipY + shipSize / 2);
+      lives--;
+      meteors.splice(meteorIndex, 1);
+      if (lives <= 0) {
+        showBonusShipPopup(); // Mostra o pop-up da nave bônus
+        isPaused = true; // Pausa o jogo
+      }
+    }
+  });
 }
   
 </script>
