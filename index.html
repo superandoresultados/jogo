@@ -461,7 +461,7 @@
             moveEnemyShip();
             moveEnemyBullets();
             checkEnemyBulletCollisions();
-        }
+          }
     } else {
         ctx.fillStyle = 'white';
         ctx.font = '48px Arial';
@@ -560,7 +560,7 @@
         updateCoins(10);
       }
     });
-    if (bullet.y < enemyShipY + enemyShipHeight &&
+    if (phase >= 5 && enemyShip && bullet.y < enemyShipY + enemyShipHeight &&
         bullet.y + bulletHeight > enemyShipY &&
         bullet.x < enemyShipX + enemyShipWidth &&
         bullet.x + bulletWidth > enemyShipX) {
@@ -571,7 +571,8 @@
         drawExplosion(enemyShipX + enemyShipWidth / 2, enemyShipY + enemyShipHeight / 2);
         updateCoins(3000);
         clearInterval(enemyBulletInterval);
-        enemyShip = null;
+        enemyShip = null; // Remove a nave inimiga
+        enemyHits = 0; // Reseta o contador de acertos
       }
     }
   });
@@ -1101,15 +1102,19 @@ function createEnemyShip() {
 
     // Função para desenhar a nave inimiga
 function drawEnemyShip() {
+  if (enemyShip) {
     ctx.drawImage(enemyShip, enemyShipX, enemyShipY, enemyShipWidth, enemyShipHeight);
+  }
 }
 
     // Função para mover a nave inimiga
 function moveEnemyShip() {
+  if (enemyShip) {
     enemyShipX += enemyShipSpeed * enemyShipDirection;
     if (enemyShipX <= 0 || enemyShipX + enemyShipWidth >= canvas.width) {
-        enemyShipDirection *= -1; // Inverter a direção
+      enemyShipDirection *= -1; // Inverter a direção
     }
+  }
 }
 
     // Função para criar um tiro da nave inimiga
@@ -1121,18 +1126,18 @@ function createEnemyBullet() {
 
     // Função para desenhar os tiros da nave inimiga
 function drawEnemyBullets() {
-    ctx.fillStyle = 'yellow';
-    enemyBullets.forEach((bullet) => {
-        ctx.fillRect(bullet.x, bullet.y, enemyBulletWidth, enemyBulletHeight);
-    });
+  ctx.fillStyle = 'yellow';
+  enemyBullets.forEach((bullet) => {
+    ctx.fillRect(bullet.x, bullet.y, enemyBulletWidth, enemyBulletHeight);
+  });
 }
 
     // Função para mover os tiros da nave inimiga
 function moveEnemyBullets() {
-    enemyBullets.forEach((bullet) => {
-        bullet.y += enemyBulletSpeed;
-    });
-    enemyBullets = enemyBullets.filter((bullet) => bullet.y < canvas.height);
+  enemyBullets.forEach((bullet) => {
+    bullet.y += enemyBulletSpeed;
+  });
+  enemyBullets = enemyBullets.filter((bullet) => bullet.y &lt; canvas.height);
 }
 
     // Função para verificar colisões entre os tiros da nave inimiga e a nave do jogador
