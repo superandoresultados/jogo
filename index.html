@@ -739,6 +739,21 @@ function hideTrophy() {
 
     draw();
 
+    function createDoubleMeteor() {
+  createMeteor();
+  createMeteor();
+}
+
+    setInterval(() => {
+  if (phase === 4) {
+    createDoubleMeteor();
+  } else {
+    createMeteor();
+  }
+}, 1000);
+
+    
+
     function handleTouch(event) {
   event.preventDefault();
   const touch = event.touches[0];
