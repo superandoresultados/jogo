@@ -602,7 +602,7 @@
   } else {
     pauseOverlay.style.display = 'none';
     playButton.style.display = 'none';
-    meteorInterval = setInterval(createMeteor, 1000);
+    meteorInterval = setInterval(createMeteor, 1000); // Retoma a criação de meteoros
     requestAnimationFrame(draw);
     requestAnimationFrame(drawBackground);
   }
