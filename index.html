@@ -489,6 +489,9 @@
     let enemyBulletInterval;
     let enemyHits = 0; // Contador de acertos na nave inimiga
 
+    let meteorInterval;
+    let isPaused = false; // Variável para controlar o estado de pausa
+
     const bulletWidth = 5;
     const bulletHeight = 15;
     const bulletSpeed = 5;
@@ -567,11 +570,13 @@
   if (isPaused) {
     pauseOverlay.style.display = 'block';
     playButton.style.display = 'block';
+    clearInterval(meteorInterval); // Pausa a criação de meteoros
     cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
     cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
   } else {
     pauseOverlay.style.display = 'none';
     playButton.style.display = 'none';
+    meteorInterval = setInterval(createMeteor, 1000); // Retoma a criação de meteoros
     requestAnimationFrame(draw);
     requestAnimationFrame(drawBackground);
   }
