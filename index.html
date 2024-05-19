@@ -383,6 +383,7 @@
 <body>
   <canvas id="backgroundCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
+  <audio id="backgroundMusic" src="mission.mp3" loop></audio>
   <audio id="coinSound" src="coin.mp3"></audio>
   <audio id="shootSound" src="shoot.wav"></audio>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
@@ -464,6 +465,22 @@
 
     const backgroundImage = new Image();
     backgroundImage.src = 'space.png';
+
+    // Obtém o elemento de áudio
+const backgroundMusic = document.getElementById('backgroundMusic');
+
+// Função para iniciar a música
+function playBackgroundMusic() {
+  backgroundMusic.play();
+}
+
+// Função para pausar a música
+function pauseBackgroundMusic() {
+  backgroundMusic.pause();
+}
+
+// Chama a função para iniciar a música quando o jogo começar
+playBackgroundMusic();
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
@@ -599,6 +616,7 @@
     clearInterval(meteorInterval); // Pausa a criação de meteoros
     cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
     cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
+    pauseBackgroundMusic(); // Pausa a música de fundo
   } else {
     pauseOverlay.style.display = 'none';
     playButton.style.display = 'none';
@@ -609,6 +627,7 @@
     }
     requestAnimationFrame(draw);
     requestAnimationFrame(drawBackground);
+    playBackgroundMusic(); // Retoma a música de fundo
   }
 }
     
