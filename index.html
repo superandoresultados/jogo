@@ -383,7 +383,6 @@
 <body>
   <canvas id="backgroundCanvas"></canvas>
   <canvas id="gameCanvas"></canvas>
-  <audio id="backgroundMusic" src="mission.mp3" loop></audio>
   <audio id="coinSound" src="coin.mp3"></audio>
   <audio id="shootSound" src="shoot.wav"></audio>
   <button class="restart-button" onclick="restartGame()">Reiniciar Jogo</button>
@@ -465,22 +464,6 @@
 
     const backgroundImage = new Image();
     backgroundImage.src = 'space.png';
-
-    // Obtém o elemento de áudio
-const backgroundMusic = document.getElementById('backgroundMusic');
-
-// Função para iniciar a música
-function playBackgroundMusic() {
-  backgroundMusic.play();
-}
-
-// Função para pausar a música
-function pauseBackgroundMusic() {
-  backgroundMusic.pause();
-}
-
-// Chama a função para iniciar a música quando o jogo começar
-playBackgroundMusic();
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
@@ -616,21 +599,14 @@ playBackgroundMusic();
     clearInterval(meteorInterval); // Pausa a criação de meteoros
     cancelAnimationFrame(draw); // Pausa o loop de animação do jogo
     cancelAnimationFrame(drawBackground); // Pausa o fundo em movimento
-    pauseBackgroundMusic(); // Pausa a música de fundo
   } else {
     pauseOverlay.style.display = 'none';
     playButton.style.display = 'none';
-    if (phase === 6) {
-      meteorInterval = setInterval(createMeteor, 500); // Criação mais rápida de meteoros na fase 6
-    } else {
-      meteorInterval = setInterval(createMeteor, 1000); // Criação normal de meteoros
-    }
+    meteorInterval = setInterval(createMeteor, 1000); // Retoma a criação de meteoros
     requestAnimationFrame(draw);
     requestAnimationFrame(drawBackground);
-    playBackgroundMusic(); // Retoma a música de fundo
   }
 }
-
     
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
@@ -983,14 +959,9 @@ function hideTrophy() {
       }
     }
     meteors.push({ x, y, color, width, height });
-
-    if (phase === 6) {
-      // Cria um meteoro adicional na fase 6
-      let additionalMeteor = { x, y, color, width, height };
-      meteors.push(additionalMeteor);
-    }
   }
 }
+
     setInterval(createMeteor, 1000);
 
     draw();
@@ -1416,21 +1387,6 @@ function resumeMeteorMission() {
     }
   });
 }
-
-    function startGame() {
-  // Inicializa a criação de meteoros no início do jogo
-  if (phase === 6) {
-    meteorInterval = setInterval(createDoubleMeteor, 1000); // Cria meteoros adicionais na fase 6
-  } else {
-    meteorInterval = setInterval(createMeteor, 1000); // Criação normal de meteoros
-  }
-
-  // Desenha o jogo
-  draw();
-}
-
-// Chame startGame no início do seu script ou quando o jogo começar
-startGame();
   
 </script>
 </body>
