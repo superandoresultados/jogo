@@ -440,6 +440,7 @@
 
     let bgY = 0;
     let isPaused = false; // Variável para controlar o estado de pausa
+    let meteorInterval;
 
     function drawBackground() {
       bgCtx.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
@@ -488,9 +489,6 @@
     let enemyBulletSpeed = 5;
     let enemyBulletInterval;
     let enemyHits = 0; // Contador de acertos na nave inimiga
-
-    let isPaused = false; // Variável para controlar o estado de pausa
-    let meteorInterval;
     
 
     const bulletWidth = 5;
