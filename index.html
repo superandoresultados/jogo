@@ -633,7 +633,9 @@
         clearInterval(enemyBulletInterval);
         enemyShip = null; // Remove a nave inimiga
         enemyHits = 0; // Reseta o contador de acertos
-        showMissionCompletePopup(); // Mostra o pop-up de "Missão cumprida!"
+
+        // Adiciona um atraso de 1 segundo antes de mostrar o pop-up
+        setTimeout(showMissionCompletePopup, 1000);
       }
     }
   });
@@ -805,16 +807,16 @@ function hideTrophy() {
     }
 
     function drawExplosion(x, y) {
-      const explosionRadius = 50;
-      const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
-      explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
-      explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
-      ctx.fillStyle = explosionGradient;
-      ctx.beginPath();
-      ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    const explosionRadius = 50;
+    const explosionGradient = ctx.createRadialGradient(x, y, 0, x, y, explosionRadius);
+    explosionGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    explosionGradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.5)');
+    explosionGradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+    ctx.fillStyle = explosionGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, explosionRadius, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
     function createMeteor() {
   let x, y, color, width, height;
