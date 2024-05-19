@@ -294,7 +294,7 @@
     }
     
     .buy-button-game-over {
-      background-color: #4CAF50;
+      background-color: #1f6abb;
       color: white;
     }
     
@@ -669,6 +669,10 @@
       }
     }
   });
+
+  if (phase === 6) {
+    checkMeteorCollisions(); // Verifica colisões de meteoros com a nave do jogador na fase 6
+  }
 }
 
 
