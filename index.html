@@ -489,8 +489,9 @@
     let enemyBulletInterval;
     let enemyHits = 0; // Contador de acertos na nave inimiga
 
-    let meteorInterval;
     let isPaused = false; // Variável para controlar o estado de pausa
+    let meteorInterval;
+    
 
     const bulletWidth = 5;
     const bulletHeight = 15;
@@ -576,12 +577,12 @@
   } else {
     pauseOverlay.style.display = 'none';
     playButton.style.display = 'none';
-    meteorInterval = setInterval(createMeteor, 1000); // Retoma a criação de meteoros
+    meteorInterval = setInterval(createMeteor, 1000);
     requestAnimationFrame(draw);
     requestAnimationFrame(drawBackground);
   }
 }
-
+    
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
     }
@@ -850,84 +851,86 @@ function hideTrophy() {
   }
 
     function createMeteor() {
-  let x, y, color, width, height;
-  if (phase === 1) {
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
+  if (!isPaused) {
+    let x, y, color, width, height;
+    if (phase === 1) {
+      x = Math.random() * (canvas.width - yellowMeteorWidth);
+      y = -yellowMeteorHeight;
+      const colors = ['yellow', 'green', 'red'];
+      color = colors[Math.floor(Math.random() * colors.length)];
+      if (color === 'yellow') {
+        width = yellowMeteorWidth;
+        height = yellowMeteorHeight;
+      } else if (color === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (color === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
+      }
+    } else if (phase === 2) {
+      x = Math.random() * (canvas.width - blueMeteorWidth);
+      y = -blueMeteorHeight;
+      const colors = ['yellow', 'green', 'red', 'blue'];
+      color = colors[Math.floor(Math.random() * colors.length)];
+      if (color === 'yellow') {
+        width = yellowMeteorWidth;
+        height = yellowMeteorHeight;
+      } else if (color === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (color === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
+      } else if (color === 'blue') {
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
+      }
+    } else if (phase === 3) {
+      x = Math.random() * (canvas.width - purpleMeteorWidth);
+      y = -purpleMeteorHeight;
+      const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+      color = colors[Math.floor(Math.random() * colors.length)];
+      if (color === 'yellow') {
+        width = yellowMeteorWidth;
+        height = yellowMeteorHeight;
+      } else if (color === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (color === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
+      } else if (color === 'blue') {
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
+      } else if (color === 'purple') {
+        width = purpleMeteorWidth;
+        height = purpleMeteorHeight;
+      }
+    } else { // Para todas as fases posteriores
+      x = Math.random() * (canvas.width - yellowMeteorWidth);
+      y = -yellowMeteorHeight;
+      const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
+      color = colors[Math.floor(Math.random() * colors.length)];
+      if (color === 'yellow') {
+        width = yellowMeteorWidth;
+        height = yellowMeteorHeight;
+      } else if (color === 'green') {
+        width = greenMeteorWidth;
+        height = greenMeteorHeight;
+      } else if (color === 'red') {
+        width = redMeteorWidth;
+        height = redMeteorHeight;
+      } else if (color === 'blue') {
+        width = blueMeteorWidth;
+        height = blueMeteorHeight;
+      } else if (color === 'purple') {
+        width = purpleMeteorWidth;
+        height = purpleMeteorHeight;
+      }
     }
-  } else if (phase === 2) {
-    x = Math.random() * (canvas.width - blueMeteorWidth);
-    y = -blueMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    }
-  } else if (phase === 3) {
-    x = Math.random() * (canvas.width - purpleMeteorWidth);
-    y = -purpleMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
-  } else { // Para todas as fases posteriores
-    x = Math.random() * (canvas.width - yellowMeteorWidth);
-    y = -yellowMeteorHeight;
-    const colors = ['yellow', 'green', 'red', 'blue', 'purple'];
-    color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
-      width = yellowMeteorWidth;
-      height = yellowMeteorHeight;
-    } else if (color === 'green') {
-      width = greenMeteorWidth;
-      height = greenMeteorHeight;
-    } else if (color === 'red') {
-      width = redMeteorWidth;
-      height = redMeteorHeight;
-    } else if (color === 'blue') {
-      width = blueMeteorWidth;
-      height = blueMeteorHeight;
-    } else if (color === 'purple') {
-      width = purpleMeteorWidth;
-      height = purpleMeteorHeight;
-    }
+    meteors.push({ x, y, color, width, height });
   }
-  meteors.push({ x, y, color, width, height });
 }
 
     setInterval(createMeteor, 1000);
