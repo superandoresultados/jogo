@@ -630,6 +630,7 @@ playBackgroundMusic();
     playBackgroundMusic(); // Retoma a música de fundo
   }
 }
+
     
     function drawShip() {
       ctx.drawImage(shipImg, shipX, shipY, shipSize, shipSize);
@@ -924,16 +925,16 @@ function hideTrophy() {
     y = -blueMeteorHeight;
     const colors = ['yellow', 'green', 'red', 'blue'];
     color = colors[Math.floor(Math.random() * colors.length)];
-    if (color === 'yellow') {
+    if (color is 'yellow') {
       width = yellowMeteorWidth;
       height = yellowMeteorHeight;
-    } else if (color === 'green') {
+    } else if (color is 'green') {
       width = greenMeteorWidth;
       height = greenMeteorHeight;
-    } else if (color === 'red') {
+    } else if (color is 'red') {
       width = redMeteorWidth;
       height = redMeteorHeight;
-    } else if (color === 'blue') {
+    } else if (color is 'blue') {
       width = blueMeteorWidth;
       height = blueMeteorHeight;
     }
