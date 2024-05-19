@@ -351,13 +351,13 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    @keyframes slideUp {
+    @keyframes growCenter {
   from {
-    transform: translateY(100%);
+    transform: translate(-50%, -50%) scale(0);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
 }
@@ -367,7 +367,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   width: 300px;
   padding: 20px;
   background-color: #181818;
@@ -375,7 +375,7 @@
   z-index: 3000;
   display: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  animation: slideUp 1.5s ease-in-out; /* Aumenta a duração da animação para 1.5s */
+  animation: growCenter 0.5s ease-in-out;
 }
 
   </style>
@@ -1330,7 +1330,9 @@ function showMissionCompletePopup() {
 // Função para mostrar o pop-up da próxima missão
 function showNextMissionPopup() {
   document.getElementById('popupMissionComplete').style.display = 'none';
-  document.getElementById('popupMission2').style.display = 'block';
+  const nextPopup = document.getElementById('popupMission2');
+  nextPopup.style.display = 'block';
+  nextPopup.classList.add('show');
 }
 
     // Função para iniciar a missão de chuva de meteoros
