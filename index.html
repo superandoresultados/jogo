@@ -521,10 +521,6 @@
     if (phase === 6) {
       checkMeteorCollisions(); // Verifica colisões de meteoros com a nave do jogador na fase 6
     }
-  } else {
-    ctx.fillStyle = 'white';
-    ctx.font = '48px Arial';
-    ctx.fillText('Jogo Pausado', canvas.width / 2 - 150, canvas.height / 2);
   }
   if (!isPaused) {
     requestAnimationFrame(draw);
