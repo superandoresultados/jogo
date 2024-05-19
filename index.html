@@ -351,6 +351,33 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
+    @keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+      .popup-upgrade,
+  .popup-game-over {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: #181818;
+    border-radius: 10px;
+    z-index: 3000;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.5s ease-out;
+  }
+
   </style>
 </head>
 <body>
@@ -1292,8 +1319,10 @@ function checkEnemyBulletCollisions() {
 
     // Função para mostrar o pop-up de "Missão cumprida"
 function showMissionCompletePopup() {
+  const popup = document.getElementById('popupMissionComplete');
+  popup.style.display = 'block';
+  popup.classList.add('show');
   isPaused = true;
-  document.getElementById('popupMissionComplete').style.display = 'block';
   updateCoins(5000); // Adiciona 5000 coins
   increaseLife(); // Adiciona uma nave extra
 }
@@ -1325,8 +1354,10 @@ if (phase === 5) {
 
     // Função para mostrar o pop-up da nave bônus
 function showBonusShipPopup() {
-  isPaused = true;
-  document.getElementById('popupBonusShip').style.display = 'block';
+  const popup = document.getElementById('popupBonusShip');
+  popup.style.display = 'block';
+  popup.classList.add('show');
+  isPaused = true; // Pausa o jogo
 }
 
 // Função para retomar a missão de chuva de meteoros
